@@ -1,3 +1,6 @@
+Here is the complete, updated code for your **`index.html`** file, configured with the correct path to your logo inside the `brand` folder (`./brand/logo.jpeg`) and focused on the team-first, player-centered approach:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,7 +64,6 @@
         .logo-container img {
             max-height: 55px;
             width: auto;
-            /* White outline highlight to pop against black background */
             filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.8));
             transition: transform 0.3s ease;
         }
@@ -127,7 +129,6 @@
             height: auto;
             margin-bottom: 2rem;
             filter: drop-shadow(0px 0px 15px rgba(255, 255, 255, 0.9));
-            animation: fadeIn 1s ease-in-out;
         }
 
         .hero h1 {
@@ -299,25 +300,24 @@
     <!-- Header Navigation -->
     <header>
         <a href="index.html" class="logo-container">
-            <img src="red_rock_logo.png" alt="Red Rock Baseball Club Logo">
+            <img src="./brand/logo.jpeg" alt="Red Rock Baseball Club Logo">
             <span class="brand-name">RED ROCK</span>
         </a>
         <nav>
             <a href="index.html" class="active">Home</a>
-            <a href="manager.html">Manager</a>
-            <a href="coaches.html">Coaches</a>
+            <a href="coaches.html">Staff & Philosophy</a>
             <a href="#portal" class="btn-portal">Parent Login</a>
         </nav>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
-        <img src="red_rock_logo.png" alt="Red Rock Baseball Club Logo" class="hero-logo">
+        <img src="./brand/logo.jpeg" alt="Red Rock Baseball Club Logo" class="hero-logo">
         <h1>RED ROCK <span>BASEBALL CLUB</span></h1>
-        <p>Developing elite high-school athletes through mental toughness, physical discipline, and competitive varsity preparation.</p>
+        <p>Empowering young athletes through mental toughness, physical development, and a team-first standard of excellence.</p>
         <div class="cta-buttons">
             <a href="#portal" class="btn-primary">Parent Portal</a>
-            <a href="manager.html" class="btn-secondary">Meet The Director</a>
+            <a href="coaches.html" class="btn-secondary">Staff & Philosophy</a>
         </div>
     </section>
 
@@ -344,8 +344,10 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 <strong>Red Rock Baseball Club</strong>. Program Director Coach Matty. All Rights Reserved.</p>
+        <p>&copy; 2026 <strong>Red Rock Baseball Club</strong>. All Rights Reserved.</p>
     </footer>
 
 </body>
 </html>
+
+```
