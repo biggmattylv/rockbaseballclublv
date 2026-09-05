@@ -3,173 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Red Rock Baseball Club | Premier Athletic Development</title>
+    <title>Red Rock Baseball Club | Elite Athletic Development</title>
+    
+    <!-- Google Fonts for High-Contrast Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+
     <style>
-        /* Dark Theme & Cincinnati Red Color Palette */
         :root {
-            --bg-dark: #0f0f11;
-            --bg-card: #1a1a1e;
-            --red-accent: #c8102e;
-            --text-light: #f4f4f5;
-            --text-muted: #a1a1aa;
-            --border-color: #27272a;
+            --bg-dark: #0a0a0c;
+            --bg-card: #141418;
+            --bg-card-hover: #1c1c22;
+            --red-accent: #d3122a;
+            --red-glow: rgba(211, 18, 42, 0.4);
+            --text-light: #ffffff;
+            --text-muted: #a0a0ab;
+            --border-color: #26262e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            font-family: 'Impact', 'Bebas Neue', sans-serif, system-ui;
+            font-family: 'Montserrat', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-light);
-            line-height: 1.5;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Navigation Bar */
+        /* Fixed Sharp Header */
         header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 2rem;
-            background-color: #050506;
+            padding: 1rem 3rem;
+            background-color: rgba(10, 10, 12, 0.95);
+            backdrop-filter: blur(8px);
             border-bottom: 2px solid var(--red-accent);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
         }
 
         .logo-container img {
-            max-height: 60px;
-            /* White outline filter to make logo pop on dark background */
-            filter: drop-shadow(0px 0px 4px #ffffff);
+            max-height: 55px;
+            width: auto;
+            /* White outline highlight to pop against black background */
+            filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.8));
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        .brand-name {
+            font-family: 'Impact', sans-serif;
+            font-size: 1.6rem;
+            color: var(--text-light);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
         }
 
         nav a {
             color: var(--text-light);
             text-decoration: none;
-            margin-left: 1.5rem;
+            font-weight: 700;
+            font-size: 0.95rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-size: 1.1rem;
+            transition: color 0.2s ease;
         }
 
-        nav a:hover {
+        nav a:hover, nav a.active {
             color: var(--red-accent);
         }
 
         .btn-portal {
             background-color: var(--red-accent);
-            padding: 0.6rem 1.2rem;
+            color: #ffffff !important;
+            padding: 0.75rem 1.5rem;
             border-radius: 4px;
-            font-weight: bold;
+            font-weight: 800;
+            box-shadow: 0 0 12px var(--red-glow);
+            transition: all 0.3s ease;
         }
 
-        /* Hero Section */
+        .btn-portal:hover {
+            background-color: #ff1a35;
+            box-shadow: 0 0 20px rgba(211, 18, 42, 0.8);
+            transform: translateY(-2px);
+        }
+
+        /* High-Impact Hero Section */
         .hero {
             text-align: center;
-            padding: 5rem 1rem;
-            background: linear-gradient(180deg, rgba(200,16,46,0.15) 0%, rgba(15,15,17,1) 100%);
+            padding: 6rem 1.5rem 4rem;
+            background: radial-gradient(circle at top center, rgba(211, 18, 42, 0.18) 0%, rgba(10, 10, 12, 1) 70%);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .hero img {
-            max-width: 280px;
-            filter: drop-shadow(0px 0px 8px #ffffff);
-            margin-bottom: 1.5rem;
+        .hero-logo {
+            max-width: 260px;
+            height: auto;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0px 0px 15px rgba(255, 255, 255, 0.9));
+            animation: fadeIn 1s ease-in-out;
         }
 
         .hero h1 {
-            font-size: 3.5rem;
-            margin: 0;
+            font-family: 'Impact', sans-serif;
+            font-size: 4rem;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .hero h1 span {
+            color: var(--red-accent);
         }
 
         .hero p {
-            font-family: sans-serif;
             color: var(--text-muted);
-            max-width: 600px;
-            margin: 1rem auto 2rem;
-            font-size: 1.1rem;
+            max-width: 650px;
+            margin: 0 auto 2.5rem;
+            font-size: 1.15rem;
+            font-weight: 400;
         }
 
-        /* Parent Portal Section */
-        .portal-preview {
-            max-width: 1000px;
-            margin: 3rem auto;
-            padding: 2rem;
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
         }
 
+        .btn-primary {
+            background-color: var(--red-accent);
+            color: #fff;
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px var(--red-glow);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff1a35;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(211, 18, 42, 0.8);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #fff;
+            border: 2px solid var(--border-color);
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-light);
+            background-color: rgba(255, 255, 255, 0.05);
+            transform: translateY(-3px);
+        }
+
+        /* Clean Content Sections */
+        .section-container {
+            max-width: 1100px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            font-family: 'Impact', sans-serif;
+            font-size: 2.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            font-size: 1.05rem;
+        }
+
+        /* Modern Grid Cards */
         .portal-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-            font-family: sans-serif;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
         }
 
         .card {
-            background-color: #121214;
-            padding: 1.5rem;
-            border-left: 4px solid var(--red-accent);
-            border-radius: 4px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem 2rem;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--red-accent);
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            background-color: var(--bg-card-hover);
+            transform: translateY(-5px);
+            border-color: rgba(211, 18, 42, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .card h3 {
-            margin-top: 0;
-            color: var(--text-light);
+            font-family: 'Impact', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.98rem;
+            line-height: 1.6;
         }
 
         /* Footer */
         footer {
             text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-            font-family: sans-serif;
-            font-size: 0.9rem;
+            padding: 3rem 1.5rem;
+            background-color: #050506;
             border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer strong {
+            color: var(--text-light);
+        }
+
+        /* Responsive Tweaks */
+        @media (max-width: 768px) {
+            header { padding: 1rem 1.5rem; }
+            .hero h1 { font-size: 2.8rem; }
+            .cta-buttons { flex-direction: column; }
+            nav { gap: 1rem; }
+            nav a { font-size: 0.85rem; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Header Navigation -->
     <header>
-        <div class="logo-container">
+        <a href="index.html" class="logo-container">
             <img src="red_rock_logo.png" alt="Red Rock Baseball Club Logo">
-        </div>
+            <span class="brand-name">RED ROCK</span>
+        </a>
         <nav>
-            <a href="#teams">Teams</a>
-            <a href="#schedule">Schedules</a>
-            <a href="#highlights">Highlights</a>
+            <a href="index.html" class="active">Home</a>
+            <a href="manager.html">Manager</a>
+            <a href="coaches.html">Coaches</a>
             <a href="#portal" class="btn-portal">Parent Login</a>
         </nav>
     </header>
 
+    <!-- Hero Section -->
     <section class="hero">
-        <img src="red_rock_logo.png" alt="Red Rock Dragon Logo">
-        <h1>Red Rock Baseball Club</h1>
-        <p>Building elite high-school athletes through mental toughness, discipline, and competitive baseball development.</p>
+        <img src="red_rock_logo.png" alt="Red Rock Baseball Club Logo" class="hero-logo">
+        <h1>RED ROCK <span>BASEBALL CLUB</span></h1>
+        <p>Developing elite high-school athletes through mental toughness, physical discipline, and competitive varsity preparation.</p>
+        <div class="cta-buttons">
+            <a href="#portal" class="btn-primary">Parent Portal</a>
+            <a href="manager.html" class="btn-secondary">Meet The Director</a>
+        </div>
     </section>
 
-    <section class="portal-preview" id="portal">
-        <h2 style="font-size: 2rem; margin: 0; text-transform: uppercase;">Parent & Player Hub</h2>
-        <p style="font-family: sans-serif; color: var(--text-muted);">Registered family portal dashboard access once signed up.</p>
-        
+    <!-- Parent & Player Hub Section -->
+    <section class="section-container" id="portal">
+        <h2 class="section-title">Parent & Player Hub</h2>
+        <p class="section-subtitle">Streamlined club access for schedules, uniform orders, and program updates.</p>
+
         <div class="portal-grid">
             <div class="card">
                 <h3>Uniform Packages</h3>
-                <p>Order official game jerseys, practice shirts, caps, and select white game pants sizes.</p>
+                <p>Order official game jerseys, practice tops, hats, and white game-day pants directly through our team store portal.</p>
             </div>
             <div class="card">
-                <h3>Roster & Schedules</h3>
-                <p>Direct integration with GameChanger for practice times, field maps, and game brackets.</p>
+                <h3>Rosters & Schedules</h3>
+                <p>Direct GameChanger integration for real-time tournament schedules, practice slots, field locations, and live stats.</p>
             </div>
             <div class="card">
                 <h3>Dues & Fee Management</h3>
-                <p>Track monthly team dues, league registration fees, and tournament payment deadlines.</p>
+                <p>View monthly team dues, upcoming league entry fee deadlines, and payment arrangement options seamlessly.</p>
             </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
-        &copy; 2026 Red Rock Baseball Club. Directed by Coach Matty. All Rights Reserved.
+        <p>&copy; 2026 <strong>Red Rock Baseball Club</strong>. Program Director Coach Matty. All Rights Reserved.</p>
     </footer>
 
 </body>
