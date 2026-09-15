@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Admin Dashboard | Red Rock Baseball Club</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0a0c;
+            --bg-module: #121216;
+            --bg-input: #08080a;
+            --red-accent: #d3122a;
+            --red-glow: rgba(211, 18, 42, 0.35);
+            --green-accent: #10b981;
+            --text-light: #ffffff;
+            --text-muted: #9a9ab0;
+            --border-thin: 1px solid #23232c;
+            --radius-module: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .module-container {
+            background-color: var(--bg-module);
+            border: var(--border-thin);
+            border-radius: var(--radius-module);
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .header-module {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--red-accent);
+        }
+
+        .header-module h1 { font-family: 'Impact', sans-serif; font-size: 2.2rem; text-transform: uppercase; }
+
+        /* Grid Layouts */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1rem; margin-top: 1rem; }
+
+        /* Interactive Player Profile Cards */
+        .player-card {
+            background-color: var(--bg-input);
+            border: var(--border-thin);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .player-card:hover {
+            border-color: var(--red-accent);
+            transform: translateY(-2px);
+        }
+
+        .player-card.active {
+            border-color: var(--red-accent);
+            background-color: #1a1012;
+            box-shadow: 0 0 10px var(--red-glow);
+        }
+
+        .player-name { font-weight: 800; font-size: 1rem; color: #fff; }
+        .player-team { font-size: 0.75rem; color: var(--red-accent); text-transform: uppercase; font-weight: 700; }
+        .player-email { font-size: 0.75rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* Forms & Inputs */
+        label { display: block; margin-top: 1rem; font-weight: 700; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        input, select, textarea {
+            width: 100%; padding: 0.8rem; margin-top: 0.3rem;
+            background-color: var(--bg-input); border: var(--border-thin);
+            border-radius: 8px; color: var(--text-light); font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.2rem; }
+        button {
+            background-color: var(--red-accent); color: #fff; border: none; padding: 0.85rem 1rem;
+            font-weight: 800; text-transform: uppercase; border-radius: 8px; cursor: pointer;
+        }
+        button:hover { background-color: #ff1a35; box-shadow: 0 0 15px var(--red-glow); }
+        .btn-green { background-color: var(--green-accent); }
+        .btn-green:hover { background-color: #059669; }
+
+        .inner-box { background-color: var(--bg-input); border: var(--border-thin); padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+        iframe { width: 100%; height: 550px; border: var(--border-thin); border-radius: 8px; background-color: #fff; }
+
+        @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <script>
+        let password = prompt("Enter Admin Password:");
+        if (password !== "redrock2026") {
+            alert("Unauthorized Access.");
+            document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:5rem;'>ACCESS DENIED</h1>";
+        }
+    </script>
+
+    <!-- Header Module -->
+    <div class="module-container header-module">
+        <div>
+            <h1>Red Rock Interactive Admin</h1>
+            <span style="color: var(--red-accent);">Live Roster Management & Payment Tracking</span>
+        </div>
+        <span>Manager Portal</span>
+    </div>
+
+    <!-- Section 1: Interactive Roster Selector -->
+    <div class="module-container">
+        <h2 style="font-family:'Impact'; font-size:1.6rem; text-transform:uppercase;">Select Player Profile</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Click any player card below to automatically populate admin actions.</p>
+        
+        <div class="roster-grid" id="rosterContainer">
+            <!-- Dynamically populates or uses active list -->
+            <div class="player-card" onclick="selectPlayer('Sample Player', 'parent@example.com', '16U / 18U Hybrid')">
+                <div class="player-name">Sample Player</div>
+                <div class="player-team">16U / 18U Hybrid</div>
+                <div class="player-email">parent@example.com</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Action Center (Dual Module) -->
+    <div class="grid-2">
+        
+        <!-- Module A: Solicit Payment / Contact -->
+        <div class="module-container">
+            <h2 style="font-family:'Impact'; font-size:1.6rem; text-transform:uppercase;">1. Request Payment</h2>
+            
+            <label>Selected Player</label>
+            <input type="text" id="playerSelect" placeholder="Click a player above..." readonly>
+
+            <label>Parent Email</label>
+            <input type="email" id="parentEmail" placeholder="parent@example.com">
+
+            <label>Team Status</label>
+            <input type="text" id="teamStatus" placeholder="Team Division" readonly>
+
+            <label>Payment Due</label>
+            <select id="payAmount">
+                <option value="$300 - Monthly Dues">$300 - Monthly Dues</option>
+                <option value="$150 - Tournament Fee">$150 - Weekend Tournament</option>
+                <option value="$150 - One-Time Registration">$150 - Registration Fee</option>
+            </select>
+
+            <div class="btn-group">
+                <button onclick="sendPaymentRequest('email')">✉️ Email Request</button>
+                <button onclick="sendPaymentRequest('text')" style="background-color:#202028; border:var(--border-thin);">💬 Copy Text/GC</button>
+            </div>
+        </div>
+
+        <!-- Module B: Receive & Log Payment -->
+        <div class="module-container">
+            <h2 style="font-family:'Impact'; font-size:1.6rem; text-transform:uppercase; color: var(--green-accent);">2. Receive & Log Payment</h2>
+            
+            <label>Date Received</label>
+            <input type="date" id="paymentDate">
+
+            <label>Amount Received ($)</label>
+            <input type="number" id="amountReceived" placeholder="300">
+
+            <label>Payment Method</label>
+            <select id="payMethod">
+                <option value="Zelle">Zelle</option>
+                <option value="Cash">Cash</option>
+                <option value="Check">Check</option>
+            </select>
+
+            <button class="btn-green" onclick="logPayment()" style="margin-top: 1.2rem; width: 100%;">✅ Record Received Payment</button>
+
+            <div class="inner-box" id="paymentLogBox" style="display:none;">
+                <strong style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Latest Received Payment Record:</strong>
+                <p id="logOutput" style="font-size: 0.85rem; margin-top: 0.4rem; color: var(--green-accent); font-weight:700;"></p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Section 3: Master Google Sheet Live Link -->
+    <div class="module-container">
+        <h2 style="font-family:'Impact'; font-size:1.6rem; text-transform:uppercase;">Master Google Sheet Record</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">View all full ledger data live from your published master file.</p>
+        <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vROIJwAWb4eF9lS4kuK0IRhe1rVpNLx1KkN6fwXXAggVRxlr-A2_zMRX10ZoTLZ7dzhKrxQ4yQjV0eq/pubhtml?widget=true&headers=false"></iframe>
+    </div>
+
+    <script>
+        // Set Default Date to Today
+        document.getElementById('paymentDate').valueAsDate = new Date();
+
+        // One-Click Player Profile Selector
+        function selectPlayer(name, email, team) {
+            document.getElementById('playerSelect').value = name;
+            document.getElementById('parentEmail').value = email;
+            document.getElementById('teamStatus').value = team;
+
+            let cards = document.querySelectorAll('.player-card');
+            cards.forEach(card => card.classList.remove('active'));
+            if(event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+        }
+
+        // Action 1: Send Request
+        function sendPaymentRequest(mode) {
+            let player = document.getElementById('playerSelect').value;
+            let email = document.getElementById('parentEmail').value;
+            let team = document.getElementById('teamStatus').value;
+            let amount = document.getElementById('payAmount').value;
+
+            if(!player) { alert("Please click a player card above first."); return; }
+
+            let zelleEmail = "coachmatty@redrockbaseball.com"; 
+            let messageText = `Red Rock Baseball Payment Request:\nPlayer: ${player} (${team})\nAmount Due: ${amount}\n\nPlease Zelle to: ${zelleEmail}\nMemo: ${player} - ${amount}`;
+            
+            let subject = encodeURIComponent(`Red Rock Baseball - Payment Request for ${player}`);
+            let body = encodeURIComponent(`Hi,\n\nThis is a payment request for Red Rock Baseball Club.\n\nPlayer: ${player}\nTeam: ${team}\nAmount Due: ${amount}\n\nPlease submit payment via Zelle to:\nZelle Account: ${zelleEmail}\nMemo Line: ${player} - ${amount}\n\nThank you,\nCoach Matty`);
+
+            if (mode === 'text') {
+                navigator.clipboard.writeText(messageText);
+                alert("Payment request text copied to clipboard!");
+            } else if (mode === 'email') {
+                if (!email) { alert("No parent email found for this player."); return; }
+                window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+            }
+        }
+
+        // Action 2: Receive & Track Payment
+        function logPayment() {
+            let player = document.getElementById('playerSelect').value;
+            let date = document.getElementById('paymentDate').value;
+            let amount = document.getElementById('amountReceived').value;
+            let method = document.getElementById('payMethod').value;
+
+            if(!player || !amount) {
+                alert("Please select a player and enter the amount received.");
+                return;
+            }
+
+            let logEntry = `[${date}] CONFIRMED: $${amount} received for ${player} via ${method}.`;
+            
+            document.getElementById('logOutput').innerText = logEntry;
+            document.getElementById('paymentLogBox').style.display = 'block';
+
+            alert(`Payment Recorded!\n\n${logEntry}\n\nRecord saved in session output below.`);
+        }
+    </script>
+</body>
+</html>
