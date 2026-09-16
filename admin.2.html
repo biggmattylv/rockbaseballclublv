@@ -439,7 +439,7 @@
 
     <script>
         const SUPABASE_URL = "https://lhnizfqwedvssvsezut.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_oGRt0Iu1em1FXuYY9roobA_VmxuJ";
+        const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -454,7 +454,7 @@
                 renderRoster();
             } catch (err) {
                 console.error("Database Fetch Error:", err);
-                alert("Database connection error. Check Supabase credentials.");
+                alert("Database connection error. Ensure the 'players' table is created in Supabase SQL Editor.");
             }
         }
 
