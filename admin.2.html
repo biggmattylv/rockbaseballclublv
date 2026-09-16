@@ -449,22 +449,29 @@
         async function fetchRosterFromDatabase() {
             try {
                 let { data, error } = await supabaseClient.from('players').select('*').order('created_at', { ascending: true });
-                if (error) throw error;
+                if (error) {
+                    console.error("Full Supabase Select Error:", error);
+                    throw error;
+                }
                 roster = data || [];
                 renderRoster();
             } catch (err) {
-                console.error("Database Fetch Error:", err);
-                alert("Database connection error. Ensure the 'players' table is created in Supabase SQL Editor.");
+                alert(`Database Error: ${err.message || 'Check browser developer console for error details.'}`);
             }
         }
 
         async function savePlayerToDatabase(player) {
             try {
-                let { error } = await supabaseClient.from('players').upsert(player);
-                if (error) throw error;
+                let { data, error } = await supabaseClient.from('players').upsert([player], { onConflict: 'id' }).select();
+                if (error) {
+                    console.error("Full Supabase Upsert Error:", error);
+                    alert(`Save Failed: ${error.message} (${error.details || error.code})`);
+                    return;
+                }
+                console.log("Successfully saved to database:", data);
             } catch (err) {
-                console.error("Database Save Error:", err);
-                alert("Failed to save entry to database.");
+                console.error("Database Save Exception:", err);
+                alert(`Save Error: ${err.message}`);
             }
         }
 
@@ -521,7 +528,7 @@
                                 </div>
                                 <div>
                                     <strong style="color:${isCharge ? '#f87171' : 'var(--green-accent)'}">${isCharge ? '-' : '+'}$${item.amount}</strong>
-                                    <button class="ledger-edit-btn" onclick="editLedgerItem(${player.id}, ${index})">✏️</button>
+                                    <button class="ledger-edit-btn" onclick="editLedgerItem('${player.id}', ${index})">✏️</button>
                                 </div>
                             </div>
                         `;
@@ -564,7 +571,7 @@
                                 </div>
                             </div>
 
-                            <button class="btn-flip" onclick="toggleFlip(${player.id})">🔄 Flip Card / Admin Actions</button>
+                            <button class="btn-flip" onclick="toggleFlip('${player.id}')">🔄 Flip Card / Admin Actions</button>
                         </div>
 
                         <div class="card-back">
@@ -585,18 +592,18 @@
 
                             <div>
                                 <div class="action-btns">
-                                    <button class="card-btn" style="background-color:#b91c1c;" onclick="openEntryModal(${player.id}, 'charge')">➕ Add Charge</button>
-                                    <button class="card-btn-green card-btn" onclick="openEntryModal(${player.id}, 'payment')">✅ Log Pay</button>
-                                    <button class="card-btn" style="background-color:#1d4ed8;" onclick="quickEmail(${player.id})">✉️ Email</button>
+                                    <button class="card-btn" style="background-color:#b91c1c;" onclick="openEntryModal('${player.id}', 'charge')">➕ Add Charge</button>
+                                    <button class="card-btn-green card-btn" onclick="openEntryModal('${player.id}', 'payment')">✅ Log Pay</button>
+                                    <button class="card-btn" style="background-color:#1d4ed8;" onclick="quickEmail('${player.id}')">✉️ Email</button>
                                 </div>
 
                                 <div class="edit-controls">
-                                    <button class="card-btn-dark card-btn" onclick="toggleStatus(${player.id})">${isActive ? '⏸️ Deactivate' : '▶️ Activate'}</button>
-                                    <button class="card-btn-dark card-btn" onclick="editPlayer(${player.id})">✏️ Edit</button>
-                                    <button class="card-btn-dark card-btn" onclick="duplicatePlayer(${player.id})">📋 Copy</button>
-                                    <button class="card-btn-dark card-btn" style="background-color:#7f1d1d;" onclick="deletePlayer(${player.id})">🗑️ Del</button>
+                                    <button class="card-btn-dark card-btn" onclick="toggleStatus('${player.id}')">${isActive ? '⏸️ Deactivate' : '▶️ Activate'}</button>
+                                    <button class="card-btn-dark card-btn" onclick="editPlayer('${player.id}')">✏️ Edit</button>
+                                    <button class="card-btn-dark card-btn" onclick="duplicatePlayer('${player.id}')">📋 Copy</button>
+                                    <button class="card-btn-dark card-btn" style="background-color:#7f1d1d;" onclick="deletePlayer('${player.id}')">🗑️ Del</button>
                                 </div>
-                                <button class="btn-flip" style="margin-top:0.4rem;" onclick="toggleFlip(${player.id})">↩️ Back to Front</button>
+                                <button class="btn-flip" style="margin-top:0.4rem;" onclick="toggleFlip('${player.id}')">↩️ Back to Front</button>
                             </div>
                         </div>
                     </div>
@@ -660,7 +667,7 @@
         }
 
         async function submitModalEntry() {
-            let id = parseInt(document.getElementById('modalPlayerId').value);
+            let id = document.getElementById('modalPlayerId').value;
             let type = document.getElementById('modalType').value;
             let index = parseInt(document.getElementById('modalLedgerIndex').value);
             let date = document.getElementById('modalDate').value;
@@ -700,7 +707,7 @@
             let pos = prompt("Enter Primary Position:", "Shortstop") || "Shortstop";
             let email = prompt("Enter Parent Email:", "parent@example.com") || "parent@example.com";
 
-            let newId = Date.now();
+            let newId = "p_" + Date.now();
             let newPlayer = { id: newId, name: name.trim(), team: team, age: age, pos: pos, email: email, active: true, ledger: [] };
             
             roster.push(newPlayer);
@@ -730,7 +737,7 @@
             if (!player) return;
 
             let clone = JSON.parse(JSON.stringify(player));
-            clone.id = Date.now();
+            clone.id = "p_" + Date.now();
             clone.name = `${player.name} (Copy)`;
             
             roster.push(clone);
