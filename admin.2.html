@@ -94,7 +94,7 @@
         /* 3D FLIP CARD ROSTER GRID */
         .roster-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
             gap: 1.5rem;
             margin-top: 1.5rem;
         }
@@ -102,7 +102,7 @@
         .card-container {
             background-color: transparent;
             width: 100%;
-            height: 340px;
+            height: 420px;
             perspective: 1000px;
         }
 
@@ -154,11 +154,11 @@
 
         .card-front .player-name {
             font-family: 'Impact', sans-serif;
-            font-size: 1.8rem;
+            font-size: 2rem;
             letter-spacing: 1px;
             color: var(--text-light);
             text-transform: uppercase;
-            margin: 0.4rem 0 0.1rem;
+            margin: 0.5rem 0 0.1rem;
         }
 
         .stats-row {
@@ -169,7 +169,7 @@
             padding: 0.75rem;
             border-radius: 8px;
             border: var(--border-thin);
-            margin-top: 0.8rem;
+            margin-top: 1rem;
         }
 
         .stats-item span { display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
@@ -179,7 +179,7 @@
             background-color: #202028;
             color: var(--text-light);
             border: var(--border-thin);
-            padding: 0.6rem;
+            padding: 0.65rem;
             font-size: 0.75rem;
             font-weight: 800;
             text-transform: uppercase;
@@ -204,12 +204,36 @@
             font-size: 1.3rem;
             color: var(--green-accent);
             text-transform: uppercase;
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.2rem;
         }
 
-        .info-group { margin-bottom: 0.5rem; }
+        .info-group { margin-bottom: 0.4rem; }
         .info-group label { display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
         .info-group p { font-size: 0.85rem; color: var(--text-light); font-weight: 600; word-break: break-all; }
+
+        /* LEDGER DISPLAY BOX */
+        .ledger-box {
+            background-color: var(--bg-input);
+            border: var(--border-thin);
+            border-radius: 6px;
+            padding: 0.6rem;
+            max-height: 110px;
+            overflow-y: auto;
+            margin-top: 0.3rem;
+        }
+
+        .ledger-item {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            border-bottom: 1px solid #1c1c24;
+            padding: 0.3rem 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .ledger-item:last-child { border-bottom: none; }
+        .ledger-item .pay-date { color: var(--text-muted); font-size: 0.7rem; }
+        .ledger-item .pay-desc { color: var(--green-accent); font-weight: 700; }
 
         .action-btns {
             display: grid;
@@ -229,7 +253,7 @@
             background-color: var(--red-accent);
             color: #fff;
             border: none;
-            padding: 0.45rem;
+            padding: 0.5rem;
             font-size: 0.65rem;
             font-weight: 800;
             text-transform: uppercase;
@@ -240,6 +264,55 @@
         button.card-btn-green { background-color: var(--green-accent); }
         button.card-btn-dark { background-color: #27272a; color: #fff; }
         button.card-btn-dark:hover { background-color: #3f3f46; }
+
+        /* POPUP MODAL STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-card {
+            background-color: var(--bg-module);
+            border: var(--border-thin);
+            border-radius: var(--radius-module);
+            padding: 2rem;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+
+        .modal-card h2 {
+            font-family: 'Impact', sans-serif;
+            color: var(--green-accent);
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .modal-card label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-top: 0.8rem;
+        }
+
+        .modal-card input, .modal-card select {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 0.3rem;
+            background-color: var(--bg-input);
+            border: var(--border-thin);
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+        }
 
         iframe { width: 100%; height: 500px; border: var(--border-thin); border-radius: 8px; background-color: #fff; }
 
@@ -255,12 +328,10 @@
             let entry = prompt("🔒 COACHES HUB RESTRICTED ACCESS\nEnter Password:");
             
             if (entry === currentPassword) {
-                // Correct Password -> Reveal Page
                 window.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('protectedContent').style.display = 'block';
                 });
             } else {
-                // Incorrect Password -> Wipe Page Entirely
                 alert("❌ Unauthorized Access. Access Denied.");
                 document.documentElement.innerHTML = `
                     <body style="background-color:#0a0a0c; color:#d3122a; font-family:sans-serif; text-align:center; padding-top:10rem;">
@@ -273,20 +344,22 @@
         })();
     </script>
 
-    <!-- PROTECTED CONTENT -->
+    <!-- PROTECTED CONTENT CONTAINER -->
     <div id="protectedContent">
 
+        <!-- HEADER BAR -->
         <div class="module-container header-module">
             <div>
-                <h1>Red Rock Coaches Hub</h1>
+                <h1>Coaches Hub</h1>
                 <span style="color: var(--red-accent);">Restricted Staff Operations & Admin Controls</span>
             </div>
             <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.8rem; font-weight: 700;">← Exit to Website</a>
         </div>
 
+        <!-- ROSTER DECK MODULE -->
         <div class="module-container">
             <h2 style="font-family:'Impact'; font-size:1.6rem; text-transform:uppercase;">Player Roster Deck</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage player profiles, duplicate templates, edit details, or trigger payment solicitations.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage player profiles, view payment ledgers, log custom transactions, or solicit Zelle dues.</p>
             
             <div class="toolbar">
                 <button class="btn-main" onclick="addNewPlayer()">➕ Add New Player Card</button>
@@ -294,10 +367,11 @@
             </div>
 
             <div class="roster-grid" id="rosterContainer">
-                <!-- Cards Render Dynamically Here -->
+                <!-- Dynamic Player Cards Render Here -->
             </div>
         </div>
 
+        <!-- GOOGLE SHEET MASTER LEDGER -->
         <div class="module-container">
             <h2 style="font-family:'Impact'; font-size:1.6rem; text-transform:uppercase;">Master Google Sheet Ledger</h2>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Edits made in Google Sheets auto-reflect across your organization.</p>
@@ -306,30 +380,81 @@
 
     </div>
 
+    <!-- PAYMENT ENTRY POPUP MODAL -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-card">
+            <h2>Record Payment</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);" id="modalPlayerName">Log payment received for Player</p>
+            
+            <input type="hidden" id="modalPlayerId">
+
+            <label>Payment Date</label>
+            <input type="date" id="modalPayDate">
+
+            <label>Amount Received ($)</label>
+            <input type="number" id="modalPayAmount" placeholder="300">
+
+            <label>Payment Purpose / Note</label>
+            <input type="text" id="modalPayDesc" placeholder="e.g. Sept Dues, Tournament Fee, Hat">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1.5rem;">
+                <button class="btn-main" style="background-color: var(--green-accent);" onclick="submitModalPayment()">Save Payment</button>
+                <button class="btn-sec" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Core Player Dataset with LocalStorage Sync
+        // Core Dataset with LocalStorage Persistence
         let storedRoster = localStorage.getItem('redRockRoster');
         let roster = storedRoster ? JSON.parse(storedRoster) : [
-            { id: 1, name: "John Doe", team: "16U / 18U Hybrid", age: "16 Yrs", pos: "SS / RHP", email: "parent.doe@example.com", status: "Paid (Sept Dues)" },
-            { id: 2, name: "Alex Smith", team: "16U Division", age: "15 Yrs", pos: "Catcher", email: "smith.family@example.com", status: "Pending ($300 Due)" },
-            { id: 3, name: "Mike Johnson", team: "18U Division", age: "17 Yrs", pos: "OF / LHP", email: "johnson88@example.com", status: "Paid (Sept Dues)" }
+            { 
+                id: 1, name: "John Doe", team: "16U / 18U Hybrid", age: "16 Yrs", pos: "SS / RHP", email: "parent.doe@example.com", 
+                ledger: [
+                    { date: "2026-09-01", amount: "$300", desc: "Sept Dues" }
+                ]
+            },
+            { 
+                id: 2, name: "Alex Smith", team: "16U Division", age: "15 Yrs", pos: "Catcher", email: "smith.family@example.com", 
+                ledger: [
+                    { date: "2026-08-15", amount: "$150", desc: "Registration Fee" }
+                ]
+            }
         ];
 
         function saveRoster() {
             localStorage.setItem('redRockRoster', JSON.stringify(roster));
         }
 
-        // Render Cards Function
+        // Render Roster Flip Cards
         function renderRoster() {
             const container = document.getElementById('rosterContainer');
             if(!container) return;
             container.innerHTML = '';
 
             roster.forEach(player => {
+                // Generate Ledger List Items
+                let ledgerHTML = '';
+                if (player.ledger && player.ledger.length > 0) {
+                    player.ledger.forEach(item => {
+                        ledgerHTML += `
+                            <div class="ledger-item">
+                                <div>
+                                    <span class="pay-desc">${item.desc}</span> 
+                                    <span class="pay-date">(${item.date})</span>
+                                </div>
+                                <strong style="color:var(--green-accent);">${item.amount}</strong>
+                            </div>
+                        `;
+                    });
+                } else {
+                    ledgerHTML = `<div style="font-size:0.75rem; color:var(--text-muted); padding:0.2rem 0;">No payments recorded yet.</div>`;
+                }
+
                 const cardHTML = `
                 <div class="card-container" id="card-${player.id}">
                     <div class="card-flipper">
-                        <!-- FRONT -->
+                        <!-- FRONT OF CARD -->
                         <div class="card-front">
                             <div>
                                 <span class="badge">${player.team}</span>
@@ -347,23 +472,28 @@
                             </div>
                             <button class="btn-flip" onclick="toggleFlip(${player.id})">🔄 Flip Card / Admin Actions</button>
                         </div>
-                        <!-- BACK -->
+
+                        <!-- BACK OF CARD (ADMIN & LEDGER) -->
                         <div class="card-back">
                             <div>
                                 <h3>Admin & Payment Hub</h3>
                                 <div class="info-group">
-                                    <label>Parent Contact</label>
+                                    <label>Parent Contact Email</label>
                                     <p>${player.email}</p>
                                 </div>
+                                
                                 <div class="info-group">
-                                    <label>Ledger Status</label>
-                                    <p style="color: ${player.status.includes('Paid') ? 'var(--green-accent)' : 'var(--red-accent)'}">${player.status}</p>
+                                    <label>Payment Ledger History</label>
+                                    <div class="ledger-box">
+                                        ${ledgerHTML}
+                                    </div>
                                 </div>
                             </div>
+
                             <div>
                                 <div class="action-btns">
-                                    <button class="card-btn" onclick="quickEmail('${player.email}', '${player.name}')">✉️ Email</button>
-                                    <button class="card-btn-green card-btn" onclick="quickLog('${player.name}')">✅ Log Pay</button>
+                                    <button class="card-btn" onclick="quickEmail('${player.email}', '${player.name}')">✉️ Email Request</button>
+                                    <button class="card-btn-green card-btn" onclick="openPaymentModal(${player.id}, '${player.name}')">➕ Record Pay</button>
                                 </div>
                                 <div class="edit-controls">
                                     <button class="card-btn-dark card-btn" onclick="editPlayer(${player.id})">✏️ Edit</button>
@@ -385,25 +515,46 @@
             document.getElementById(`card-${id}`).classList.toggle('flipped');
         }
 
-        // Password Manager
-        function changeAdminPassword() {
-            let currentKey = localStorage.getItem('coachesHubPassword') || "redrock2026";
-            let verification = prompt("Enter Current Password:");
+        // OPEN PAYMENT MODAL
+        function openPaymentModal(playerId, playerName) {
+            document.getElementById('modalPlayerId').value = playerId;
+            document.getElementById('modalPlayerName').innerText = `Log payment received for ${playerName}`;
+            document.getElementById('modalPayDate').valueAsDate = new Date();
+            document.getElementById('modalPayAmount').value = '';
+            document.getElementById('modalPayDesc').value = '';
+            
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
 
-            if (verification === currentKey) {
-                let newKey = prompt("Enter NEW Admin Password:");
-                if (newKey && newKey.trim().length > 3) {
-                    localStorage.setItem('coachesHubPassword', newKey.trim());
-                    alert(`✅ SUCCESS: Password updated! Your new password is: ${newKey.trim()}`);
-                } else {
-                    alert("❌ Invalid password. Must be at least 4 characters.");
-                }
-            } else {
-                alert("❌ Incorrect current password.");
+        function closeModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        // SUBMIT PAYMENT TO LEDGER
+        function submitModalPayment() {
+            let id = parseInt(document.getElementById('modalPlayerId').value);
+            let date = document.getElementById('modalPayDate').value;
+            let amount = document.getElementById('modalPayAmount').value;
+            let desc = document.getElementById('modalPayDesc').value || "Payment Received";
+
+            if (!amount) {
+                alert("Please enter the amount received.");
+                return;
+            }
+
+            let player = roster.find(p => p.id === id);
+            if (player) {
+                if (!player.ledger) player.ledger = [];
+                player.ledger.unshift({ date: date, amount: `$${amount}`, desc: desc });
+                saveRoster();
+                renderRoster();
+                closeModal();
+                // Keeps card flipped on return
+                document.getElementById(`card-${id}`).classList.add('flipped');
             }
         }
 
-        // Player Card Actions
+        // ADMIN CONTROLS
         function addNewPlayer() {
             let name = prompt("Enter Player Name:");
             if (!name) return;
@@ -413,7 +564,7 @@
             let email = prompt("Enter Parent Email:", "parent@example.com");
 
             let newId = Date.now();
-            roster.push({ id: newId, name, team, age, pos, email, status: "Pending Dues" });
+            roster.push({ id: newId, name, team, age, pos, email, ledger: [] });
             saveRoster();
             renderRoster();
         }
@@ -427,17 +578,19 @@
             player.age = prompt("Edit Age:", player.age) || player.age;
             player.pos = prompt("Edit Position:", player.pos) || player.pos;
             player.email = prompt("Edit Parent Email:", player.email) || player.email;
-            player.status = prompt("Edit Payment Status:", player.status) || player.status;
 
             saveRoster();
             renderRoster();
+            document.getElementById(`card-${id}`).classList.add('flipped');
         }
 
         function duplicatePlayer(id) {
             let player = roster.find(p => p.id === id);
             if (!player) return;
 
-            let clone = { ...player, id: Date.now(), name: `${player.name} (Copy)` };
+            let clone = JSON.parse(JSON.stringify(player));
+            clone.id = Date.now();
+            clone.name = `${player.name} (Copy)`;
             roster.push(clone);
             saveRoster();
             renderRoster();
@@ -458,18 +611,24 @@
             window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
         }
 
-        function quickLog(playerName) {
-            let amount = prompt(`Enter amount received for ${playerName}:`, "300");
-            if (amount) {
-                let player = roster.find(p => p.name === playerName);
-                if(player) player.status = `Paid ($${amount})`;
-                saveRoster();
-                renderRoster();
-                alert(`SUCCESS:\nRecorded $${amount} payment for ${playerName}. Update your Google Sheet master file below!`);
+        function changeAdminPassword() {
+            let currentKey = localStorage.getItem('coachesHubPassword') || "redrock2026";
+            let verification = prompt("Enter Current Password:");
+
+            if (verification === currentKey) {
+                let newKey = prompt("Enter NEW Admin Password:");
+                if (newKey && newKey.trim().length > 3) {
+                    localStorage.setItem('coachesHubPassword', newKey.trim());
+                    alert(`✅ SUCCESS: Password updated! Your new password is: ${newKey.trim()}`);
+                } else {
+                    alert("❌ Invalid password. Must be at least 4 characters.");
+                }
+            } else {
+                alert("❌ Incorrect current password.");
             }
         }
 
-        // Initial Load
+        // Initial Execution
         renderRoster();
     </script>
 </body>
