@@ -607,9 +607,9 @@
 
                             <div>
                                 <div class="action-btns">
-                                    <button class="card-btn" style="background-color:#b91c1c;" onclick="openEntryModal(${player.id}, '${player.name}', 'charge')">➕ Add Charge</button>
-                                    <button class="card-btn-green card-btn" onclick="openEntryModal(${player.id}, '${player.name}', 'payment')">✅ Log Pay</button>
-                                    <button class="card-btn" style="background-color:#1d4ed8;" onclick="quickEmail('${player.email}', '${player.name}', ${balance})">✉️ Email</button>
+                                    <button class="card-btn" style="background-color:#b91c1c;" onclick="openEntryModal(${player.id}, 'charge')">➕ Add Charge</button>
+                                    <button class="card-btn-green card-btn" onclick="openEntryModal(${player.id}, 'payment')">✅ Log Pay</button>
+                                    <button class="card-btn" style="background-color:#1d4ed8;" onclick="quickEmail(${player.id})">✉️ Email</button>
                                 </div>
 
                                 <div class="edit-controls">
@@ -643,18 +643,20 @@
             }
         }
 
-        function openEntryModal(playerId, playerName, type, ledgerIndex = -1) {
+        function openEntryModal(playerId, type, ledgerIndex = -1) {
+            let player = roster.find(p => p.id === playerId);
+            if (!player) return;
+
             document.getElementById('modalPlayerId').value = playerId;
             document.getElementById('modalType').value = type;
             document.getElementById('modalLedgerIndex').value = ledgerIndex;
 
-            let player = roster.find(p => p.id === playerId);
             let isEdit = ledgerIndex >= 0;
 
-            document.getElementById('modalPlayerName').innerText = `${isEdit ? 'Edit' : 'Record'} ${type === 'charge' ? 'Charge' : 'Payment'} for ${playerName}`;
+            document.getElementById('modalPlayerName').innerText = `${isEdit ? 'Edit' : 'Record'} ${type === 'charge' ? 'Charge' : 'Payment'} for ${player.name}`;
             document.getElementById('modalTitle').innerText = isEdit ? 'Edit Ledger Entry' : (type === 'charge' ? 'Add Charge to Account' : 'Record Received Payment');
             
-            if (isEdit && player && player.ledger[ledgerIndex]) {
+            if (isEdit && player.ledger[ledgerIndex]) {
                 let item = player.ledger[ledgerIndex];
                 document.getElementById('modalDate').value = item.date;
                 document.getElementById('modalAmount').value = item.amount;
@@ -672,7 +674,7 @@
             let player = roster.find(p => p.id === playerId);
             if (player && player.ledger[index]) {
                 let item = player.ledger[index];
-                openEntryModal(playerId, player.name, item.type, index);
+                openEntryModal(playerId, item.type, index);
             }
         }
 
@@ -767,11 +769,24 @@
             }
         }
 
-        function quickEmail(email, playerName, balance) {
+        function quickEmail(playerId) {
+            let player = roster.find(p => p.id === playerId);
+            if (!player) return;
+
+            let totalCharges = 0;
+            let totalPayments = 0;
+            if (player.ledger) {
+                player.ledger.forEach(i => {
+                    if (i.type === 'charge') totalCharges += i.amount;
+                    if (i.type === 'payment') totalPayments += i.amount;
+                });
+            }
+            let balance = totalCharges - totalPayments;
+
             let zelleEmail = "coachmatty@redrockbaseball.com";
-            let subject = encodeURIComponent(`Red Rock Baseball - Payment Request for ${playerName}`);
-            let body = encodeURIComponent(`Hi,\n\nThis is a payment request for Red Rock Baseball Club.\n\nPlayer: ${playerName}\nCurrent Balance Due: $${balance > 0 ? balance : 0}\n\nPlease submit payment via Zelle to:\nZelle Account: ${zelleEmail}\nMemo Line: ${playerName} - Dues\n\nThank you,\nCoach Matty`);
-            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+            let subject = encodeURIComponent(`Red Rock Baseball - Payment Request for ${player.name}`);
+            let body = encodeURIComponent(`Hi,\n\nThis is a payment request for Red Rock Baseball Club.\n\nPlayer: ${player.name}\nCurrent Balance Due: $${balance > 0 ? balance : 0}\n\nPlease submit payment via Zelle to:\nZelle Account: ${zelleEmail}\nMemo Line: ${player.name} - Dues\n\nThank you,\nCoach Matty`);
+            window.location.href = `mailto:${player.email}?subject=${subject}&body=${body}`;
         }
 
         function changeAdminPassword() {
@@ -791,7 +806,6 @@
             }
         }
 
-        // Initialize display
         renderRoster();
     </script>
 </body>
