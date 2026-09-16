@@ -116,7 +116,6 @@
 
         .btn-sec:hover { background-color: #2c2c38; border-color: var(--red-accent); }
 
-        /* 3D FLIP CARD ROSTER GRID */
         .roster-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
@@ -159,7 +158,6 @@
             box-shadow: 0 6px 18px rgba(0,0,0,0.5);
         }
 
-        /* FRONT OF CARD */
         .card-front {
             background: linear-gradient(145deg, #18181f 0%, #0a0a0c 100%);
             border-top: 3px solid var(--red-accent);
@@ -246,7 +244,6 @@
 
         .btn-flip:hover { background-color: #2c2c38; border-color: var(--red-accent); }
 
-        /* BACK OF CARD */
         .card-back {
             background: #14141a;
             transform: rotateY(180deg);
@@ -283,10 +280,20 @@
             padding: 0.25rem 0;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         .ledger-item:last-child { border-bottom: none; }
         .ledger-item .pay-date { color: var(--text-muted); font-size: 0.65rem; }
+
+        .ledger-edit-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin-left: 0.4rem;
+        }
 
         .action-btns {
             display: grid;
@@ -317,9 +324,7 @@
 
         button.card-btn-green { background-color: var(--green-accent); }
         button.card-btn-dark { background-color: #27272a; color: #fff; }
-        button.card-btn-dark:hover { background-color: #3f3f46; }
 
-        /* MODAL POPUPS */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -340,32 +345,9 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.8);
         }
 
-        .modal-card h2 {
-            font-family: 'Impact', sans-serif;
-            font-size: 1.8rem;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal-card label {
-            display: block;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 700;
-            margin-top: 0.8rem;
-        }
-
-        .modal-card input, .modal-card select {
-            width: 100%;
-            padding: 0.75rem;
-            margin-top: 0.3rem;
-            background-color: var(--bg-input);
-            border: var(--border-thin);
-            border-radius: 6px;
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-        }
+        .modal-card h2 { font-family: 'Impact', sans-serif; font-size: 1.8rem; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .modal-card label { display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-top: 0.8rem; }
+        .modal-card input, .modal-card select { width: 100%; padding: 0.75rem; margin-top: 0.3rem; background-color: var(--bg-input); border: var(--border-thin); border-radius: 6px; color: #fff; font-family: 'Montserrat', sans-serif; }
 
         iframe { width: 100%; height: 500px; border: var(--border-thin); border-radius: 8px; background-color: #fff; }
 
@@ -374,7 +356,6 @@
 </head>
 <body>
 
-    <!-- SECURITY CHECK -->
     <script>
         (function authenticate() {
             let currentPassword = localStorage.getItem('coachesHubPassword') || "redrock2026";
@@ -397,7 +378,6 @@
         })();
     </script>
 
-    <!-- MAIN DASHBOARD CONTENT -->
     <div id="protectedContent">
 
         <div class="module-container header-module">
@@ -410,7 +390,7 @@
 
         <div class="module-container">
             <h2 style="font-family:'Impact'; font-size:1.6rem; text-transform:uppercase;">Player Roster Deck</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage player status, issue charges, log Zelle payments, and filter active rosters.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage player status, issue charges, log/edit Zelle payments, and sync live to Google Sheets.</p>
             
             <div class="toolbar">
                 <div class="filter-group">
@@ -424,26 +404,27 @@
             </div>
 
             <div class="roster-grid" id="rosterContainer">
-                <!-- Dynamic Player Cards Render Here -->
+                <!-- Dynamic Cards Render Here -->
             </div>
         </div>
 
         <div class="module-container">
             <h2 style="font-family:'Impact'; font-size:1.6rem; text-transform:uppercase;">Master Google Sheet Ledger</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Edits made in Google Sheets auto-reflect across your organization.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Live synchronized spreadsheet feed.</p>
             <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vROIJwAWb4eF9lS4kuK0IRhe1rVpNLx1KkN6fwXXAggVRxlr-A2_zMRX10ZoTLZ7dzhKrxQ4yQjV0eq/pubhtml?widget=true&headers=false"></iframe>
         </div>
 
     </div>
 
-    <!-- ENTRY MODAL (CHARGES & PAYMENTS) -->
+    <!-- ENTRY MODAL -->
     <div class="modal-overlay" id="entryModal">
         <div class="modal-card">
             <h2 id="modalTitle">Record Transaction</h2>
             <p style="font-size: 0.85rem; color: var(--text-muted);" id="modalPlayerName">Player Ledger Update</p>
             
             <input type="hidden" id="modalPlayerId">
-            <input type="hidden" id="modalType"> <!-- 'charge' or 'payment' -->
+            <input type="hidden" id="modalType">
+            <input type="hidden" id="modalLedgerIndex" value="-1">
 
             <label>Date</label>
             <input type="date" id="modalDate">
@@ -455,16 +436,18 @@
             <input type="text" id="modalDesc" placeholder="e.g. Oct Dues, Tournament Fee, Zelle Payment">
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1.5rem;">
-                <button class="btn-main" id="modalSubmitBtn" onclick="submitModalEntry()">Save</button>
+                <button class="btn-main" id="modalSubmitBtn" onclick="submitModalEntry()">Save Entry</button>
                 <button class="btn-sec" onclick="closeModal()">Cancel</button>
             </div>
         </div>
     </div>
 
     <script>
+        // GOOGLE APPS SCRIPT WEB APP URL
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhQ90mNYgUwefrKFo3k2u2SQ7Cs7i2smvfyFmonqSs6t-T3M8vW5Z7nIZLWEs06ONN/exec"; 
+
         let currentFilter = 'active';
 
-        // LocalStorage Dataset
         let storedRoster = localStorage.getItem('redRockRoster');
         let roster = storedRoster ? JSON.parse(storedRoster) : [
             { 
@@ -473,17 +456,22 @@
                     { type: "charge", date: "2026-09-01", amount: 300, desc: "Sept Dues" },
                     { type: "payment", date: "2026-09-02", amount: 300, desc: "Zelle Payment" }
                 ]
-            },
-            { 
-                id: 2, name: "Alex Smith", team: "16U Division", age: "15 Yrs", pos: "Catcher", email: "smith.family@example.com", active: true,
-                ledger: [
-                    { type: "charge", date: "2026-09-01", amount: 300, desc: "Sept Dues" }
-                ]
             }
         ];
 
         function saveRoster() {
             localStorage.setItem('redRockRoster', JSON.stringify(roster));
+        }
+
+        // Live Google Sheets Database Sync Function
+        function syncToGoogleSheets(action, payload) {
+            if (!GOOGLE_SCRIPT_URL) return;
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: action, ...payload })
+            }).catch(err => console.error("Sheets Sync Error:", err));
         }
 
         function setFilter(filter) {
@@ -493,7 +481,6 @@
             renderRoster();
         }
 
-        // Render Roster Deck
         function renderRoster() {
             const container = document.getElementById('rosterContainer');
             if(!container) return;
@@ -502,24 +489,22 @@
             let filteredList = roster.filter(player => {
                 if (currentFilter === 'active') return player.active !== false;
                 if (currentFilter === 'inactive') return player.active === false;
-                return true; // 'all'
+                return true;
             });
 
             if (filteredList.length === 0) {
-                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.9rem; grid-column: 1 / -1;">No players found in this category.</div>`;
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.9rem; grid-column: 1 / -1;">No players found in this view.</div>`;
                 return;
             }
 
             filteredList.forEach(player => {
                 let isActive = player.active !== false;
-                
-                // Calculate Ledger Balance
                 let totalCharges = 0;
                 let totalPayments = 0;
                 let ledgerHTML = '';
 
                 if (player.ledger && player.ledger.length > 0) {
-                    player.ledger.forEach(item => {
+                    player.ledger.forEach((item, index) => {
                         if (item.type === 'charge') totalCharges += item.amount;
                         if (item.type === 'payment') totalPayments += item.amount;
 
@@ -531,7 +516,10 @@
                                     <span>${item.desc}</span> 
                                     <span class="pay-date">(${item.date})</span>
                                 </div>
-                                <strong style="color:${isCharge ? '#f87171' : 'var(--green-accent)'}">${isCharge ? '-' : '+'}$${item.amount}</strong>
+                                <div>
+                                    <strong style="color:${isCharge ? '#f87171' : 'var(--green-accent)'}">${isCharge ? '-' : '+'}$${item.amount}</strong>
+                                    <button class="ledger-edit-btn" onclick="editLedgerItem(${player.id}, ${index})">✏️</button>
+                                </div>
                             </div>
                         `;
                     });
@@ -546,7 +534,7 @@
                 const cardHTML = `
                 <div class="card-container" id="card-${player.id}">
                     <div class="card-flipper">
-                        <!-- FRONT OF CARD -->
+                        <!-- FRONT -->
                         <div class="card-front ${!isActive ? 'inactive-card' : ''}">
                             <div>
                                 <div class="badge-row">
@@ -577,7 +565,7 @@
                             <button class="btn-flip" onclick="toggleFlip(${player.id})">🔄 Flip Card / Admin Actions</button>
                         </div>
 
-                        <!-- BACK OF CARD -->
+                        <!-- BACK -->
                         <div class="card-back">
                             <div>
                                 <h3>Admin & Ledger Hub</h3>
@@ -587,7 +575,7 @@
                                 </div>
                                 
                                 <div class="info-group">
-                                    <label>Ledger History</label>
+                                    <label>Ledger History (Click ✏️ to Edit Item)</label>
                                     <div class="ledger-box">
                                         ${ledgerHTML}
                                     </div>
@@ -621,30 +609,47 @@
             document.getElementById(`card-${id}`).classList.toggle('flipped');
         }
 
-        // TOGGLE ACTIVE / INACTIVE
         function toggleStatus(id) {
             let player = roster.find(p => p.id === id);
             if (player) {
                 player.active = player.active === false ? true : false;
                 saveRoster();
+                syncToGoogleSheets('savePlayer', { player: player });
                 renderRoster();
             }
         }
 
-        // OPEN ENTRY MODAL (CHARGE OR PAYMENT)
-        function openEntryModal(playerId, playerName, type) {
+        function openEntryModal(playerId, playerName, type, ledgerIndex = -1) {
             document.getElementById('modalPlayerId').value = playerId;
             document.getElementById('modalType').value = type;
-            document.getElementById('modalPlayerName').innerText = `${type === 'charge' ? 'Add Charge / Fee for' : 'Log Payment Received for'} ${playerName}`;
-            document.getElementById('modalTitle').innerText = type === 'charge' ? 'Add Charge to Account' : 'Record Received Payment';
-            document.getElementById('modalTitle').style.color = type === 'charge' ? '#f87171' : 'var(--green-accent)';
-            document.getElementById('modalSubmitBtn').style.backgroundColor = type === 'charge' ? '#b91c1c' : 'var(--green-accent)';
+            document.getElementById('modalLedgerIndex').value = ledgerIndex;
+
+            let player = roster.find(p => p.id === playerId);
+            let isEdit = ledgerIndex >= 0;
+
+            document.getElementById('modalPlayerName').innerText = `${isEdit ? 'Edit' : 'Record'} ${type === 'charge' ? 'Charge' : 'Payment'} for ${playerName}`;
+            document.getElementById('modalTitle').innerText = isEdit ? 'Edit Ledger Entry' : (type === 'charge' ? 'Add Charge to Account' : 'Record Received Payment');
             
-            document.getElementById('modalDate').valueAsDate = new Date();
-            document.getElementById('modalAmount').value = '';
-            document.getElementById('modalDesc').value = type === 'charge' ? 'Monthly Dues' : 'Zelle Payment';
+            if (isEdit && player && player.ledger[ledgerIndex]) {
+                let item = player.ledger[ledgerIndex];
+                document.getElementById('modalDate').value = item.date;
+                document.getElementById('modalAmount').value = item.amount;
+                document.getElementById('modalDesc').value = item.desc;
+            } else {
+                document.getElementById('modalDate').valueAsDate = new Date();
+                document.getElementById('modalAmount').value = '';
+                document.getElementById('modalDesc').value = type === 'charge' ? 'Monthly Dues' : 'Zelle Payment';
+            }
             
             document.getElementById('entryModal').style.display = 'flex';
+        }
+
+        function editLedgerItem(playerId, index) {
+            let player = roster.find(p => p.id === playerId);
+            if (player && player.ledger[index]) {
+                let item = player.ledger[index];
+                openEntryModal(playerId, player.name, item.type, index);
+            }
         }
 
         function closeModal() {
@@ -654,6 +659,7 @@
         function submitModalEntry() {
             let id = parseInt(document.getElementById('modalPlayerId').value);
             let type = document.getElementById('modalType').value;
+            let index = parseInt(document.getElementById('modalLedgerIndex').value);
             let date = document.getElementById('modalDate').value;
             let amount = parseFloat(document.getElementById('modalAmount').value);
             let desc = document.getElementById('modalDesc').value || (type === 'charge' ? 'Charge' : 'Payment');
@@ -666,15 +672,21 @@
             let player = roster.find(p => p.id === id);
             if (player) {
                 if (!player.ledger) player.ledger = [];
-                player.ledger.unshift({ type: type, date: date, amount: amount, desc: desc });
+                
+                if (index >= 0) {
+                    player.ledger[index] = { type: type, date: date, amount: amount, desc: desc };
+                } else {
+                    player.ledger.unshift({ type: type, date: date, amount: amount, desc: desc });
+                }
+
                 saveRoster();
+                syncToGoogleSheets('logTransaction', { playerName: player.name, date: date, type: type, amount: amount, desc: desc });
                 renderRoster();
                 closeModal();
                 document.getElementById(`card-${id}`).classList.add('flipped');
             }
         }
 
-        // ADMIN CONTROLS
         function addNewPlayer() {
             let name = prompt("Enter Player Name:");
             if (!name) return;
@@ -684,8 +696,10 @@
             let email = prompt("Enter Parent Email:", "parent@example.com");
 
             let newId = Date.now();
-            roster.push({ id: newId, name, team, age, pos, email, active: true, ledger: [] });
+            let newPlayer = { id: newId, name: name, team: team, age: age, pos: pos, email: email, active: true, ledger: [] };
+            roster.push(newPlayer);
             saveRoster();
+            syncToGoogleSheets('savePlayer', { player: newPlayer });
             renderRoster();
         }
 
@@ -700,6 +714,7 @@
             player.email = prompt("Edit Parent Email:", player.email) || player.email;
 
             saveRoster();
+            syncToGoogleSheets('savePlayer', { player: player });
             renderRoster();
             document.getElementById(`card-${id}`).classList.add('flipped');
         }
@@ -713,6 +728,7 @@
             clone.name = `${player.name} (Copy)`;
             roster.push(clone);
             saveRoster();
+            syncToGoogleSheets('savePlayer', { player: clone });
             renderRoster();
         }
 
@@ -746,9 +762,3 @@
             } else {
                 alert("❌ Incorrect current password.");
             }
-        }
-
-        renderRoster();
-    </script>
-</body>
-</html>
