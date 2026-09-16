@@ -8,9 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Supabase JS Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
@@ -438,49 +435,74 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "https://lhnizfqwedvssvsezut.supabase.co";
+        const SUPABASE_URL = "https://nimhjlpjsyuijkjgtmii.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxobml6ZnFkd2VkdnNzdnNlenV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MjA3MTAsImV4cCI6MjEwNTA5NjcxMH0.J8Z1SO8UezuPzGino2m_BeY0pilR36Vx0HTRJ-DmSYM";
-
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentFilter = 'active';
         let roster = [];
 
         async function fetchRosterFromDatabase() {
             try {
-                let { data, error } = await supabaseClient.from('players').select('*').order('created_at', { ascending: true });
-                if (error) {
-                    console.error("Full Supabase Select Error:", error);
-                    throw error;
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/players?select=*&order=created_at.asc`, {
+                    headers: {
+                        "apikey": SUPABASE_ANON_KEY,
+                        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+
+                if (!res.ok) {
+                    let errText = await res.text();
+                    throw new Error(errText);
                 }
-                roster = data || [];
+
+                roster = await res.json();
                 renderRoster();
             } catch (err) {
-                alert(`Database Error: ${err.message || 'Check browser developer console for error details.'}`);
+                console.error("Fetch Error:", err);
+                alert(`Database Fetch Error: ${err.message}`);
             }
         }
 
         async function savePlayerToDatabase(player) {
             try {
-                let { data, error } = await supabaseClient.from('players').upsert([player], { onConflict: 'id' }).select();
-                if (error) {
-                    console.error("Full Supabase Upsert Error:", error);
-                    alert(`Save Failed: ${error.message} (${error.details || error.code})`);
-                    return;
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/players`, {
+                    method: "POST",
+                    headers: {
+                        "apikey": SUPABASE_ANON_KEY,
+                        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+                        "Content-Type": "application/json",
+                        "Prefer": "resolution=merge-duplicates"
+                    },
+                    body: JSON.stringify(player)
+                });
+
+                if (!res.ok) {
+                    let errText = await res.text();
+                    throw new Error(errText);
                 }
-                console.log("Successfully saved to database:", data);
+                console.log("Successfully saved via REST API!");
             } catch (err) {
-                console.error("Database Save Exception:", err);
-                alert(`Save Error: ${err.message}`);
+                console.error("Save Error:", err);
+                alert(`Save Failed: ${err.message}`);
             }
         }
 
         async function deletePlayerFromDatabase(id) {
             try {
-                let { error } = await supabaseClient.from('players').delete().eq('id', id);
-                if (error) throw error;
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/players?id=eq.${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "apikey": SUPABASE_ANON_KEY,
+                        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+
+                if (!res.ok) {
+                    let errText = await res.text();
+                    throw new Error(errText);
+                }
             } catch (err) {
-                console.error("Database Delete Error:", err);
+                console.error("Delete Error:", err);
             }
         }
 
