@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
@@ -435,74 +438,42 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "https://nimhjlpjsyuijkjgtmii.supabase.co";
+        const SUPABASE_URL = "https://lhnizfqwedvssvsezut.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxobml6ZnFkd2VkdnNzdnNlenV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MjA3MTAsImV4cCI6MjEwNTA5NjcxMH0.J8Z1SO8UezuPzGino2m_BeY0pilR36Vx0HTRJ-DmSYM";
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentFilter = 'active';
         let roster = [];
 
         async function fetchRosterFromDatabase() {
             try {
-                let res = await fetch(`${SUPABASE_URL}/rest/v1/players?select=*&order=created_at.asc`, {
-                    headers: {
-                        "apikey": SUPABASE_ANON_KEY,
-                        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
-
-                if (!res.ok) {
-                    let errText = await res.text();
-                    throw new Error(errText);
-                }
-
-                roster = await res.json();
+                let { data, error } = await supabaseClient.from('players').select('*').order('created_at', { ascending: true });
+                if (error) throw error;
+                roster = data || [];
                 renderRoster();
             } catch (err) {
-                console.error("Fetch Error:", err);
-                alert(`Database Fetch Error: ${err.message}`);
+                console.error("Database Fetch Error:", err);
+                alert(`Database Error: ${err.message || 'Failed to fetch player deck.'}`);
             }
         }
 
         async function savePlayerToDatabase(player) {
             try {
-                let res = await fetch(`${SUPABASE_URL}/rest/v1/players`, {
-                    method: "POST",
-                    headers: {
-                        "apikey": SUPABASE_ANON_KEY,
-                        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-                        "Content-Type": "application/json",
-                        "Prefer": "resolution=merge-duplicates"
-                    },
-                    body: JSON.stringify(player)
-                });
-
-                if (!res.ok) {
-                    let errText = await res.text();
-                    throw new Error(errText);
-                }
-                console.log("Successfully saved via REST API!");
+                let { error } = await supabaseClient.from('players').upsert([player], { onConflict: 'id' });
+                if (error) throw error;
             } catch (err) {
-                console.error("Save Error:", err);
+                console.error("Database Save Error:", err);
                 alert(`Save Failed: ${err.message}`);
             }
         }
 
         async function deletePlayerFromDatabase(id) {
             try {
-                let res = await fetch(`${SUPABASE_URL}/rest/v1/players?id=eq.${id}`, {
-                    method: "DELETE",
-                    headers: {
-                        "apikey": SUPABASE_ANON_KEY,
-                        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
-
-                if (!res.ok) {
-                    let errText = await res.text();
-                    throw new Error(errText);
-                }
+                let { error } = await supabaseClient.from('players').delete().eq('id', id);
+                if (error) throw error;
             } catch (err) {
-                console.error("Delete Error:", err);
+                console.error("Database Delete Error:", err);
             }
         }
 
