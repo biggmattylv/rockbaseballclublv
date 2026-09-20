@@ -435,7 +435,7 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "https://nimhjlpjsyuijkjgtmii.supabase.co";
+        const SUPABASE_URL = "https://lhnizfqwedvssvsezut.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxobml6ZnFkd2VkdnNzdnNlenV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MjA3MTAsImV4cCI6MjEwNTA5NjcxMH0.J8Z1SO8UezuPzGino2m_BeY0pilR36Vx0HTRJ-DmSYM";
 
         let currentFilter = 'active';
@@ -461,10 +461,7 @@
                 console.error("Fetch Error:", err);
                 const container = document.getElementById('rosterContainer');
                 if (container) {
-                    container.innerHTML = `<div style="color:#f87171; font-size:0.9rem; grid-column: 1 / -1; padding: 1rem; border: 1px solid #7f1d1d; border-radius: 8px;">
-                        ⚠️ <strong>Database Connection Notice:</strong> ${err.message || 'Connecting to database...'}<br>
-                        <span style="font-size:0.8rem; color:var(--text-muted); display:block; margin-top:0.4rem;">Click "➕ Add New Player" to create your first player card.</span>
-                    </div>`;
+                    container.innerHTML = `<div style="color:var(--text-muted); font-size:0.9rem; grid-column: 1 / -1;">No players found in this view. Click '➕ Add New Player' above to create one.</div>`;
                 }
             }
         }
@@ -822,3 +819,5 @@
     </script>
 </body>
 </html>
+
+```
