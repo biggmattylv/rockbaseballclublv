@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>14U Division Roster | The Rock Baseball Club</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Supabase Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --bg-dark: #070709;
+            --bg-module: #111116;
+            --bg-input: #0a0a0e;
+            --red-accent: #d3122a;
+            --red-glow: rgba(211, 18, 42, 0.4);
+            --text-light: #ffffff;
+            --text-muted: #9a9ab0;
+            --border-thin: 1px solid #22222d;
+            --radius-module: 14px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        header {
+            background-color: rgba(17, 17, 22, 0.95); backdrop-filter: blur(12px);
+            border-bottom: var(--border-thin); position: sticky; top: 0; z-index: 1000; padding: 1rem 2rem;
+        }
+
+        .nav-container { max-width: 1250px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo-group { display: flex; align-items: center; gap: 0.85rem; text-decoration: none; }
+        .logo-img { height: 48px; width: auto; border-radius: 6px; object-fit: contain; }
+        .logo-text { font-family: 'Impact', sans-serif; font-size: 1.7rem; text-transform: uppercase; letter-spacing: 1px; color: #fff; line-height: 1; }
+        .logo-text span { color: var(--red-accent); }
+        .logo-text small { display: block; font-family: 'Montserrat', sans-serif; font-size: 0.65rem; color: var(--text-muted); font-weight: 700; letter-spacing: 1.5px; }
+
+        nav { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+        nav a { color: var(--text-muted); text-decoration: none; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; padding: 0.5rem 0.65rem; border-radius: 6px; }
+        nav a:hover, nav a.active { color: #fff; background-color: rgba(255, 255, 255, 0.06); }
+        nav a.nav-accent { color: var(--red-accent); border: 1px solid var(--red-accent); background: rgba(211, 18, 42, 0.1); }
+
+        main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
+
+        .page-header {
+            background: linear-gradient(135deg, #181822 0%, #08080b 100%);
+            border: var(--border-thin); border-left: 6px solid var(--red-accent);
+            border-radius: var(--radius-module); padding: 2.5rem; margin-bottom: 2rem;
+        }
+
+        .page-header h1 { font-family: 'Impact', sans-serif; font-size: 3.2rem; text-transform: uppercase; letter-spacing: 2px; }
+        .page-header p { color: var(--text-muted); font-size: 1rem; }
+
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+
+        .player-card {
+            background-color: var(--bg-module); border: var(--border-thin);
+            border-top: 3px solid var(--red-accent); border-radius: var(--radius-module);
+            padding: 1.5rem; transition: transform 0.2s ease;
+        }
+
+        .player-card:hover { transform: translateY(-4px); border-color: var(--red-accent); }
+        .player-name { font-family: 'Impact', sans-serif; font-size: 1.8rem; text-transform: uppercase; margin: 0.5rem 0; letter-spacing: 1px; }
+
+        .badge {
+            background-color: rgba(211, 18, 42, 0.15); color: var(--red-accent);
+            border: 1px solid var(--red-accent); padding: 0.2rem 0.6rem;
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border-radius: 4px; display: inline-block;
+        }
+
+        .stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+            background-color: var(--bg-input); padding: 0.75rem; border-radius: 8px; border: var(--border-thin); margin-top: 0.75rem;
+        }
+
+        .stats-item span { display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+        .stats-item strong { font-size: 0.95rem; color: #fff; }
+
+        .empty-box {
+            background-color: var(--bg-module);
+            border: var(--border-thin);
+            border-left: 4px solid var(--red-accent);
+            border-radius: var(--radius-module);
+            padding: 2rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            grid-column: 1 / -1;
+        }
+
+        footer { border-top: var(--border-thin); background-color: var(--bg-module); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo-group">
+                <img src="brand/logo.jpg" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+                <div class="logo-text">The Rock <span>Baseball</span><small>Summerlin, Nevada</small></div>
+            </a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="14u.html" class="active">14U Roster</a>
+                <a href="16u.html">16U Roster</a>
+                <a href="18u.html">18U Roster</a>
+                <a href="uniforms.html">Uniforms</a>
+                <a href="admin.2.html" class="nav-accent">🔒 Coaches Hub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-header">
+            <h1>14U Division Roster</h1>
+            <p>Youth to High School Transition Program — Summer 2026</p>
+        </div>
+
+        <div class="roster-grid" id="rosterContainer">
+            <div style="color:var(--text-muted);">Checking 14U roster data...</div>
+        </div>
+    </main>
+
+    <footer>&copy; 2026 The Rock Baseball Club — Summerlin, NV</footer>
+
+    <script>
+        const SUPABASE_URL = "https://lhnizfqwedvssvsezut.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function loadDivisionRoster() {
+            try {
+                let { data: players, error } = await supabaseClient
+                    .from('players')
+                    .select('*')
+                    .eq('active', true)
+                    .order('name', { ascending: true });
+
+                if (error) throw error;
+
+                const container = document.getElementById('rosterContainer');
+                container.innerHTML = '';
+
+                let filtered = (players || []).filter(p => {
+                    let teamLower = (p.team || '').toLowerCase();
+                    return teamLower.includes('14u');
+                });
+
+                if (filtered.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-box">
+                            ⏳ Player Roster Still Loading — Summerlin 2026 Season Roster Drops Soon!
+                        </div>
+                    `;
+                    return;
+                }
+
+                filtered.forEach(p => {
+                    container.innerHTML += `
+                        <div class="player-card">
+                            <span class="badge">${p.team}</span>
+                            <div class="player-name">${p.name}</div>
+                            <div class="stats-grid">
+                                <div class="stats-item"><span>Age</span><strong>${p.age}</strong></div>
+                                <div class="stats-item"><span>Position</span><strong>${p.pos}</strong></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error("Roster error:", err);
+                document.getElementById('rosterContainer').innerHTML = `
+                    <div class="empty-box">
+                        ⏳ Player Roster Still Loading — Summerlin 2026 Season Roster Drops Soon!
+                    </div>
+                `;
+            }
+        }
+
+        loadDivisionRoster();
+    </script>
+</body>
+</html>
