@@ -1,0 +1,28 @@
+[build]
+  publish = "."
+
+# Clean URL redirects (removes .html extension)
+[[redirects]]
+  from = "/14u"
+  to = "/14u.html"
+  status = 200
+
+[[redirects]]
+  from = "/16u"
+  to = "/16u.html"
+  status = 200
+
+[[redirects]]
+  from = "/18u"
+  to = "/18u.html"
+  status = 200
+
+[[redirects]]
+  from = "/uniforms"
+  to = "/uniforms.html"
+  status = 200
+
+[[redirects]]
+  from = "/coaches"
+  to = "/admin.2.html"
+  status = 200
