@@ -441,15 +441,27 @@
         const SUPABASE_URL = "https://lhnizfqdwedvssvsezut.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
 
-        // Initialize Supabase Client SDK
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let supabaseClient;
+
+        function getClient() {
+            if (!supabaseClient && window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+            return supabaseClient;
+        }
 
         let currentFilter = 'active';
         let roster = [];
 
         async function fetchRosterFromDatabase() {
             try {
-                let { data, error } = await supabaseClient
+                let client = getClient();
+                if (!client) {
+                    setTimeout(fetchRosterFromDatabase, 300);
+                    return;
+                }
+
+                let { data, error } = await client
                     .from('players')
                     .select('*')
                     .order('created_at', { ascending: true });
@@ -469,7 +481,10 @@
 
         async function savePlayerToDatabase(player) {
             try {
-                let { error } = await supabaseClient
+                let client = getClient();
+                if (!client) throw new Error("Supabase SDK still loading, please retry in a second.");
+
+                let { error } = await client
                     .from('players')
                     .upsert([player], { onConflict: 'id' });
 
@@ -484,7 +499,10 @@
 
         async function deletePlayerFromDatabase(id) {
             try {
-                let { error } = await supabaseClient
+                let client = getClient();
+                if (!client) return;
+
+                let { error } = await client
                     .from('players')
                     .delete()
                     .eq('id', id);
