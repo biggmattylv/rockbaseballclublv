@@ -1,0 +1,154 @@
+/* =========================================================
+   THE ROCK BASEBALL CLUB - GLOBAL STYLESHEET
+   ========================================================= */
+
+:root {
+    --bg-dark: #070709;
+    --bg-module: #111116;
+    --bg-module-hover: #171720;
+    --bg-input: #0a0a0e;
+    
+    /* High-Voltage Sharp Red Accent */
+    --red-accent: #ff1a35;
+    --red-glow: rgba(255, 26, 53, 0.25);
+    
+    --gold-accent: #f59e0b;
+    --green-accent: #10b981;
+    --text-light: #ffffff;
+    --text-muted: #a1a1b5;
+    --border-thin: 1px solid #22222e;
+    --radius-module: 14px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* =========================================================
+   GLOBAL HIGH-CONTRAST DIVISION BADGES (CRISP WHITE + RED OUTLINE)
+   ========================================================= */
+.badge, .badge-team, .div-badge {
+    background-color: rgba(0, 0, 0, 0.85) !important;
+    color: #ffffff !important;
+    border: 1.5px solid var(--red-accent) !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.75px !important;
+    text-transform: uppercase !important;
+    padding: 0.3rem 0.75rem !important;
+    border-radius: 6px !important;
+    box-shadow: 0 0 10px var(--red-glow) !important;
+    display: inline-block !important;
+}
+
+/* =========================================================
+   GLOBAL NAVIGATION BAR
+   ========================================================= */
+header {
+    background-color: rgba(17, 17, 22, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: var(--border-thin);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 1rem 2rem;
+}
+
+.nav-container {
+    max-width: 1250px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-group {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 48px;
+    width: auto;
+    border-radius: 6px;
+    object-fit: contain;
+}
+
+.logo-text {
+    font-family: 'Impact', sans-serif;
+    font-size: 1.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fff;
+    line-height: 1;
+}
+
+.logo-text span { color: var(--red-accent); }
+.logo-text small {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    padding: 0.5rem 0.65rem;
+    border-radius: 6px;
+}
+
+nav a:hover, nav a.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+nav a.nav-accent {
+    color: var(--red-accent);
+    border: 1px solid var(--red-accent);
+    background: rgba(255, 26, 53, 0.1);
+}
+
+nav a.nav-accent:hover {
+    background-color: var(--red-accent);
+    color: #fff;
+    box-shadow: 0 0 15px var(--red-glow);
+}
+
+/* FOOTER */
+footer {
+    border-top: var(--border-thin);
+    background-color: var(--bg-module);
+    padding: 2.5rem 2rem;
+    margin-top: 4rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
