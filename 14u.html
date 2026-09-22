@@ -19,6 +19,7 @@
             --bg-input: #0a0a0e;
             --red-accent: #d3122a;
             --red-glow: rgba(211, 18, 42, 0.4);
+            --gold-accent: #f59e0b;
             --text-light: #ffffff;
             --text-muted: #9a9ab0;
             --border-thin: 1px solid #22222d;
@@ -65,41 +66,94 @@
         .page-header h1 { font-family: 'Impact', sans-serif; font-size: 3.2rem; text-transform: uppercase; letter-spacing: 2px; }
         .page-header p { color: var(--text-muted); font-size: 1rem; }
 
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-
-        .player-card {
-            background-color: var(--bg-module); border: var(--border-thin);
-            border-top: 3px solid var(--red-accent); border-radius: var(--radius-module);
-            padding: 1.5rem; transition: transform 0.2s ease;
+        /* BASEBALL FLIP CARD STYLES */
+        .roster-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;
         }
 
-        .player-card:hover { transform: translateY(-4px); border-color: var(--red-accent); }
-        .player-name { font-family: 'Impact', sans-serif; font-size: 1.8rem; text-transform: uppercase; margin: 0.5rem 0; letter-spacing: 1px; }
+        .card-container {
+            background-color: transparent;
+            width: 100%;
+            height: 420px;
+            perspective: 1000px;
+        }
 
+        .card-flipper {
+            position: relative; width: 100%; height: 100%;
+            text-align: left;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .card-container.flipped .card-flipper { transform: rotateY(180deg); }
+
+        .card-front, .card-back {
+            position: absolute; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            border-radius: var(--radius-module); border: var(--border-thin);
+            padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.6);
+        }
+
+        .card-front {
+            background: linear-gradient(145deg, #181822 0%, #0a0a0c 100%);
+            border-top: 4px solid var(--red-accent);
+        }
+
+        .badge-row { display: flex; justify-content: space-between; align-items: center; }
         .badge {
             background-color: rgba(211, 18, 42, 0.15); color: var(--red-accent);
-            border: 1px solid var(--red-accent); padding: 0.2rem 0.6rem;
-            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border-radius: 4px; display: inline-block;
+            border: 1px solid var(--red-accent); padding: 0.25rem 0.65rem;
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border-radius: 4px;
+        }
+
+        .player-photo-placeholder {
+            width: 100%; height: 140px;
+            background-color: var(--bg-input); border: var(--border-thin);
+            border-radius: 8px; margin: 0.75rem 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+        }
+
+        .player-name {
+            font-family: 'Impact', sans-serif; font-size: 2.1rem;
+            text-transform: uppercase; letter-spacing: 1px; color: #fff; line-height: 1; margin-bottom: 0.5rem;
         }
 
         .stats-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
-            background-color: var(--bg-input); padding: 0.75rem; border-radius: 8px; border: var(--border-thin); margin-top: 0.75rem;
+            background-color: var(--bg-input); padding: 0.75rem; border-radius: 8px; border: var(--border-thin);
         }
 
         .stats-item span { display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
         .stats-item strong { font-size: 0.95rem; color: #fff; }
 
-        .empty-box {
-            background-color: var(--bg-module);
-            border: var(--border-thin);
-            border-left: 4px solid var(--red-accent);
-            border-radius: var(--radius-module);
-            padding: 2rem;
-            color: var(--text-muted);
-            font-weight: 700;
-            grid-column: 1 / -1;
+        .btn-flip {
+            background-color: #202028; color: var(--text-light); border: var(--border-thin);
+            padding: 0.65rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
+            border-radius: 6px; cursor: pointer; width: 100%; margin-top: 0.5rem;
         }
+
+        .btn-flip:hover { background-color: #2c2c38; border-color: var(--red-accent); }
+
+        .card-back {
+            background: #14141c; transform: rotateY(180deg);
+            border-top: 4px solid var(--gold-accent);
+        }
+
+        .card-back h3 { font-family: 'Impact', sans-serif; font-size: 1.5rem; color: var(--gold-accent); text-transform: uppercase; margin-bottom: 0.25rem; }
+
+        .gpa-box {
+            background-color: var(--bg-input); border: var(--border-thin);
+            border-radius: 8px; padding: 0.85rem; margin: 0.75rem 0; text-align: center;
+        }
+
+        .gpa-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 0.3rem; }
+        .gpa-value { font-family: 'Impact', sans-serif; font-size: 2rem; color: var(--gold-accent); display: block; line-height: 1; }
+
+        .gpa-input-group { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
+        .gpa-input-group input { width: 100%; background: #000; border: var(--border-thin); border-radius: 4px; padding: 0.4rem; color: #fff; font-weight: 700; text-align: center; }
+        .gpa-input-group button { background: var(--gold-accent); color: #000; border: none; padding: 0.4rem 0.8rem; font-weight: 800; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; }
 
         footer { border-top: var(--border-thin); background-color: var(--bg-module); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
     </style>
@@ -130,14 +184,14 @@
         </div>
 
         <div class="roster-grid" id="rosterContainer">
-            <div style="color:var(--text-muted);">Checking 14U roster data...</div>
+            <div style="color:var(--text-muted);">Loading 14U roster...</div>
         </div>
     </main>
 
     <footer>&copy; 2026 The Rock Baseball Club — Summerlin, NV</footer>
 
     <script>
-        const SUPABASE_URL = "https://lhnizfqwedvssvsezut.supabase.co";
+        const SUPABASE_URL = "https://lhnizfqdwedvssvsezut.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -154,39 +208,90 @@
                 const container = document.getElementById('rosterContainer');
                 container.innerHTML = '';
 
+                // FIX: Include 14U players
                 let filtered = (players || []).filter(p => {
                     let teamLower = (p.team || '').toLowerCase();
                     return teamLower.includes('14u');
                 });
 
                 if (filtered.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-box">
-                            ⏳ Player Roster Still Loading — Summerlin 2026 Season Roster Drops Soon!
-                        </div>
-                    `;
+                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">⏳ Player Roster Still Loading — Summerlin 2026 Season Roster Drops Soon!</div>`;
                     return;
                 }
 
                 filtered.forEach(p => {
+                    let savedGPA = localStorage.getItem(`gpa_${p.id}`) || '3.80';
+
                     container.innerHTML += `
-                        <div class="player-card">
-                            <span class="badge">${p.team}</span>
-                            <div class="player-name">${p.name}</div>
-                            <div class="stats-grid">
-                                <div class="stats-item"><span>Age</span><strong>${p.age}</strong></div>
-                                <div class="stats-item"><span>Position</span><strong>${p.pos}</strong></div>
+                        <div class="card-container" id="card-${p.id}">
+                            <div class="card-flipper">
+                                
+                                <!-- FRONT OF BASEBALL CARD -->
+                                <div class="card-front">
+                                    <div>
+                                        <div class="badge-row">
+                                            <span class="badge">${p.team}</span>
+                                            <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800;">ROCK LV</span>
+                                        </div>
+                                        <div class="player-photo-placeholder">
+                                            <span>⚾ Photo Coming Soon</span>
+                                        </div>
+                                        <div class="player-name">${p.name}</div>
+                                    </div>
+
+                                    <div>
+                                        <div class="stats-grid">
+                                            <div class="stats-item"><span>Age</span><strong>${p.age}</strong></div>
+                                            <div class="stats-item"><span>Primary Pos</span><strong>${p.pos}</strong></div>
+                                        </div>
+                                        <button class="btn-flip" onclick="toggleFlip('${p.id}')">🔄 Flip Card / Academic Stats</button>
+                                    </div>
+                                </div>
+
+                                <!-- BACK OF BASEBALL CARD -->
+                                <div class="card-back">
+                                    <div>
+                                        <h3>Athletic & Academic Metrics</h3>
+                                        
+                                        <div class="stats-grid" style="margin-top:0.5rem;">
+                                            <div class="stats-item"><span>Primary Pos</span><strong>${p.pos}</strong></div>
+                                            <div class="stats-item"><span>Club Team</span><strong>${p.team}</strong></div>
+                                        </div>
+
+                                        <div class="gpa-box">
+                                            <span class="gpa-title">Academic GPA Score</span>
+                                            <span class="gpa-value" id="gpa-display-${p.id}">${savedGPA}</span>
+                                            
+                                            <div class="gpa-input-group">
+                                                <input type="number" step="0.01" min="0.0" max="5.0" id="gpa-input-${p.id}" placeholder="Set GPA (e.g. 3.8)">
+                                                <button onclick="updateGPA('${p.id}')">Update</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button class="btn-flip" onclick="toggleFlip('${p.id}')">↩️ Back to Front</button>
+                                </div>
+
                             </div>
                         </div>
                     `;
                 });
             } catch (err) {
                 console.error("Roster error:", err);
-                document.getElementById('rosterContainer').innerHTML = `
-                    <div class="empty-box">
-                        ⏳ Player Roster Still Loading — Summerlin 2026 Season Roster Drops Soon!
-                    </div>
-                `;
+            }
+        }
+
+        function toggleFlip(id) {
+            let el = document.getElementById(`card-${id}`);
+            if (el) el.classList.toggle('flipped');
+        }
+
+        function updateGPA(id) {
+            let val = document.getElementById(`gpa-input-${id}`).value;
+            if (val && parseFloat(val) > 0) {
+                localStorage.setItem(`gpa_${id}`, parseFloat(val).toFixed(2));
+                document.getElementById(`gpa-display-${id}`).innerText = parseFloat(val).toFixed(2);
+                document.getElementById(`gpa-input-${id}`).value = '';
             }
         }
 
