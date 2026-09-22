@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- GLOBAL STYLESHEET (Controls Navbar, Badges, & Base Colors) -->
+    <!-- GLOBAL STYLESHEET (Navbar, Badges, & Base Colors) -->
     <link rel="stylesheet" href="styles.css">
 
     <!-- HOMEPAGE LAYOUT STYLES -->
@@ -34,16 +34,31 @@
             overflow: hidden;
         }
 
-        .hero-module::after {
-            content: 'THE ROCK';
-            position: absolute;
-            right: -20px;
-            bottom: -35px;
-            font-family: 'Impact', sans-serif;
-            font-size: 11rem;
-            color: rgba(255, 255, 255, 0.02);
-            pointer-events: none;
-            user-select: none;
+        .hero-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .hero-logo-box {
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .hero-logo-img {
+            max-width: 240px;
+            height: auto;
+            border-radius: 16px;
+            border: 2px solid var(--red-accent);
+            box-shadow: 0 0 30px var(--red-glow);
+            background: #000;
         }
 
         .hero-tag {
@@ -62,7 +77,7 @@
 
         .hero-module h1 {
             font-family: 'Impact', sans-serif;
-            font-size: 4rem;
+            font-size: 3.8rem;
             text-transform: uppercase;
             letter-spacing: 2px;
             line-height: 1.05;
@@ -71,7 +86,7 @@
 
         .tagline {
             color: var(--red-accent);
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -376,6 +391,8 @@
         @media (max-width: 768px) {
             .hero-module { padding: 2.5rem 1.5rem; }
             .hero-module h1 { font-size: 2.8rem; }
+            .hero-container { flex-direction: column; text-align: center; }
+            .hero-btns { justify-content: center; }
             .coach-card { flex-direction: column; text-align: center; }
             .contact-box { flex-direction: column; gap: 1rem; }
         }
@@ -387,7 +404,7 @@
     <header>
         <div class="nav-container">
             <a href="index.html" class="logo-group">
-                <img src="brand/logo.jpg" alt="The Rock Baseball Club Logo" class="logo-img" onerror="this.style.display='none'">
+                <img src="brand/logo.jpg" alt="The Rock Baseball Club Logo" class="logo-img">
                 <div class="logo-text">
                     The Rock <span>Baseball</span>
                     <small>Summerlin, Nevada</small>
@@ -407,16 +424,26 @@
     <main>
         <!-- HERO BANNER -->
         <section class="hero-module">
-            <span class="hero-tag">Summerlin's Premier Baseball Club</span>
-            <h1>Where Future Champions Are Built</h1>
-            <span class="tagline">Where Tomorrow’s State Champions Train Today.</span>
-            <p>Based in the heart of Summerlin, The Rock Baseball Club delivers elite player development built to prepare local athletes for top-tier high school competition, championship runs, and collegiate recruitment.</p>
-            
-            <div class="hero-btns">
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLScLBVTibhyf7lPfXdNr7djJaqdmk7pHIT7CQW4-7Smhy3Akvw/viewform?usp=header" target="_blank" class="btn-primary">
-                    📝 Fill Player Interest Form
-                </a>
-                <a href="uniforms.html" class="btn-secondary">Uniform Package</a>
+            <div class="hero-container">
+                
+                <div class="hero-text">
+                    <span class="hero-tag">Summerlin's Premier Baseball Club</span>
+                    <h1>Where Future Champions Are Built</h1>
+                    <span class="tagline">Where Tomorrow’s State Champions Train Today.</span>
+                    <p>Based in the heart of Summerlin, The Rock Baseball Club delivers elite player development built to prepare local athletes for top-tier high school competition, championship runs, and collegiate recruitment.</p>
+                    
+                    <div class="hero-btns">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScLBVTibhyf7lPfXdNr7djJaqdmk7pHIT7CQW4-7Smhy3Akvw/viewform?usp=header" target="_blank" class="btn-primary">
+                            📝 Fill Player Interest Form
+                        </a>
+                        <a href="uniforms.html" class="btn-secondary">Uniform Package</a>
+                    </div>
+                </div>
+
+                <div class="hero-logo-box">
+                    <img src="brand/logo.jpg" alt="The Rock Baseball Emblem" class="hero-logo-img">
+                </div>
+
             </div>
         </section>
 
@@ -549,7 +576,7 @@
     <footer>
         <div style="max-width: 1250px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
             <div class="logo-group">
-                <img src="brand/logo.jpg" alt="Logo" class="logo-img" style="height: 36px;" onerror="this.style.display='none'">
+                <img src="brand/logo.jpg" alt="Logo" class="logo-img" style="height: 36px;">
                 <div class="logo-text" style="font-size: 1.3rem;">The Rock <span>Baseball</span></div>
             </div>
             <div style="color: var(--text-muted); font-size: 0.85rem;">
