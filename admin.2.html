@@ -3,823 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coaches Hub | Red Rock Baseball Club</title>
+    <title>Coaches Hub & Admin Portal | The Rock Baseball Club</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Official Supabase SDK Library -->
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        :root {
-            --bg-dark: #0a0a0c;
-            --bg-module: #121216;
-            --bg-input: #08080a;
-            --red-accent: #d3122a;
-            --red-glow: rgba(211, 18, 42, 0.4);
-            --green-accent: #10b981;
-            --text-light: #ffffff;
-            --text-muted: #9a9ab0;
-            --border-thin: 1px solid #23232c;
-            --radius-module: 12px;
+        main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
+
+        .page-header {
+            background: linear-gradient(135deg, #161620 0%, #08080b 100%);
+            border: var(--border-thin); border-left: 6px solid var(--red-accent);
+            border-radius: var(--radius-module); padding: 2.5rem; margin-bottom: 2rem;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        .page-header h1 { font-family: 'Impact', sans-serif; font-size: 3.2rem; text-transform: uppercase; letter-spacing: 2px; }
+        .page-header p { color: var(--text-muted); font-size: 1rem; }
 
-        #protectedContent {
-            display: none;
-            padding: 2rem;
+        .toolbar-module {
+            background-color: var(--bg-module); border: var(--border-thin);
+            border-radius: var(--radius-module); padding: 1.75rem; margin-bottom: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
 
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
+        .toolbar-title {
+            font-family: 'Impact', sans-serif; font-size: 1.6rem; text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: #fff;
         }
 
-        .module-container {
-            background-color: var(--bg-module);
-            border: var(--border-thin);
-            border-radius: var(--radius-module);
-            padding: 1.75rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        .toolbar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+
+        .tool-btn {
+            background: var(--bg-input); border: var(--border-thin); color: var(--text-light);
+            text-decoration: none; padding: 1rem; border-radius: 10px; display: flex;
+            align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.2s ease;
         }
 
-        .header-module {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid var(--red-accent);
+        .tool-btn:hover { border-color: var(--red-accent); background: #151520; box-shadow: 0 0 15px var(--red-glow); transform: translateY(-2px); }
+        .tool-btn span { font-size: 1.3rem; }
+
+        .admin-form-module {
+            background-color: var(--bg-module); border: var(--border-thin);
+            border-radius: var(--radius-module); padding: 2rem; margin-bottom: 2.5rem;
         }
 
-        .header-module h1 { font-family: 'Impact', sans-serif; font-size: 2.2rem; text-transform: uppercase; letter-spacing: 1.5px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .input-group label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .input-group input, .input-group select { width: 100%; background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.75rem; color: #fff; font-weight: 600; }
 
-        .toolbar {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-            align-items: center;
+        .btn-submit {
+            background-color: var(--red-accent); color: #fff; border: none; padding: 0.85rem 1.5rem;
+            font-weight: 800; text-transform: uppercase; border-radius: 8px; cursor: pointer;
+            box-shadow: 0 4px 15px var(--red-glow); transition: all 0.2s ease; margin-top: 1rem;
         }
 
-        .filter-group {
-            display: flex;
-            background-color: var(--bg-input);
-            border: var(--border-thin);
-            border-radius: 8px;
-            padding: 0.2rem;
+        .btn-submit:hover { background-color: #ff334b; }
+
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+
+        .player-card {
+            background-color: var(--bg-module); border: var(--border-thin);
+            border-radius: var(--radius-module); padding: 1.75rem; display: flex;
+            flex-direction: column; justify-content: space-between;
         }
 
-        .btn-filter {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            border-radius: 6px;
-            cursor: pointer;
+        .player-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+        .player-card h3 { font-family: 'Impact', sans-serif; font-size: 1.8rem; text-transform: uppercase; line-height: 1; }
+
+        .meta-info { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; }
+        .ledger-box { background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 1rem; margin-top: 0.75rem; }
+        .balance-row { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem; }
+
+        .ledger-list { max-height: 100px; overflow-y: auto; font-size: 0.75rem; color: var(--text-muted); border-top: var(--border-thin); padding-top: 0.5rem; }
+        .ledger-entry { display: flex; justify-content: space-between; padding: 0.2rem 0; }
+
+        .add-charge-group { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+        .add-charge-group input { background: #000; border: var(--border-thin); border-radius: 4px; padding: 0.4rem; color: #fff; font-size: 0.8rem; width: 100%; }
+
+        .btn-small {
+            background: var(--red-accent); color: #fff; border: none; padding: 0.4rem 0.75rem;
+            font-weight: 800; border-radius: 4px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase;
         }
-
-        .btn-filter.active {
-            background-color: var(--red-accent);
-            color: #fff;
-        }
-
-        .btn-main {
-            background-color: var(--red-accent);
-            color: #fff;
-            border: none;
-            padding: 0.75rem 1.2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-main:hover { background-color: #ff1a35; box-shadow: 0 0 15px var(--red-glow); }
-
-        .btn-sec {
-            background-color: #202028;
-            color: var(--text-light);
-            border: var(--border-thin);
-            padding: 0.75rem 1.2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .btn-sec:hover { background-color: #2c2c38; border-color: var(--red-accent); }
-
-        .roster-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .card-container {
-            background-color: transparent;
-            width: 100%;
-            height: 440px;
-            perspective: 1000px;
-        }
-
-        .card-flipper {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: left;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
-        }
-
-        .card-container.flipped .card-flipper {
-            transform: rotateY(180deg);
-        }
-
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            border-radius: var(--radius-module);
-            border: var(--border-thin);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.5);
-        }
-
-        .card-front {
-            background: linear-gradient(145deg, #18181f 0%, #0a0a0c 100%);
-            border-top: 3px solid var(--red-accent);
-        }
-
-        .card-front.inactive-card {
-            opacity: 0.6;
-            border-top: 3px solid #6b7280;
-        }
-
-        .badge-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .badge {
-            background-color: rgba(211, 18, 42, 0.15);
-            color: var(--red-accent);
-            border: 1px solid var(--red-accent);
-            padding: 0.2rem 0.6rem;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            border-radius: 4px;
-        }
-
-        .badge-status {
-            font-size: 0.65rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-        }
-
-        .badge-status.active { background-color: rgba(16, 185, 129, 0.2); color: var(--green-accent); border: 1px solid var(--green-accent); }
-        .badge-status.inactive { background-color: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid #6b7280; }
-
-        .card-front .player-name {
-            font-family: 'Impact', sans-serif;
-            font-size: 2rem;
-            letter-spacing: 1px;
-            color: var(--text-light);
-            text-transform: uppercase;
-            margin: 0.5rem 0 0.1rem;
-        }
-
-        .stats-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-            background-color: var(--bg-input);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border: var(--border-thin);
-            margin-top: 0.8rem;
-        }
-
-        .stats-item span { display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
-        .stats-item strong { font-size: 0.95rem; color: var(--text-light); }
-
-        .balance-box {
-            background-color: #0d0d12;
-            border: var(--border-thin);
-            padding: 0.5rem;
-            border-radius: 6px;
-            margin-top: 0.5rem;
-            text-align: center;
-        }
-
-        .btn-flip {
-            background-color: #202028;
-            color: var(--text-light);
-            border: var(--border-thin);
-            padding: 0.65rem;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 0.6rem;
-            width: 100%;
-        }
-
-        .btn-flip:hover { background-color: #2c2c38; border-color: var(--red-accent); }
-
-        .card-back {
-            background: #14141a;
-            transform: rotateY(180deg);
-            border-top: 3px solid var(--green-accent);
-            overflow-y: auto;
-        }
-
-        .card-back h3 {
-            font-family: 'Impact', sans-serif;
-            font-size: 1.3rem;
-            color: var(--green-accent);
-            text-transform: uppercase;
-            margin-bottom: 0.2rem;
-        }
-
-        .info-group { margin-bottom: 0.4rem; }
-        .info-group label { display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
-        .info-group p { font-size: 0.85rem; color: var(--text-light); font-weight: 600; word-break: break-all; }
-
-        .ledger-box {
-            background-color: var(--bg-input);
-            border: var(--border-thin);
-            border-radius: 6px;
-            padding: 0.6rem;
-            max-height: 100px;
-            overflow-y: auto;
-            margin-top: 0.3rem;
-        }
-
-        .ledger-item {
-            font-size: 0.72rem;
-            color: var(--text-light);
-            border-bottom: 1px solid #1c1c24;
-            padding: 0.25rem 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .ledger-item:last-child { border-bottom: none; }
-        .ledger-item .pay-date { color: var(--text-muted); font-size: 0.65rem; }
-
-        .ledger-edit-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 0.7rem;
-            margin-left: 0.4rem;
-        }
-
-        .action-btns {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 0.3rem;
-            margin-top: 0.6rem;
-        }
-
-        .edit-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 0.3rem;
-            margin-top: 0.4rem;
-        }
-
-        button.card-btn {
-            background-color: var(--red-accent);
-            color: #fff;
-            border: none;
-            padding: 0.5rem 0.2rem;
-            font-size: 0.62rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            border-radius: 4px;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        button.card-btn-green { background-color: var(--green-accent); }
-        button.card-btn-dark { background-color: #27272a; color: #fff; }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .modal-card {
-            background-color: var(--bg-module);
-            border: var(--border-thin);
-            border-radius: var(--radius-module);
-            padding: 2rem;
-            width: 90%;
-            max-width: 420px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-        }
-
-        .modal-card h2 { font-family: 'Impact', sans-serif; font-size: 1.8rem; text-transform: uppercase; margin-bottom: 0.5rem; }
-        .modal-card label { display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-top: 0.8rem; }
-        .modal-card input, .modal-card select { width: 100%; padding: 0.75rem; margin-top: 0.3rem; background-color: var(--bg-input); border: var(--border-thin); border-radius: 6px; color: #fff; font-family: 'Montserrat', sans-serif; }
-
-        @media (max-width: 768px) { .header-module { flex-direction: column; align-items: flex-start; gap: 0.5rem; } }
     </style>
 </head>
 <body>
 
-    <script>
-        (function authenticate() {
-            let currentPassword = localStorage.getItem('coachesHubPassword') || "redrock2026";
-            let entry = prompt("🔒 COACHES HUB RESTRICTED ACCESS\nEnter Password:");
-            
-            if (entry === currentPassword) {
-                window.addEventListener('DOMContentLoaded', () => {
-                    document.getElementById('protectedContent').style.display = 'block';
-                });
-            } else {
-                alert("❌ Unauthorized Access. Access Denied.");
-                document.documentElement.innerHTML = `
-                    <body style="background-color:#0a0a0c; color:#d3122a; font-family:sans-serif; text-align:center; padding-top:10rem;">
-                        <h1 style="font-size:3rem; margin-bottom:1rem;">ACCESS DENIED</h1>
-                        <p style="color:#9a9ab0;">You do not have permission to view the Coaches Hub.</p>
-                        <a href="index.html" style="color:#fff; text-decoration:underline; margin-top:2rem; display:inline-block;">Return to Main Website</a>
-                    </body>
-                `;
-            }
-        })();
-    </script>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo-group">
+                <img src="brand/logo.jpg" alt="Logo" class="logo-img">
+                <div class="logo-text">The Rock <span>Baseball</span><small>Summerlin, Nevada</small></div>
+            </a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="14u.html">14U Roster</a>
+                <a href="16u.html">16U Roster</a>
+                <a href="18u.html">18U Roster</a>
+                <a href="uniforms.html">Uniforms</a>
+                <a href="admin.2.html" class="active nav-accent">🔒 Coaches Hub</a>
+            </nav>
+        </div>
+    </header>
 
-    <div id="protectedContent">
-
-        <div class="module-container header-module">
-            <div>
-                <h1>Coaches Hub</h1>
-                <span style="color: var(--red-accent);">Restricted Staff Operations & Cloud Database Hub</span>
-            </div>
-            <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.8rem; font-weight: 700;">← Exit to Website</a>
+    <main>
+        <div class="page-header">
+            <h1>Coaches Hub & Master Roster</h1>
+            <p>Database Administration, Ledger Accounts, and Player Management</p>
         </div>
 
-        <div class="module-container">
-            <h2 style="font-family:'Impact'; font-size:1.6rem; text-transform:uppercase;">Player Roster Deck</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Cloud database powered: Manage player status, issue charges, and track payments permanently.</p>
-            
-            <div class="toolbar">
-                <div class="filter-group">
-                    <button class="btn-filter active" id="filter-active" onclick="setFilter('active')">Active</button>
-                    <button class="btn-filter" id="filter-inactive" onclick="setFilter('inactive')">Inactive</button>
-                    <button class="btn-filter" id="filter-all" onclick="setFilter('all')">All</button>
+        <section class="toolbar-module">
+            <h2 class="toolbar-title">⚡ Database Quick Reference Toolbar</h2>
+            <div class="toolbar-grid">
+                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/editor" target="_blank" class="tool-btn">
+                    <span>📊</span>
+                    <div><div>Players Table</div><small style="color:var(--text-muted); text-transform:none;">View & Edit Raw Rows</small></div>
+                </a>
+                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/sql/new" target="_blank" class="tool-btn">
+                    <span>>_</span>
+                    <div><div>SQL Query Editor</div><small style="color:var(--text-muted); text-transform:none;">Run Scripts & Updates</small></div>
+                </a>
+                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/settings/database" target="_blank" class="tool-btn">
+                    <span>💾</span>
+                    <div><div>Daily Backups</div><small style="color:var(--text-muted); text-transform:none;">System Health & Snapshots</small></div>
+                </a>
+                <a href="https://app.netlify.com/projects/redrockbaseball/overview" target="_blank" class="tool-btn">
+                    <span>🚀</span>
+                    <div><div>Netlify Control</div><small style="color:var(--text-muted); text-transform:none;">Deploys & Domain Config</small></div>
+                </a>
+            </div>
+        </section>
+
+        <section class="admin-form-module">
+            <h2 class="toolbar-title">➕ Add New Player to Database</h2>
+            <form id="addPlayerForm" onsubmit="handleAddPlayer(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Player Name</label>
+                        <input type="text" id="new_name" placeholder="e.g. John Doe" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Division / Team</label>
+                        <select id="new_team">
+                            <option value="18U Division">18U Division</option>
+                            <option value="16U Division">16U Division</option>
+                            <option value="14U Division">14U Division</option>
+                            <option value="Hybrid">Hybrid (16U & 18U)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Age</label>
+                        <input type="text" id="new_age" placeholder="e.g. 15 Yrs" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Positions</label>
+                        <input type="text" id="new_pos" placeholder="e.g. Pitcher, Shortstop" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Parent Email</label>
+                        <input type="email" id="new_email" placeholder="parent@example.com" required>
+                    </div>
                 </div>
-                
-                <button class="btn-main" onclick="addNewPlayer()">➕ Add New Player</button>
-                <button class="btn-sec" onclick="changeAdminPassword()">🔐 Change Password</button>
-            </div>
+                <button type="submit" class="btn-submit">💾 Save Player to Supabase</button>
+            </form>
+        </section>
 
-            <div class="roster-grid" id="rosterContainer">
-                <div style="color:var(--text-muted);">Connecting to database...</div>
-            </div>
+        <h2 class="toolbar-title" style="margin-bottom:1.25rem;">📋 Master Roster & Accounts Ledger</h2>
+        <div class="roster-grid" id="adminRosterContainer">
+            <div style="color:var(--text-muted);">Loading active players from Supabase database...</div>
         </div>
+    </main>
 
-    </div>
-
-    <!-- ENTRY MODAL -->
-    <div class="modal-overlay" id="entryModal">
-        <div class="modal-card">
-            <h2 id="modalTitle">Record Transaction</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);" id="modalPlayerName">Player Ledger Update</p>
-            
-            <input type="hidden" id="modalPlayerId">
-            <input type="hidden" id="modalType">
-            <input type="hidden" id="modalLedgerIndex" value="-1">
-
-            <label>Date</label>
-            <input type="date" id="modalDate">
-
-            <label>Amount ($)</label>
-            <input type="number" id="modalAmount" placeholder="300">
-
-            <label>Description / Purpose</label>
-            <input type="text" id="modalDesc" placeholder="e.g. Oct Dues, Tournament Fee, Zelle Payment">
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1.5rem;">
-                <button class="btn-main" id="modalSubmitBtn" onclick="submitModalEntry()">Save Entry</button>
-                <button class="btn-sec" onclick="closeModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <footer>&copy; 2026 The Rock Baseball Club — Summerlin, NV</footer>
 
     <script>
         const SUPABASE_URL = "https://lhnizfqdwedvssvsezut.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let supabaseClient;
+        let activePlayers = [];
 
-        function getClient() {
-            if (!supabaseClient && window.supabase) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            }
-            return supabaseClient;
-        }
-
-        let currentFilter = 'active';
-        let roster = [];
-
-        async function fetchRosterFromDatabase() {
+        async function loadMasterRoster() {
             try {
-                let client = getClient();
-                if (!client) {
-                    setTimeout(fetchRosterFromDatabase, 300);
+                let { data: players, error } = await supabaseClient.from('players').select('*').eq('active', true).order('name', { ascending: true });
+                if (error) throw error;
+                activePlayers = players || [];
+
+                const container = document.getElementById('adminRosterContainer');
+                container.innerHTML = '';
+
+                if (activePlayers.length === 0) {
+                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No players currently registered in database.</div>`;
                     return;
                 }
 
-                let { data, error } = await client
-                    .from('players')
-                    .select('*')
-                    .order('created_at', { ascending: true });
+                activePlayers.forEach(p => {
+                    let ledgerArray = Array.isArray(p.ledger) ? p.ledger : [];
+                    let balance = ledgerArray.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
 
-                if (error) throw error;
-
-                roster = data || [];
-                renderRoster();
-            } catch (err) {
-                console.error("Fetch Error:", err);
-                const container = document.getElementById('rosterContainer');
-                if (container) {
-                    container.innerHTML = `<div style="color:var(--text-muted); font-size:0.9rem; grid-column: 1 / -1;">No players found in this view. Click '➕ Add New Player' above to create one.</div>`;
-                }
-            }
-        }
-
-        async function savePlayerToDatabase(player) {
-            try {
-                let client = getClient();
-                if (!client) throw new Error("Supabase SDK still loading, please retry in a second.");
-
-                let { error } = await client
-                    .from('players')
-                    .upsert([player], { onConflict: 'id' });
-
-                if (error) throw error;
-
-                console.log("Successfully saved record!");
-            } catch (err) {
-                console.error("Save Error:", err);
-                alert(`Save Failed: ${err.message || 'Error saving to database.'}`);
-            }
-        }
-
-        async function deletePlayerFromDatabase(id) {
-            try {
-                let client = getClient();
-                if (!client) return;
-
-                let { error } = await client
-                    .from('players')
-                    .delete()
-                    .eq('id', id);
-
-                if (error) throw error;
-            } catch (err) {
-                console.error("Delete Error:", err);
-            }
-        }
-
-        function setFilter(filter) {
-            currentFilter = filter;
-            document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-            document.getElementById(`filter-${filter}`).classList.add('active');
-            renderRoster();
-        }
-
-        function renderRoster() {
-            const container = document.getElementById('rosterContainer');
-            if (!container) return;
-            container.innerHTML = '';
-
-            let filteredList = roster.filter(player => {
-                if (currentFilter === 'active') return player.active !== false;
-                if (currentFilter === 'inactive') return player.active === false;
-                return true;
-            });
-
-            if (filteredList.length === 0) {
-                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.9rem; grid-column: 1 / -1;">No players found in this view. Click '➕ Add New Player' above to create one.</div>`;
-                return;
-            }
-
-            filteredList.forEach(player => {
-                let isActive = player.active !== false;
-                let totalCharges = 0;
-                let totalPayments = 0;
-                let ledgerHTML = '';
-
-                if (player.ledger && player.ledger.length > 0) {
-                    player.ledger.forEach((item, index) => {
-                        if (item.type === 'charge') totalCharges += item.amount;
-                        if (item.type === 'payment') totalPayments += item.amount;
-
-                        let isCharge = item.type === 'charge';
-                        ledgerHTML += `
-                            <div class="ledger-item">
-                                <div>
-                                    <span style="color:${isCharge ? '#f87171' : 'var(--green-accent)'}; font-weight:700;">${isCharge ? '[CHARGE]' : '[PAID]'}</span>
-                                    <span>${item.desc}</span> 
-                                    <span class="pay-date">(${item.date})</span>
-                                </div>
-                                <div>
-                                    <strong style="color:${isCharge ? '#f87171' : 'var(--green-accent)'}">${isCharge ? '-' : '+'}$${item.amount}</strong>
-                                    <button class="ledger-edit-btn" onclick="editLedgerItem('${player.id}', ${index})">✏️</button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    ledgerHTML = `<div style="font-size:0.75rem; color:var(--text-muted); padding:0.2rem 0;">No ledger items recorded.</div>`;
-                }
-
-                let balance = totalCharges - totalPayments;
-                let balanceColor = balance > 0 ? 'var(--red-accent)' : 'var(--green-accent)';
-                let balanceText = balance > 0 ? `$${balance} Due` : balance === 0 ? '$0 (Settled)' : `$${Math.abs(balance)} Credit`;
-
-                const cardHTML = `
-                <div class="card-container" id="card-${player.id}">
-                    <div class="card-flipper">
-                        <div class="card-front ${!isActive ? 'inactive-card' : ''}">
-                            <div>
-                                <div class="badge-row">
-                                    <span class="badge">${player.team}</span>
-                                    <span class="badge-status ${isActive ? 'active' : 'inactive'}">${isActive ? 'Active' : 'Inactive'}</span>
-                                </div>
-                                <div class="player-name">${player.name}</div>
-                            </div>
-                            
-                            <div>
-                                <div class="stats-row">
-                                    <div class="stats-item">
-                                        <span>Age</span>
-                                        <strong>${player.age}</strong>
-                                    </div>
-                                    <div class="stats-item">
-                                        <span>Primary Pos</span>
-                                        <strong>${player.pos}</strong>
-                                    </div>
-                                </div>
-
-                                <div class="balance-box">
-                                    <span style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Account Balance:</span>
-                                    <strong style="display:block; color:${balanceColor}; font-size:1.1rem;">${balanceText}</strong>
-                                </div>
-                            </div>
-
-                            <button class="btn-flip" onclick="toggleFlip('${player.id}')">🔄 Flip Card / Admin Actions</button>
+                    let ledgerRowsHtml = ledgerArray.map(item => `
+                        <div class="ledger-entry">
+                            <span>${item.desc || 'Fee'}</span>
+                            <span style="color:${item.amount >= 0 ? 'var(--red-accent)' : 'var(--green-accent)'}; font-weight:700;">
+                                ${item.amount >= 0 ? '+' : ''}$${parseFloat(item.amount).toFixed(2)}
+                            </span>
                         </div>
+                    `).join('');
 
-                        <div class="card-back">
+                    container.innerHTML += `
+                        <div class="player-card">
                             <div>
-                                <h3>Admin & Ledger Hub</h3>
-                                <div class="info-group">
-                                    <label>Parent Contact Email</label>
-                                    <p>${player.email}</p>
+                                <div class="player-card-header">
+                                    <h3>${p.name}</h3>
+                                    <span class="badge-team">${p.team}</span>
                                 </div>
-                                
-                                <div class="info-group">
-                                    <label>Ledger History (Click ✏️ to Edit Item)</label>
-                                    <div class="ledger-box">
-                                        ${ledgerHTML}
-                                    </div>
+                                <div class="meta-info">
+                                    <div><strong>Age:</strong> ${p.age} | <strong>Positions:</strong> ${p.pos}</div>
+                                    <div><strong>Email:</strong> ${p.email}</div>
                                 </div>
                             </div>
 
-                            <div>
-                                <div class="action-btns">
-                                    <button class="card-btn" style="background-color:#b91c1c;" onclick="openEntryModal('${player.id}', 'charge')">➕ Add Charge</button>
-                                    <button class="card-btn-green card-btn" onclick="openEntryModal('${player.id}', 'payment')">✅ Log Pay</button>
-                                    <button class="card-btn" style="background-color:#1d4ed8;" onclick="quickEmail('${player.id}')">✉️ Email</button>
+                            <div class="ledger-box">
+                                <div class="balance-row">
+                                    <span>Account Balance:</span>
+                                    <span style="color:${balance > 0 ? 'var(--red-accent)' : 'var(--green-accent)'}">
+                                        $${balance.toFixed(2)}
+                                    </span>
                                 </div>
 
-                                <div class="edit-controls">
-                                    <button class="card-btn-dark card-btn" onclick="toggleStatus('${player.id}')">${isActive ? '⏸️ Deactivate' : '▶️ Activate'}</button>
-                                    <button class="card-btn-dark card-btn" onclick="editPlayer('${player.id}')">✏️ Edit</button>
-                                    <button class="card-btn-dark card-btn" onclick="duplicatePlayer('${player.id}')">📋 Copy</button>
-                                    <button class="card-btn-dark card-btn" style="background-color:#7f1d1d;" onclick="deletePlayer('${player.id}')">🗑️ Del</button>
+                                <div class="ledger-list">${ledgerRowsHtml || '<div style="font-style:italic;">No transaction history</div>'}</div>
+
+                                <div class="add-charge-group">
+                                    <input type="text" id="desc-${p.id}" placeholder="Fee / Payment desc">
+                                    <input type="number" step="0.01" id="amt-${p.id}" placeholder="$ Amt (+/-)" style="width:80px;">
+                                    <button class="btn-small" onclick="addLedgerItem('${p.id}')">Add</button>
                                 </div>
-                                <button class="btn-flip" style="margin-top:0.4rem;" onclick="toggleFlip('${player.id}')">↩️ Back to Front</button>
                             </div>
                         </div>
-                    </div>
-                </div>
-                `;
-                container.innerHTML += cardHTML;
-            });
-        }
-
-        function toggleFlip(id) {
-            let el = document.getElementById(`card-${id}`);
-            if (el) el.classList.toggle('flipped');
-        }
-
-        async function toggleStatus(id) {
-            let player = roster.find(p => p.id === id);
-            if (player) {
-                player.active = player.active === false ? true : false;
-                renderRoster();
-                await savePlayerToDatabase(player);
-            }
-        }
-
-        function openEntryModal(playerId, type, ledgerIndex = -1) {
-            let player = roster.find(p => p.id === playerId);
-            if (!player) return;
-
-            document.getElementById('modalPlayerId').value = playerId;
-            document.getElementById('modalType').value = type;
-            document.getElementById('modalLedgerIndex').value = ledgerIndex;
-
-            let isEdit = ledgerIndex >= 0;
-
-            document.getElementById('modalPlayerName').innerText = `${isEdit ? 'Edit' : 'Record'} ${type === 'charge' ? 'Charge' : 'Payment'} for ${player.name}`;
-            document.getElementById('modalTitle').innerText = isEdit ? 'Edit Ledger Entry' : (type === 'charge' ? 'Add Charge to Account' : 'Record Received Payment');
-            
-            if (isEdit && player.ledger[ledgerIndex]) {
-                let item = player.ledger[ledgerIndex];
-                document.getElementById('modalDate').value = item.date;
-                document.getElementById('modalAmount').value = item.amount;
-                document.getElementById('modalDesc').value = item.desc;
-            } else {
-                document.getElementById('modalDate').valueAsDate = new Date();
-                document.getElementById('modalAmount').value = '';
-                document.getElementById('modalDesc').value = type === 'charge' ? 'Monthly Dues' : 'Zelle Payment';
-            }
-            
-            document.getElementById('entryModal').style.display = 'flex';
-        }
-
-        function editLedgerItem(playerId, index) {
-            let player = roster.find(p => p.id === playerId);
-            if (player && player.ledger[index]) {
-                let item = player.ledger[index];
-                openEntryModal(playerId, item.type, index);
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('entryModal').style.display = 'none';
-        }
-
-        async function submitModalEntry() {
-            let id = document.getElementById('modalPlayerId').value;
-            let type = document.getElementById('modalType').value;
-            let index = parseInt(document.getElementById('modalLedgerIndex').value);
-            let date = document.getElementById('modalDate').value;
-            let amount = parseFloat(document.getElementById('modalAmount').value);
-            let desc = document.getElementById('modalDesc').value || (type === 'charge' ? 'Charge' : 'Payment');
-
-            if (!amount || amount <= 0) {
-                alert("Please enter a valid amount.");
-                return;
-            }
-
-            let player = roster.find(p => p.id === id);
-            if (player) {
-                if (!player.ledger) player.ledger = [];
-                
-                if (index >= 0) {
-                    player.ledger[index] = { type: type, date: date, amount: amount, desc: desc };
-                } else {
-                    player.ledger.unshift({ type: type, date: date, amount: amount, desc: desc });
-                }
-
-                renderRoster();
-                closeModal();
-                let cardEl = document.getElementById(`card-${id}`);
-                if (cardEl) cardEl.classList.add('flipped');
-                
-                await savePlayerToDatabase(player);
-            }
-        }
-
-        async function addNewPlayer() {
-            let name = prompt("Enter Player Name:");
-            if (!name || !name.trim()) return;
-
-            let team = prompt("Enter Team Division (14U, 16U, 18U, Hybrid):", "16U Division") || "16U Division";
-            let age = prompt("Enter Player Age:", "16 Yrs") || "16 Yrs";
-            let pos = prompt("Enter Primary Position:", "Shortstop") || "Shortstop";
-            let email = prompt("Enter Parent Email:", "parent@example.com") || "parent@example.com";
-
-            let newId = "p_" + Date.now();
-            let newPlayer = { id: newId, name: name.trim(), team: team, age: age, pos: pos, email: email, active: true, ledger: [] };
-            
-            roster.push(newPlayer);
-            renderRoster();
-            await savePlayerToDatabase(newPlayer);
-        }
-
-        async function editPlayer(id) {
-            let player = roster.find(p => p.id === id);
-            if (!player) return;
-
-            player.name = prompt("Edit Player Name:", player.name) || player.name;
-            player.team = prompt("Edit Team Division:", player.team) || player.team;
-            player.age = prompt("Edit Age:", player.age) || player.age;
-            player.pos = prompt("Edit Position:", player.pos) || player.pos;
-            player.email = prompt("Edit Parent Email:", player.email) || player.email;
-
-            renderRoster();
-            let cardEl = document.getElementById(`card-${id}`);
-            if (cardEl) cardEl.classList.add('flipped');
-
-            await savePlayerToDatabase(player);
-        }
-
-        async function duplicatePlayer(id) {
-            let player = roster.find(p => p.id === id);
-            if (!player) return;
-
-            let clone = JSON.parse(JSON.stringify(player));
-            clone.id = "p_" + Date.now();
-            clone.name = `${player.name} (Copy)`;
-            
-            roster.push(clone);
-            renderRoster();
-            await savePlayerToDatabase(clone);
-        }
-
-        async function deletePlayer(id) {
-            if (confirm("Are you sure you want to permanently delete this player card?")) {
-                roster = roster.filter(p => p.id !== id);
-                renderRoster();
-                await deletePlayerFromDatabase(id);
-            }
-        }
-
-        function quickEmail(playerId) {
-            let player = roster.find(p => p.id === playerId);
-            if (!player) return;
-
-            let totalCharges = 0;
-            let totalPayments = 0;
-            if (player.ledger) {
-                player.ledger.forEach(i => {
-                    if (i.type === 'charge') totalCharges += i.amount;
-                    if (i.type === 'payment') totalPayments += i.amount;
+                    `;
                 });
-            }
-            let balance = totalCharges - totalPayments;
-
-            let zelleEmail = "coachmatty@redrockbaseball.com";
-            let subject = encodeURIComponent(`Red Rock Baseball - Payment Request for ${player.name}`);
-            let body = encodeURIComponent(`Hi,\n\nThis is a payment request for Red Rock Baseball Club.\n\nPlayer: ${player.name}\nCurrent Balance Due: $${balance > 0 ? balance : 0}\n\nPlease submit payment via Zelle to:\nZelle Account: ${zelleEmail}\nMemo Line: ${player.name} - Dues\n\nThank you,\nCoach Matty`);
-            window.location.href = `mailto:${player.email}?subject=${subject}&body=${body}`;
+            } catch (err) { console.error("Error loading admin roster:", err); }
         }
 
-        function changeAdminPassword() {
-            let currentKey = localStorage.getItem('coachesHubPassword') || "redrock2026";
-            let verification = prompt("Enter Current Password:");
+        async function handleAddPlayer(event) {
+            event.preventDefault();
+            const newPlayer = {
+                id: 'p_' + Date.now(),
+                name: document.getElementById('new_name').value,
+                team: document.getElementById('new_team').value,
+                age: document.getElementById('new_age').value,
+                pos: document.getElementById('new_pos').value,
+                email: document.getElementById('new_email').value,
+                active: true,
+                ledger: []
+            };
 
-            if (verification === currentKey) {
-                let newKey = prompt("Enter NEW Admin Password:");
-                if (newKey && newKey.trim().length > 3) {
-                    localStorage.setItem('coachesHubPassword', newKey.trim());
-                    alert(`✅ SUCCESS: Password updated! Your new password is: ${newKey.trim()}`);
-                } else {
-                    alert("❌ Invalid password. Must be at least 4 characters.");
-                }
-            } else {
-                alert("❌ Incorrect current password.");
-            }
+            const { error } = await supabaseClient.from('players').insert([newPlayer]);
+            if (error) { alert('Error adding player: ' + error.message); } 
+            else { alert('Player added successfully!'); document.getElementById('addPlayerForm').reset(); loadMasterRoster(); }
         }
 
-        fetchRosterFromDatabase();
+        async function addLedgerItem(playerId) {
+            let descInput = document.getElementById(`desc-${playerId}`);
+            let amtInput = document.getElementById(`amt-${playerId}`);
+            let desc = descInput.value || 'Fee';
+            let amt = parseFloat(amtInput.value);
+
+            if (isNaN(amt)) { alert('Please enter a valid dollar amount.'); return; }
+
+            let player = activePlayers.find(p => p.id === playerId);
+            if (!player) return;
+
+            let currentLedger = Array.isArray(player.ledger) ? player.ledger : [];
+            currentLedger.push({ desc: desc, amount: amt, date: new Date().toISOString().split('T')[0] });
+
+            const { error } = await supabaseClient.from('players').update({ ledger: currentLedger }).eq('id', playerId);
+            if (error) { alert('Error updating ledger: ' + error.message); } 
+            else { descInput.value = ''; amtInput.value = ''; loadMasterRoster(); }
+        }
+
+        loadMasterRoster();
     </script>
 </body>
 </html>
