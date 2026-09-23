@@ -9,56 +9,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Supabase Client SDK -->
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        :root {
-            --bg-dark: #070709;
-            --bg-module: #111116;
-            --bg-input: #0a0a0e;
-            --red-accent: #d3122a;
-            --red-glow: rgba(211, 18, 42, 0.4);
-            --gold-accent: #f59e0b;
-            --text-light: #ffffff;
-            --text-muted: #9a9ab0;
-            --border-thin: 1px solid #22222d;
-            --radius-module: 14px;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-
-        header {
-            background-color: rgba(17, 17, 22, 0.95); backdrop-filter: blur(12px);
-            border-bottom: var(--border-thin); position: sticky; top: 0; z-index: 1000; padding: 1rem 2rem;
-        }
-
-        .nav-container { max-width: 1250px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .logo-group { display: flex; align-items: center; gap: 0.85rem; text-decoration: none; }
-        .logo-img { height: 48px; width: auto; border-radius: 6px; object-fit: contain; }
-        .logo-text { font-family: 'Impact', sans-serif; font-size: 1.7rem; text-transform: uppercase; letter-spacing: 1px; color: #fff; line-height: 1; }
-        .logo-text span { color: var(--red-accent); }
-        .logo-text small { display: block; font-family: 'Montserrat', sans-serif; font-size: 0.65rem; color: var(--text-muted); font-weight: 700; letter-spacing: 1.5px; }
-
-        nav { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
-        nav a { color: var(--text-muted); text-decoration: none; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; padding: 0.5rem 0.65rem; border-radius: 6px; }
-        nav a:hover, nav a.active { color: #fff; background-color: rgba(255, 255, 255, 0.06); }
-        nav a.nav-accent { color: var(--red-accent); border: 1px solid var(--red-accent); background: rgba(211, 18, 42, 0.1); }
-
         main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
 
         .page-header {
-            background: linear-gradient(135deg, #181822 0%, #08080b 100%);
+            background: linear-gradient(135deg, #161620 0%, #08080b 100%);
             border: var(--border-thin); border-left: 6px solid var(--red-accent);
             border-radius: var(--radius-module); padding: 2.5rem; margin-bottom: 2rem;
         }
@@ -66,23 +24,12 @@
         .page-header h1 { font-family: 'Impact', sans-serif; font-size: 3.2rem; text-transform: uppercase; letter-spacing: 2px; }
         .page-header p { color: var(--text-muted); font-size: 1rem; }
 
-        /* BASEBALL FLIP CARD STYLES */
-        .roster-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;
-        }
-
-        .card-container {
-            background-color: transparent;
-            width: 100%;
-            height: 420px;
-            perspective: 1000px;
-        }
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .card-container { background-color: transparent; width: 100%; height: 420px; perspective: 1000px; }
 
         .card-flipper {
-            position: relative; width: 100%; height: 100%;
-            text-align: left;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
+            position: relative; width: 100%; height: 100%; text-align: left;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d;
         }
 
         .card-container.flipped .card-flipper { transform: rotateY(180deg); }
@@ -95,30 +42,17 @@
             box-shadow: 0 8px 22px rgba(0,0,0,0.6);
         }
 
-        .card-front {
-            background: linear-gradient(145deg, #181822 0%, #0a0a0c 100%);
-            border-top: 4px solid var(--red-accent);
-        }
-
+        .card-front { background: linear-gradient(145deg, #181822 0%, #0a0a0c 100%); border-top: 4px solid var(--red-accent); }
         .badge-row { display: flex; justify-content: space-between; align-items: center; }
-        .badge {
-            background-color: rgba(211, 18, 42, 0.15); color: var(--red-accent);
-            border: 1px solid var(--red-accent); padding: 0.25rem 0.65rem;
-            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border-radius: 4px;
-        }
 
         .player-photo-placeholder {
-            width: 100%; height: 140px;
-            background-color: var(--bg-input); border: var(--border-thin);
-            border-radius: 8px; margin: 0.75rem 0;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            width: 100%; height: 140px; background-color: var(--bg-input); border: var(--border-thin);
+            border-radius: 8px; margin: 0.75rem 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: var(--text-muted);
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
         }
 
-        .player-name {
-            font-family: 'Impact', sans-serif; font-size: 2.1rem;
-            text-transform: uppercase; letter-spacing: 1px; color: #fff; line-height: 1; margin-bottom: 0.5rem;
-        }
+        .player-name { font-family: 'Impact', sans-serif; font-size: 2.1rem; text-transform: uppercase; letter-spacing: 1px; color: #fff; line-height: 1; margin-bottom: 0.5rem; }
 
         .stats-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
@@ -136,26 +70,16 @@
 
         .btn-flip:hover { background-color: #2c2c38; border-color: var(--red-accent); }
 
-        .card-back {
-            background: #14141c; transform: rotateY(180deg);
-            border-top: 4px solid var(--gold-accent);
-        }
-
+        .card-back { background: #14141c; transform: rotateY(180deg); border-top: 4px solid var(--gold-accent); }
         .card-back h3 { font-family: 'Impact', sans-serif; font-size: 1.5rem; color: var(--gold-accent); text-transform: uppercase; margin-bottom: 0.25rem; }
 
-        .gpa-box {
-            background-color: var(--bg-input); border: var(--border-thin);
-            border-radius: 8px; padding: 0.85rem; margin: 0.75rem 0; text-align: center;
-        }
-
+        .gpa-box { background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.85rem; margin: 0.75rem 0; text-align: center; }
         .gpa-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 0.3rem; }
         .gpa-value { font-family: 'Impact', sans-serif; font-size: 2rem; color: var(--gold-accent); display: block; line-height: 1; }
 
         .gpa-input-group { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
         .gpa-input-group input { width: 100%; background: #000; border: var(--border-thin); border-radius: 4px; padding: 0.4rem; color: #fff; font-weight: 700; text-align: center; }
         .gpa-input-group button { background: var(--gold-accent); color: #000; border: none; padding: 0.4rem 0.8rem; font-weight: 800; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; }
-
-        footer { border-top: var(--border-thin); background-color: var(--bg-module); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -163,7 +87,7 @@
     <header>
         <div class="nav-container">
             <a href="index.html" class="logo-group">
-                <img src="brand/logo.jpg" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+                <img src="brand/logo.jpg" alt="Logo" class="logo-img">
                 <div class="logo-text">The Rock <span>Baseball</span><small>Summerlin, Nevada</small></div>
             </a>
             <nav>
@@ -180,7 +104,7 @@
     <main>
         <div class="page-header">
             <h1>14U Division Roster</h1>
-            <p>Youth to High School Transition Program — Summer 2026</p>
+            <p>Youth to High School Transition Showcase Team</p>
         </div>
 
         <div class="roster-grid" id="rosterContainer">
@@ -194,24 +118,19 @@
         const SUPABASE_URL = "https://lhnizfqdwedvssvsezut.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const COACH_PASSCODE = "ROCK2026";
 
         async function loadDivisionRoster() {
             try {
-                let { data: players, error } = await supabaseClient
-                    .from('players')
-                    .select('*')
-                    .eq('active', true)
-                    .order('name', { ascending: true });
-
+                let { data: players, error } = await supabaseClient.from('players').select('*').eq('active', true).order('name', { ascending: true });
                 if (error) throw error;
 
                 const container = document.getElementById('rosterContainer');
                 container.innerHTML = '';
 
-                // FIX: Include 14U players
                 let filtered = (players || []).filter(p => {
                     let teamLower = (p.team || '').toLowerCase();
-                    return teamLower.includes('14u');
+                    return teamLower.includes('14u') || teamLower.includes('hybrid') || teamLower.includes('both');
                 });
 
                 if (filtered.length === 0) {
@@ -225,17 +144,13 @@
                     container.innerHTML += `
                         <div class="card-container" id="card-${p.id}">
                             <div class="card-flipper">
-                                
-                                <!-- FRONT OF BASEBALL CARD -->
                                 <div class="card-front">
                                     <div>
                                         <div class="badge-row">
                                             <span class="badge">${p.team}</span>
                                             <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800;">ROCK LV</span>
                                         </div>
-                                        <div class="player-photo-placeholder">
-                                            <span>⚾ Photo Coming Soon</span>
-                                        </div>
+                                        <div class="player-photo-placeholder"><span>⚾ Photo Coming Soon</span></div>
                                         <div class="player-name">${p.name}</div>
                                     </div>
 
@@ -248,11 +163,9 @@
                                     </div>
                                 </div>
 
-                                <!-- BACK OF BASEBALL CARD -->
                                 <div class="card-back">
                                     <div>
                                         <h3>Athletic & Academic Metrics</h3>
-                                        
                                         <div class="stats-grid" style="margin-top:0.5rem;">
                                             <div class="stats-item"><span>Primary Pos</span><strong>${p.pos}</strong></div>
                                             <div class="stats-item"><span>Club Team</span><strong>${p.team}</strong></div>
@@ -261,24 +174,20 @@
                                         <div class="gpa-box">
                                             <span class="gpa-title">Academic GPA Score</span>
                                             <span class="gpa-value" id="gpa-display-${p.id}">${savedGPA}</span>
-                                            
                                             <div class="gpa-input-group">
-                                                <input type="number" step="0.01" min="0.0" max="5.0" id="gpa-input-${p.id}" placeholder="Set GPA (e.g. 3.8)">
-                                                <button onclick="updateGPA('${p.id}')">Update</button>
+                                                <input type="number" step="0.01" min="0.0" max="5.0" id="gpa-input-${p.id}" placeholder="New GPA (e.g. 3.8)">
+                                                <button onclick="updateGPAWithLock('${p.id}')">Update</button>
                                             </div>
+                                            <small style="display:block; font-size:0.65rem; color:var(--text-muted); margin-top:0.4rem;">🔒 Passcode required to edit GPA</small>
                                         </div>
                                     </div>
-
                                     <button class="btn-flip" onclick="toggleFlip('${p.id}')">↩️ Back to Front</button>
                                 </div>
-
                             </div>
                         </div>
                     `;
                 });
-            } catch (err) {
-                console.error("Roster error:", err);
-            }
+            } catch (err) { console.error("Roster error:", err); }
         }
 
         function toggleFlip(id) {
@@ -286,12 +195,21 @@
             if (el) el.classList.toggle('flipped');
         }
 
-        function updateGPA(id) {
-            let val = document.getElementById(`gpa-input-${id}`).value;
-            if (val && parseFloat(val) > 0) {
-                localStorage.setItem(`gpa_${id}`, parseFloat(val).toFixed(2));
-                document.getElementById(`gpa-display-${id}`).innerText = parseFloat(val).toFixed(2);
-                document.getElementById(`gpa-input-${id}`).value = '';
+        function updateGPAWithLock(id) {
+            let valInput = document.getElementById(`gpa-input-${id}`);
+            let val = valInput.value;
+
+            if (!val || parseFloat(val) <= 0) { alert('Please enter a valid GPA score.'); return; }
+
+            let passcode = prompt("🔒 Enter Coach Passcode to edit GPA:");
+            if (passcode === COACH_PASSCODE) {
+                let formattedGPA = parseFloat(val).toFixed(2);
+                localStorage.setItem(`gpa_${id}`, formattedGPA);
+                document.getElementById(`gpa-display-${id}`).innerText = formattedGPA;
+                valInput.value = '';
+                alert(`✅ Success: GPA updated to ${formattedGPA}!`);
+            } else if (passcode !== null) {
+                alert("❌ Incorrect Passcode. GPA updates are locked for Coaches.");
             }
         }
 
