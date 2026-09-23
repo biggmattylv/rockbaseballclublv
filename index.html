@@ -42,15 +42,8 @@
             flex-wrap: wrap;
         }
 
-        .hero-text {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .hero-logo-box {
-            flex-shrink: 0;
-            text-align: center;
-        }
+        .hero-text { flex: 1; min-width: 300px; }
+        .hero-logo-box { flex-shrink: 0; text-align: center; }
 
         .hero-logo-img {
             max-width: 240px;
@@ -102,11 +95,7 @@
             margin-bottom: 2.2rem;
         }
 
-        .hero-btns {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
+        .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
 
         .btn-primary {
             background-color: var(--red-accent);
@@ -147,7 +136,6 @@
             border-color: var(--red-accent);
         }
 
-        /* SECTION HEADINGS */
         .section-title {
             font-family: 'Impact', sans-serif;
             font-size: 2.2rem;
@@ -166,7 +154,6 @@
             background: linear-gradient(90deg, var(--red-accent), transparent);
         }
 
-        /* DIVISIONS GRID */
         .divisions-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -191,27 +178,10 @@
             transform: translateY(-4px);
         }
 
-        .div-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
+        .div-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .div-card h3 { font-family: 'Impact', sans-serif; font-size: 2rem; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .div-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
 
-        .div-card h3 {
-            font-family: 'Impact', sans-serif;
-            font-size: 2rem;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-
-        .div-card p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
-
-        /* COACHES MODULE */
         .coaches-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -232,53 +202,20 @@
             transition: all 0.2s ease;
         }
 
-        .coach-card:hover {
-            border-color: var(--red-accent);
-            transform: translateY(-3px);
-        }
+        .coach-card:hover { border-color: var(--red-accent); transform: translateY(-3px); }
 
         .coach-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            background-color: var(--bg-input);
-            border: 1px solid var(--red-accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Impact', sans-serif;
-            font-size: 2rem;
-            color: var(--red-accent);
-            flex-shrink: 0;
-            box-shadow: 0 0 15px var(--red-glow);
+            width: 80px; height: 80px; border-radius: 12px;
+            background-color: var(--bg-input); border: 1px solid var(--red-accent);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Impact', sans-serif; font-size: 2rem; color: var(--red-accent);
+            flex-shrink: 0; box-shadow: 0 0 15px var(--red-glow);
         }
 
-        .coach-info h3 {
-            font-family: 'Impact', sans-serif;
-            font-size: 1.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            line-height: 1;
-            margin-bottom: 0.4rem;
-        }
+        .coach-info h3 { font-family: 'Impact', sans-serif; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 1px; line-height: 1; margin-bottom: 0.4rem; }
+        .coach-role { font-size: 0.8rem; font-weight: 800; color: var(--red-accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; display: block; }
+        .coach-bio { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
 
-        .coach-role {
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: var(--red-accent);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .coach-bio {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        /* GAMECHANGER SCHEDULES MODULE */
         .schedule-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -294,17 +231,7 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
 
-        .schedule-card h3 {
-            font-family: 'Impact', sans-serif;
-            font-size: 1.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+        .schedule-card h3 { font-family: 'Impact', sans-serif; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; color: #fff; display: flex; align-items: center; gap: 0.5rem; }
 
         .widget-wrapper {
             background-color: var(--bg-input);
@@ -314,7 +241,6 @@
             min-height: 250px;
         }
 
-        /* CONTACT SECTION */
         .contact-section {
             background-color: var(--bg-module);
             border: var(--border-thin);
@@ -334,18 +260,10 @@
             flex-wrap: wrap;
         }
 
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.95rem;
-            font-weight: 700;
-        }
-
+        .contact-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.95rem; font-weight: 700; }
         .contact-item a { color: var(--red-accent); text-decoration: none; }
         .contact-item a:hover { text-decoration: underline; }
 
-        /* SPONSOR SECTION */
         .sponsor-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -360,33 +278,13 @@
             padding: 1.75rem 1rem;
             text-align: center;
             transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             min-height: 140px;
         }
 
-        .sponsor-card:hover {
-            border-color: var(--red-accent);
-            box-shadow: 0 0 15px rgba(255, 26, 53, 0.2);
-        }
-
-        .sponsor-card span {
-            font-family: 'Impact', sans-serif;
-            color: #444455;
-            font-size: 1.4rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .sponsor-card small {
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-top: 0.4rem;
-        }
+        .sponsor-card:hover { border-color: var(--red-accent); box-shadow: 0 0 15px rgba(255, 26, 53, 0.2); }
+        .sponsor-card span { font-family: 'Impact', sans-serif; color: #444455; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px; }
+        .sponsor-card small { color: var(--text-muted); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-top: 0.4rem; }
 
         @media (max-width: 768px) {
             .hero-module { padding: 2.5rem 1.5rem; }
@@ -400,15 +298,11 @@
 </head>
 <body>
 
-    <!-- NAVIGATION BAR -->
     <header>
         <div class="nav-container">
             <a href="index.html" class="logo-group">
                 <img src="brand/logo.jpg" alt="The Rock Baseball Club Logo" class="logo-img">
-                <div class="logo-text">
-                    The Rock <span>Baseball</span>
-                    <small>Summerlin, Nevada</small>
-                </div>
+                <div class="logo-text">The Rock <span>Baseball</span><small>Summerlin, Nevada</small></div>
             </a>
             <nav>
                 <a href="index.html" class="active">Home</a>
@@ -422,35 +316,26 @@
     </header>
 
     <main>
-        <!-- HERO BANNER -->
         <section class="hero-module">
             <div class="hero-container">
-                
                 <div class="hero-text">
                     <span class="hero-tag">Summerlin's Premier Baseball Club</span>
                     <h1>Where Future Champions Are Built</h1>
                     <span class="tagline">Where Tomorrow’s State Champions Train Today.</span>
                     <p>Based in the heart of Summerlin, The Rock Baseball Club delivers elite player development built to prepare local athletes for top-tier high school competition, championship runs, and collegiate recruitment.</p>
-                    
                     <div class="hero-btns">
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScLBVTibhyf7lPfXdNr7djJaqdmk7pHIT7CQW4-7Smhy3Akvw/viewform?usp=header" target="_blank" class="btn-primary">
-                            📝 Fill Player Interest Form
-                        </a>
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScLBVTibhyf7lPfXdNr7djJaqdmk7pHIT7CQW4-7Smhy3Akvw/viewform?usp=header" target="_blank" class="btn-primary">📝 Fill Player Interest Form</a>
                         <a href="uniforms.html" class="btn-secondary">Uniform Package</a>
                     </div>
                 </div>
-
                 <div class="hero-logo-box">
                     <img src="brand/logo.jpg" alt="The Rock Baseball Emblem" class="hero-logo-img">
                 </div>
-
             </div>
         </section>
 
-        <!-- DIVISIONS SECTION -->
         <h2 class="section-title">Our Divisions</h2>
         <section class="divisions-grid">
-            
             <div class="div-card">
                 <div>
                     <div class="div-header">
@@ -483,13 +368,23 @@
                 </div>
                 <a href="14u.html" class="btn-secondary" style="text-align: center;">View 14U Roster →</a>
             </div>
-
         </section>
 
-        <!-- COACHING STAFF MODULE -->
+        <!-- COACHING STAFF & LEADERSHIP MODULE -->
         <h2 class="section-title">Coaching Staff & Leadership</h2>
         <section class="coaches-grid">
             
+            <!-- MARK HOYT: FOUNDER & TEAM MANAGER -->
+            <div class="coach-card">
+                <div class="coach-avatar">MH</div>
+                <div class="coach-info">
+                    <h3>Mark Hoyt</h3>
+                    <span class="coach-role">Team Manager & Founder</span>
+                    <p class="coach-bio">Founder and strategic director of The Rock Baseball Club, overseeing organization growth, program operations, and player development pathways in Summerlin.</p>
+                </div>
+            </div>
+
+            <!-- JOSH GOMEZ: HEAD COACH -->
             <div class="coach-card">
                 <div class="coach-avatar">JG</div>
                 <div class="coach-info">
@@ -499,6 +394,7 @@
                 </div>
             </div>
 
+            <!-- MATTHEW EVANS: ASSISTANT COACH -->
             <div class="coach-card">
                 <div class="coach-avatar">ME</div>
                 <div class="coach-info">
@@ -510,96 +406,51 @@
 
         </section>
 
-        <!-- GAMECHANGER LIVE SCHEDULES -->
         <h2 class="section-title">Live GameChanger Schedules</h2>
         <section class="schedule-grid">
-            
-            <!-- 18U GAMECHANGER WIDGET -->
             <div class="schedule-card">
                 <h3>⚾ 18U Game Schedule</h3>
-                <div class="widget-wrapper">
-                    <div id="gc-schedule-widget-pqnl"></div>
-                </div>
+                <div class="widget-wrapper"><div id="gc-schedule-widget-pqnl"></div></div>
             </div>
 
-            <!-- 16U GAMECHANGER WIDGET -->
             <div class="schedule-card">
                 <h3>⚾ 16U Game Schedule</h3>
-                <div class="widget-wrapper">
-                    <div id="gc-schedule-widget-vl3g"></div>
-                </div>
+                <div class="widget-wrapper"><div id="gc-schedule-widget-vl3g"></div></div>
             </div>
-
         </section>
 
-        <!-- DIRECT CONTACT -->
         <section class="contact-section">
             <h2 class="section-title" style="margin-bottom: 0.5rem;">Get In Touch</h2>
             <p style="color: var(--text-muted); font-size: 0.85rem;">Have questions about tryouts, schedules, or sponsorships?</p>
-
             <div class="contact-box">
-                <div class="contact-item">
-                    <span>📧 Email:</span>
-                    <a href="mailto:therock.lvbb@gmail.com">therock.lvbb@gmail.com</a>
-                </div>
-                <div class="contact-item">
-                    <span>📱 Phone/Text:</span>
-                    <div>Coach Matty: <a href="tel:7026285558">702.628.5558</a> <small style="color:var(--text-muted); display:inline; margin-left:0.4rem;">(Text is best)</small></div>
-                </div>
+                <div class="contact-item"><span>📧 Email:</span><a href="mailto:therock.lvbb@gmail.com">therock.lvbb@gmail.com</a></div>
+                <div class="contact-item"><span>📱 Phone/Text:</span><div>Coach Matty: <a href="tel:7026285558">702.628.5558</a> <small style="color:var(--text-muted); display:inline; margin-left:0.4rem;">(Text is best)</small></div></div>
             </div>
         </section>
 
-        <!-- SPONSOR BUSINESS CARD SECTION -->
         <h2 class="section-title">Our Community Partners & Sponsors</h2>
         <section class="sponsor-grid">
-            <div class="sponsor-card">
-                <span>Sponsor Space 1</span>
-                <small>Local Business Supporter</small>
-            </div>
-            <div class="sponsor-card">
-                <span>Sponsor Space 2</span>
-                <small>Local Business Supporter</small>
-            </div>
-            <div class="sponsor-card">
-                <span>Sponsor Space 3</span>
-                <small>Local Business Supporter</small>
-            </div>
-            <div class="sponsor-card">
-                <span>Sponsor Space 4</span>
-                <small>Become a Rock Baseball Partner</small>
-            </div>
+            <div class="sponsor-card"><span>Sponsor Space 1</span><small>Local Business Supporter</small></div>
+            <div class="sponsor-card"><span>Sponsor Space 2</span><small>Local Business Supporter</small></div>
+            <div class="sponsor-card"><span>Sponsor Space 3</span><small>Local Business Supporter</small></div>
+            <div class="sponsor-card"><span>Sponsor Space 4</span><small>Become a Rock Baseball Partner</small></div>
         </section>
-
     </main>
 
-    <!-- FOOTER -->
     <footer>
         <div style="max-width: 1250px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
             <div class="logo-group">
                 <img src="brand/logo.jpg" alt="Logo" class="logo-img" style="height: 36px;">
                 <div class="logo-text" style="font-size: 1.3rem;">The Rock <span>Baseball</span></div>
             </div>
-            <div style="color: var(--text-muted); font-size: 0.85rem;">
-                &copy; 2026 The Rock Baseball Club — Summerlin, NV. All Rights Reserved.
-            </div>
+            <div style="color: var(--text-muted); font-size: 0.85rem;">&copy; 2026 The Rock Baseball Club — Summerlin, NV. All Rights Reserved.</div>
         </div>
     </footer>
 
-    <!-- GameChanger SDK & Initialization Scripts -->
     <script src="https://widgets.gc.com/static/js/sdk.v1.js"></script>
     <script>
-        window.GC.team.schedule.init({
-            target: "#gc-schedule-widget-pqnl",
-            widgetId: "8144e17d-4dff-4613-9eea-506dd1fec46c",
-            maxVerticalGamesVisible: 4,
-        });
-
-        window.GC.team.schedule.init({
-            target: "#gc-schedule-widget-vl3g",
-            widgetId: "61ff513f-bfbe-454b-9318-d6ff6434874e",
-            maxVerticalGamesVisible: 4,
-        });
+        window.GC.team.schedule.init({ target: "#gc-schedule-widget-pqnl", widgetId: "8144e17d-4dff-4613-9eea-506dd1fec46c", maxVerticalGamesVisible: 4 });
+        window.GC.team.schedule.init({ target: "#gc-schedule-widget-vl3g", widgetId: "61ff513f-bfbe-454b-9318-d6ff6434874e", maxVerticalGamesVisible: 4 });
     </script>
-
 </body>
 </html>
