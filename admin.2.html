@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coaches Hub & Admin Portal | The Rock Baseball Club</title>
 
-    <!-- PASSWORD SECURITY SCRIPT -->
     <script>
         (function() {
             const COACH_HUB_PASSWORD = "ROCK2026";
@@ -40,12 +39,10 @@
         }
 
         .page-header h1 { font-family: 'Impact', sans-serif; font-size: 3.2rem; text-transform: uppercase; letter-spacing: 2px; }
-        .page-header p { color: var(--text-muted); font-size: 1rem; }
 
-        .toolbar-module {
+        .admin-form-module {
             background-color: var(--bg-module); border: var(--border-thin);
-            border-radius: var(--radius-module); padding: 1.75rem; margin-bottom: 2rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border-radius: var(--radius-module); padding: 2rem; margin-bottom: 2rem;
         }
 
         .toolbar-title {
@@ -53,25 +50,9 @@
             letter-spacing: 1px; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: #fff;
         }
 
-        .toolbar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-
-        .tool-btn {
-            background: var(--bg-input); border: var(--border-thin); color: var(--text-light);
-            text-decoration: none; padding: 1rem; border-radius: 10px; display: flex;
-            align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.2s ease;
-        }
-
-        .tool-btn:hover { border-color: var(--red-accent); background: #151520; box-shadow: 0 0 15px var(--red-glow); transform: translateY(-2px); }
-        .tool-btn span { font-size: 1.3rem; }
-
-        .admin-form-module {
-            background-color: var(--bg-module); border: var(--border-thin);
-            border-radius: var(--radius-module); padding: 2rem; margin-bottom: 2.5rem;
-        }
-
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
         .input-group label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
-        .input-group input, .input-group select { width: 100%; background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.75rem; color: #fff; font-weight: 600; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.75rem; color: #fff; font-weight: 600; }
 
         .btn-submit {
             background-color: var(--red-accent); color: #fff; border: none; padding: 0.85rem 1.5rem;
@@ -89,27 +70,15 @@
             flex-direction: column; justify-content: space-between;
         }
 
-        .player-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
-        .player-card h3 { font-family: 'Impact', sans-serif; font-size: 1.8rem; text-transform: uppercase; line-height: 1; }
-
-        .photo-preview {
-            width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: var(--border-thin); margin-bottom: 0.75rem; background-color: #000;
-        }
-
-        .meta-info { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; }
+        .photo-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: var(--border-thin); margin-bottom: 0.75rem; background-color: #000; }
         .ledger-box { background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 1rem; margin-top: 0.75rem; }
         .balance-row { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem; }
-
         .ledger-list { max-height: 100px; overflow-y: auto; font-size: 0.75rem; color: var(--text-muted); border-top: var(--border-thin); padding-top: 0.5rem; }
         .ledger-entry { display: flex; justify-content: space-between; padding: 0.2rem 0; }
-
         .add-charge-group { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
         .add-charge-group input { background: #000; border: var(--border-thin); border-radius: 4px; padding: 0.4rem; color: #fff; font-size: 0.8rem; width: 100%; }
 
-        .btn-small {
-            background: var(--red-accent); color: #fff; border: none; padding: 0.4rem 0.75rem;
-            font-weight: 800; border-radius: 4px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase;
-        }
+        .btn-small { background: var(--red-accent); color: #fff; border: none; padding: 0.4rem 0.75rem; font-weight: 800; border-radius: 4px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -133,41 +102,77 @@
 
     <main>
         <div class="page-header">
-            <h1>Coaches Hub & Master Roster</h1>
-            <p>Database Administration, Headshots, Ledger Accounts, and Player Management</p>
+            <h1>Coaches Hub Command Center</h1>
+            <p>Master Site Controls, Player Spotlight, Notes, Videos, and Ledger</p>
         </div>
 
-        <section class="toolbar-module">
-            <h2 class="toolbar-title">⚡ Database Quick Reference Toolbar</h2>
-            <div class="toolbar-grid">
-                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/editor" target="_blank" class="tool-btn">
-                    <span>📊</span>
-                    <div><div>Players Table</div><small style="color:var(--text-muted); text-transform:none;">View & Edit Raw Rows</small></div>
-                </a>
-                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/storage/buckets/player-photos" target="_blank" class="tool-btn">
-                    <span>📷</span>
-                    <div><div>Photos Storage</div><small style="color:var(--text-muted); text-transform:none;">Manage Headshot Files</small></div>
-                </a>
-                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/sql/new" target="_blank" class="tool-btn">
-                    <span>>_</span>
-                    <div><div>SQL Query Editor</div><small style="color:var(--text-muted); text-transform:none;">Run Scripts & Updates</small></div>
-                </a>
-                <a href="https://app.netlify.com/projects/redrockbaseball/overview" target="_blank" class="tool-btn">
-                    <span>🚀</span>
-                    <div><div>Netlify Control</div><small style="color:var(--text-muted); text-transform:none;">Deploys & Domain Config</small></div>
-                </a>
-            </div>
+        <!-- MODULE 1: ANNOUNCEMENT ALERT BANNER & COACH NOTES -->
+        <section class="admin-form-module">
+            <h2 class="toolbar-title">📢 Urgent Announcement & Coach Notes</h2>
+            <form onsubmit="handleSaveSiteSettings(event)">
+                <div class="form-grid">
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label>Top Announcement Alert Banner</label>
+                        <input type="text" id="cfg_announcement" placeholder="e.g. Rainout Notice: Practice moved to indoor facility at 5 PM">
+                        <div style="margin-top:0.4rem; display:flex; align-items:center; gap:0.5rem;">
+                            <input type="checkbox" id="cfg_announcement_active" style="width:auto;">
+                            <label for="cfg_announcement_active" style="display:inline; margin:0;">Enable Banner on Website</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label>Head Coach's Corner Notes</label>
+                        <textarea id="cfg_coach_notes" rows="3" placeholder="Weekly focus points, tournament notes, or motivational messages..."></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">💾 Save Announcement & Notes</button>
+            </form>
         </section>
 
-        <!-- ADD PLAYER MODULE WITH AUTOMATIC HEADSHOT UPLOAD -->
+        <!-- MODULE 2: PLAYER OF THE WEEK SPOTLIGHT -->
+        <section class="admin-form-module">
+            <h2 class="toolbar-title">🌟 Player of the Week Spotlight</h2>
+            <form onsubmit="handleSaveSpotlight(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Select Player</label>
+                        <select id="cfg_spotlight_player">
+                            <option value="">-- Select Player --</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="grid-column: 2 / -1;">
+                        <label>Honor Blurb / Game Highlights</label>
+                        <input type="text" id="cfg_spotlight_blurb" placeholder="e.g. Went 3-for-4 with 4 RBIs and 2 stolen bases in tournament play!">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">🌟 Set Player of the Week</button>
+            </form>
+        </section>
+
+        <!-- MODULE 3: VIDEO HIGHLIGHT EMBEDDER -->
+        <section class="admin-form-module">
+            <h2 class="toolbar-title">🎬 Add Video Highlight Film</h2>
+            <form onsubmit="handleAddVideo(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Video Title</label>
+                        <input type="text" id="vid_title" placeholder="e.g. 16U Championship Game Highlights" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Video URL (YouTube or Vimeo)</label>
+                        <input type="url" id="vid_url" placeholder="https://www.youtube.com/watch?v=..." required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">🎥 Add Video to Website</button>
+            </form>
+        </section>
+
+        <!-- MODULE 4: ADD PLAYER FORM -->
         <section class="admin-form-module">
             <h2 class="toolbar-title">➕ Add New Player to Database</h2>
             <form id="addPlayerForm" onsubmit="handleAddPlayer(event)">
                 <div class="form-grid">
-                    <div class="input-group">
-                        <label>Player Name</label>
-                        <input type="text" id="new_name" placeholder="e.g. John Doe" required>
-                    </div>
+                    <div class="input-group"><label>Player Name</label><input type="text" id="new_name" placeholder="e.g. John Doe" required></div>
                     <div class="input-group">
                         <label>Division / Team</label>
                         <select id="new_team">
@@ -177,22 +182,10 @@
                             <option value="Hybrid">Hybrid (16U & 18U)</option>
                         </select>
                     </div>
-                    <div class="input-group">
-                        <label>Age</label>
-                        <input type="text" id="new_age" placeholder="e.g. 15 Yrs" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Positions</label>
-                        <input type="text" id="new_pos" placeholder="e.g. Pitcher, Shortstop" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Parent Email</label>
-                        <input type="email" id="new_email" placeholder="parent@example.com" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Headshot Photo</label>
-                        <input type="file" id="new_photo" accept="image/*">
-                    </div>
+                    <div class="input-group"><label>Age</label><input type="text" id="new_age" placeholder="e.g. 15 Yrs" required></div>
+                    <div class="input-group"><label>Positions</label><input type="text" id="new_pos" placeholder="e.g. Pitcher, Shortstop" required></div>
+                    <div class="input-group"><label>Parent Email</label><input type="email" id="new_email" placeholder="parent@example.com" required></div>
+                    <div class="input-group"><label>Headshot Photo</label><input type="file" id="new_photo" accept="image/*"></div>
                 </div>
                 <button type="submit" class="btn-submit">💾 Save Player & Headshot to Supabase</button>
             </form>
@@ -213,17 +206,41 @@
 
         let activePlayers = [];
 
+        async function initCoachesHub() {
+            await loadSiteSettings();
+            await loadMasterRoster();
+        }
+
+        async function loadSiteSettings() {
+            try {
+                let { data: settings } = await supabaseClient.from('site_settings').select('*').eq('id', 'global').single();
+                if (settings) {
+                    document.getElementById('cfg_announcement').value = settings.announcement_text || '';
+                    document.getElementById('cfg_announcement_active').checked = settings.announcement_active || false;
+                    document.getElementById('cfg_coach_notes').value = settings.coach_notes || '';
+                    document.getElementById('cfg_spotlight_blurb').value = settings.spotlight_blurb || '';
+                }
+            } catch (err) { console.error("Settings load error:", err); }
+        }
+
         async function loadMasterRoster() {
             try {
                 let { data: players, error } = await supabaseClient.from('players').select('*').eq('active', true).order('name', { ascending: true });
                 if (error) throw error;
                 activePlayers = players || [];
 
+                // Populate Spotlight Dropdown
+                const selectEl = document.getElementById('cfg_spotlight_player');
+                selectEl.innerHTML = '<option value="">-- Select Player --</option>';
+                activePlayers.forEach(p => {
+                    selectEl.innerHTML += `<option value="${p.id}">${p.name} (${p.team})</option>`;
+                });
+
                 const container = document.getElementById('adminRosterContainer');
                 container.innerHTML = '';
 
                 if (activePlayers.length === 0) {
-                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No players currently registered in database.</div>`;
+                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No players currently registered.</div>`;
                     return;
                 }
 
@@ -242,23 +259,23 @@
 
                     let photoDisplay = p.photo_url 
                         ? `<img src="${p.photo_url}" class="photo-preview" alt="${p.name}">`
-                        : `<div class="photo-preview" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:700;">⚾ No Headshot Photo</div>`;
+                        : `<div class="photo-preview" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:700;">⚾ No Headshot</div>`;
 
                     container.innerHTML += `
                         <div class="player-card">
                             <div>
                                 ${photoDisplay}
-                                <div class="player-card-header">
-                                    <h3>${p.name}</h3>
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                    <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase;">${p.name}</h3>
                                     <span class="badge-team">${p.team}</span>
                                 </div>
-                                <div class="meta-info">
+                                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
                                     <div><strong>Age:</strong> ${p.age} | <strong>Positions:</strong> ${p.pos}</div>
                                     <div><strong>Email:</strong> ${p.email}</div>
                                 </div>
 
                                 <div style="margin-bottom: 0.75rem; background: var(--bg-input); padding: 0.6rem; border-radius: 6px; border: var(--border-thin);">
-                                    <label style="font-size:0.65rem; font-weight:800; color:var(--red-accent); text-transform:uppercase; display:block; margin-bottom:0.2rem;">📷 Upload / Change Headshot</label>
+                                    <label style="font-size:0.65rem; font-weight:800; color:var(--red-accent); text-transform:uppercase; display:block; margin-bottom:0.2rem;">📷 Upload Headshot</label>
                                     <input type="file" id="upload-${p.id}" accept="image/*" onchange="uploadPlayerPhoto('${p.id}')" style="font-size:0.75rem; color:var(--text-muted); width:100%;">
                                 </div>
                             </div>
@@ -266,13 +283,9 @@
                             <div class="ledger-box">
                                 <div class="balance-row">
                                     <span>Account Balance:</span>
-                                    <span style="color:${balance > 0 ? 'var(--red-accent)' : 'var(--green-accent)'}">
-                                        $${balance.toFixed(2)}
-                                    </span>
+                                    <span style="color:${balance > 0 ? 'var(--red-accent)' : 'var(--green-accent)'}">$${balance.toFixed(2)}</span>
                                 </div>
-
                                 <div class="ledger-list">${ledgerRowsHtml || '<div style="font-style:italic;">No transaction history</div>'}</div>
-
                                 <div class="add-charge-group">
                                     <input type="text" id="desc-${p.id}" placeholder="Fee / Payment desc">
                                     <input type="number" step="0.01" id="amt-${p.id}" placeholder="$ Amt (+/-)" style="width:80px;">
@@ -282,75 +295,91 @@
                         </div>
                     `;
                 });
-            } catch (err) { console.error("Error loading admin roster:", err); }
+            } catch (err) { console.error("Admin roster error:", err); }
+        }
+
+        async function handleSaveSiteSettings(event) {
+            event.preventDefault();
+            const updates = {
+                id: 'global',
+                announcement_text: document.getElementById('cfg_announcement').value,
+                announcement_active: document.getElementById('cfg_announcement_active').checked,
+                coach_notes: document.getElementById('cfg_coach_notes').value
+            };
+
+            const { error } = await supabaseClient.from('site_settings').upsert(updates);
+            if (error) alert('Error saving settings: ' + error.message);
+            else alert('✅ Announcement & Coach Notes updated successfully!');
+        }
+
+        async function handleSaveSpotlight(event) {
+            event.preventDefault();
+            const updates = {
+                id: 'global',
+                spotlight_player_id: document.getElementById('cfg_spotlight_player').value,
+                spotlight_blurb: document.getElementById('cfg_spotlight_blurb').value
+            };
+
+            const { error } = await supabaseClient.from('site_settings').upsert(updates);
+            if (error) alert('Error setting spotlight: ' + error.message);
+            else alert('🌟 Player of the Week set successfully!');
+        }
+
+        async function handleAddVideo(event) {
+            event.preventDefault();
+            const newVideo = {
+                id: 'v_' + Date.now(),
+                title: document.getElementById('vid_title').value,
+                video_url: document.getElementById('vid_url').value
+            };
+
+            const { error } = await supabaseClient.from('videos').insert([newVideo]);
+            if (error) alert('Error adding video: ' + error.message);
+            else { alert('🎥 Video added to homepage gallery!'); document.getElementById('vid_title').value = ''; document.getElementById('vid_url').value = ''; }
         }
 
         async function handleAddPlayer(event) {
             event.preventDefault();
             const playerId = 'p_' + Date.now();
             let photoUrl = '';
-
             const photoFile = document.getElementById('new_photo').files[0];
-            if (photoFile) {
-                photoUrl = await uploadImageFile(photoFile, playerId);
-            }
+            if (photoFile) photoUrl = await uploadImageFile(photoFile, playerId);
 
             const newPlayer = {
-                id: playerId,
-                name: document.getElementById('new_name').value,
-                team: document.getElementById('new_team').value,
-                age: document.getElementById('new_age').value,
-                pos: document.getElementById('new_pos').value,
-                email: document.getElementById('new_email').value,
-                photo_url: photoUrl,
-                active: true,
-                ledger: []
+                id: playerId, name: document.getElementById('new_name').value,
+                team: document.getElementById('new_team').value, age: document.getElementById('new_age').value,
+                pos: document.getElementById('new_pos').value, email: document.getElementById('new_email').value,
+                photo_url: photoUrl, active: true, ledger: []
             };
 
             const { error } = await supabaseClient.from('players').insert([newPlayer]);
-            if (error) { alert('Error adding player: ' + error.message); } 
-            else { alert('Player and headshot saved successfully!'); document.getElementById('addPlayerForm').reset(); loadMasterRoster(); }
+            if (error) alert('Error adding player: ' + error.message);
+            else { alert('Player saved successfully!'); document.getElementById('addPlayerForm').reset(); loadMasterRoster(); }
         }
 
         async function uploadPlayerPhoto(playerId) {
-            const fileInput = document.getElementById(`upload-${playerId}`);
-            const file = fileInput.files[0];
+            const file = document.getElementById(`upload-${playerId}`).files[0];
             if (!file) return;
-
             const publicUrl = await uploadImageFile(file, playerId);
             if (!publicUrl) return;
 
             const { error } = await supabaseClient.from('players').update({ photo_url: publicUrl }).eq('id', playerId);
-            if (error) {
-                alert('Error linking photo: ' + error.message);
-            } else {
-                alert('Headshot updated and saved to Supabase!');
-                loadMasterRoster();
-            }
+            if (error) alert('Error linking photo: ' + error.message);
+            else { alert('Headshot updated!'); loadMasterRoster(); }
         }
 
         async function uploadImageFile(file, playerId) {
             const fileExt = file.name.split('.').pop();
             const filePath = `${playerId}-${Date.now()}.${fileExt}`;
-
-            const { data, error } = await supabaseClient.storage.from('player-photos').upload(filePath, file, { upsert: true });
-
-            if (error) {
-                alert('Storage Upload Error: ' + error.message + '\nMake sure the "player-photos" bucket exists in Supabase Storage.');
-                return '';
-            }
-
-            const { data: publicUrlData } = supabaseClient.storage.from('player-photos').getPublicUrl(filePath);
-            return publicUrlData.publicUrl;
+            const { error } = await supabaseClient.storage.from('player-photos').upload(filePath, file, { upsert: true });
+            if (error) { alert('Upload Error: ' + error.message); return ''; }
+            return supabaseClient.storage.from('player-photos').getPublicUrl(filePath).data.publicUrl;
         }
 
         async function addLedgerItem(playerId) {
-            let descInput = document.getElementById(`desc-${playerId}`);
-            let amtInput = document.getElementById(`amt-${playerId}`);
-            let desc = descInput.value || 'Fee';
-            let amt = parseFloat(amtInput.value);
-
-            if (isNaN(amt)) { alert('Please enter a valid dollar amount.'); return; }
+            let desc = document.getElementById(`desc-${playerId}`).value || 'Fee';
+            let amt = parseFloat(document.getElementById(`amt-${playerId}`).value);
+            if (isNaN(amt)) { alert('Enter a valid amount.'); return; }
 
             let player = activePlayers.find(p => p.id === playerId);
             if (!player) return;
@@ -359,11 +388,11 @@
             currentLedger.push({ desc: desc, amount: amt, date: new Date().toISOString().split('T')[0] });
 
             const { error } = await supabaseClient.from('players').update({ ledger: currentLedger }).eq('id', playerId);
-            if (error) { alert('Error updating ledger: ' + error.message); } 
-            else { descInput.value = ''; amtInput.value = ''; loadMasterRoster(); }
+            if (error) alert('Error updating ledger: ' + error.message);
+            else { loadMasterRoster(); }
         }
 
-        loadMasterRoster();
+        initCoachesHub();
     </script>
 </body>
 </html>
