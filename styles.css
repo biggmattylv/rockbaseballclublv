@@ -62,7 +62,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 1000;
-    padding: 1rem 2rem;
+    padding: 0.85rem 1.5rem;
 }
 
 .nav-container {
@@ -71,6 +71,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 
 .logo-group {
@@ -81,7 +82,7 @@ header {
 }
 
 .logo-img {
-    height: 48px;
+    height: 44px;
     width: auto;
     border-radius: 6px;
     object-fit: contain;
@@ -89,7 +90,7 @@ header {
 
 .logo-text {
     font-family: 'Impact', sans-serif;
-    font-size: 1.7rem;
+    font-size: 1.6rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: #fff;
@@ -107,11 +108,11 @@ header {
     letter-spacing: 1.5px;
 }
 
+/* DESKTOP NAVIGATION */
 nav {
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    flex-wrap: wrap;
 }
 
 nav a {
@@ -141,6 +142,55 @@ nav a.nav-accent:hover {
     background-color: var(--red-accent);
     color: #fff;
     box-shadow: 0 0 15px var(--red-glow);
+}
+
+/* HAMBURGER BUTTON (HIDDEN ON DESKTOP) */
+.hamburger-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--border-thin);
+    color: var(--text-light);
+    font-size: 1.5rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.hamburger-toggle:hover {
+    border-color: var(--red-accent);
+    color: var(--red-accent);
+}
+
+/* MOBILE RESPONSIVE HAMBURGER MENU */
+@media (max-width: 900px) {
+    .hamburger-toggle {
+        display: block;
+    }
+
+    nav {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #111118;
+        border-bottom: var(--border-thin);
+        padding: 1rem 1.5rem;
+        gap: 0.75rem;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+    }
+
+    nav.mobile-active {
+        display: flex;
+    }
+
+    nav a {
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
 }
 
 /* GLOBAL FOOTER */
