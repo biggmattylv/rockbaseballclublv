@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Showcase Profile | The Rock Baseball Club</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        main { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
+
+        .profile-hero {
+            background: linear-gradient(135deg, #161620 0%, #08080b 100%);
+            border: var(--border-thin);
+            border-top: 6px solid var(--red-accent);
+            border-radius: var(--radius-module);
+            padding: 2.5rem;
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.7);
+            margin-bottom: 2.5rem;
+        }
+
+        .profile-photo {
+            width: 220px;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid var(--red-accent);
+            box-shadow: 0 0 25px var(--red-glow);
+            background-color: #000;
+        }
+
+        .profile-info { flex: 1; min-width: 280px; }
+        .profile-name { font-family: 'Impact', sans-serif; font-size: 3.5rem; text-transform: uppercase; letter-spacing: 1px; line-height: 1; margin-bottom: 0.5rem; }
+        .profile-sub { color: var(--text-muted); font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; }
+
+        .status-badge {
+            background: var(--gold-accent);
+            color: #000;
+            font-weight: 900;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            display: inline-block;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metric-card {
+            background-color: var(--bg-module);
+            border: var(--border-thin);
+            border-radius: var(--radius-module);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .metric-card span { display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 0.3rem; }
+        .metric-card strong { font-family: 'Impact', sans-serif; font-size: 2.2rem; color: var(--gold-accent); letter-spacing: 1px; }
+
+        .section-box {
+            background-color: var(--bg-module);
+            border: var(--border-thin);
+            border-radius: var(--radius-module);
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .social-btn {
+            background: #1da1f2;
+            color: #fff;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back {
+            background-color: #202028;
+            color: var(--text-light);
+            text-decoration: none;
+            border: var(--border-thin);
+            padding: 0.75rem 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo-group">
+                <img src="brand/logo.jpg" alt="Logo" class="logo-img">
+                <div class="logo-text">The Rock <span>Baseball</span><small>Summerlin, Nevada</small></div>
+            </a>
+            <button class="hamburger-toggle" onclick="document.querySelector('nav').classList.toggle('mobile-active')">☰</button>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="14u.html">14U Roster</a>
+                <a href="16u.html">16U Roster</a>
+                <a href="18u.html">18U Roster</a>
+                <a href="uniforms.html">Uniforms</a>
+                <a href="admin.2.html" class="nav-accent">🔒 Coaches Hub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="showcaseContent">
+        <div style="color:var(--text-muted);">Loading player profile...</div>
+    </main>
+
+    <footer>&copy; 2026 The Rock Baseball Club — Summerlin, NV</footer>
+
+    <script>
+        const SUPABASE_URL = "https://lhnizfqdwedvssvsezut.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function loadPlayerProfile() {
+            const params = new URLSearchParams(window.location.search);
+            const playerId = params.get('id');
+
+            if (!playerId) {
+                document.getElementById('showcaseContent').innerHTML = `
+                    <a href="index.html" class="btn-back">← Return to Roster</a>
+                    <h2>No player specified.</h2>
+                `;
+                return;
+            }
+
+            let { data: player, error } = await supabaseClient.from('players').select('*').eq('id', playerId).single();
+
+            if (error || !player) {
+                document.getElementById('showcaseContent').innerHTML = `
+                    <a href="index.html" class="btn-back">← Return to Roster</a>
+                    <h2>Player not found.</h2>
+                `;
+                return;
+            }
+
+            let savedGPA = localStorage.getItem(`gpa_${player.id}`) || '3.80';
+            let photoUrl = player.photo_url || 'brand/logo.jpg';
+            let twitterBtn = player.twitter_handle 
+                ? `<a href="https://x.com/${player.twitter_handle.replace('@','')}" target="_blank" class="social-btn">🐦 Twitter / X Profile (${player.twitter_handle})</a>` 
+                : `<span style="color:var(--text-muted); font-size:0.85rem;">No Twitter profile attached</span>`;
+
+            document.getElementById('showcaseContent').innerHTML = `
+                <a href="javascript:history.back()" class="btn-back">← Back to Roster</a>
+
+                <section class="profile-hero">
+                    <img src="${photoUrl}" class="profile-photo" alt="${player.name}">
+                    <div class="profile-info">
+                        <span class="status-badge">🎓 ${player.commit_status || 'UNCOMMITTED'}</span>
+                        <h1 class="profile-name">${player.name}</h1>
+                        <div class="profile-sub">
+                            Class of ${player.grad_year || '2027'} | ${player.high_school || 'High School'} | ${player.team}
+                        </div>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <span class="badge">Primary: ${player.pos}</span>
+                            <span class="badge" style="background:#202028 !important; border-color:#333 !important;">Age: ${player.age}</span>
+                        </div>
+                    </div>
+                </section>
+
+                <h2 class="section-title">Verified Athletic & Academic Metrics</h2>
+                <section class="metrics-grid">
+                    <div class="metric-card"><span>Academic GPA</span><strong>${savedGPA}</strong></div>
+                    <div class="metric-card"><span>Exit Velocity</span><strong>${player.exit_velo || '--'} MPH</strong></div>
+                    <div class="metric-card"><span>Fastball Velo</span><strong>${player.fastball_velo || '--'} MPH</strong></div>
+                    <div class="metric-card"><span>Graduation Year</span><strong>Class of ${player.grad_year || '2027'}</strong></div>
+                </section>
+
+                <section class="section-box">
+                    <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase; margin-bottom:1rem;">College Scout & Recruiter Links</h3>
+                    <div>${twitterBtn}</div>
+                </section>
+            `;
+        }
+
+        loadPlayerProfile();
+    </script>
+</body>
+</html>
