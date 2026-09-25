@@ -133,9 +133,10 @@
                 const container = document.getElementById('rosterContainer');
                 container.innerHTML = '';
 
+                // Strictly filter for 14U or Hybrid players
                 let filtered = (players || []).filter(p => {
                     let teamLower = (p.team || '').toLowerCase();
-                    return teamLower.includes('14u') || teamLower.includes('hybrid') || teamLower.includes('both');
+                    return teamLower.includes('14u') || teamLower.includes('hybrid');
                 });
 
                 if (filtered.length === 0) {
