@@ -25,7 +25,7 @@
         .page-header p { color: var(--text-muted); font-size: 1rem; }
 
         .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-        .card-container { background-color: transparent; width: 100%; height: 420px; perspective: 1000px; }
+        .card-container { background-color: transparent; width: 100%; height: 440px; perspective: 1000px; }
 
         .card-flipper {
             position: relative; width: 100%; height: 100%; text-align: left;
@@ -92,7 +92,6 @@
                 <div class="logo-text">The Rock <span>Baseball</span><small>Summerlin, Nevada</small></div>
             </a>
 
-            <!-- HAMBURGER MENU BUTTON -->
             <button class="hamburger-toggle" onclick="document.querySelector('nav').classList.toggle('mobile-active')">☰</button>
 
             <nav>
@@ -135,7 +134,7 @@
 
                 let filtered = (players || []).filter(p => {
                     let teamLower = (p.team || '').toLowerCase();
-                    return teamLower.includes('18u') || teamLower.includes('hybrid') || teamLower.includes('both');
+                    return teamLower.includes('18u') || teamLower.includes('hybrid');
                 });
 
                 if (filtered.length === 0) {
@@ -192,7 +191,11 @@
                                             <small style="display:block; font-size:0.65rem; color:var(--text-muted); margin-top:0.4rem;">🔒 Passcode required to edit GPA</small>
                                         </div>
                                     </div>
-                                    <button class="btn-flip" onclick="toggleFlip('${p.id}')">↩️ Back to Front</button>
+
+                                    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem;">
+                                        <a href="player.html?id=${p.id}" class="btn-flip" style="text-align:center; text-decoration:none; background:var(--red-accent); color:#fff;">🌟 View Full Showcase Profile →</a>
+                                        <button class="btn-flip" onclick="toggleFlip('${p.id}')">↩️ Back to Front</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
