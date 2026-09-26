@@ -128,7 +128,7 @@
     <main>
         <div class="page-header">
             <h1>Coaches Hub Command Center</h1>
-            <p>Master Site Controls, Quick Links, Coaching Staff, RSS Feeds, and Ledger</p>
+            <p>Master Site Controls, Quick Links, Coaching Staff Manager, RSS Feeds, and Ledger</p>
         </div>
 
         <!-- DATABASE & DEPLOYMENT TOOLBAR -->
@@ -196,34 +196,11 @@
             </form>
         </section>
 
-        <!-- COACHING STAFF MANAGER (VIEW & EDIT EXISTING COACHES) -->
+        <!-- DEDICATED COACHING STAFF MANAGER -->
         <section class="admin-form-module">
-            <h2 class="toolbar-title">🧢 Coaching Staff & Leadership Manager</h2>
+            <h2 class="toolbar-title">🧢 Coaching Staff & Leadership Controls</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;">Manage and edit your current leadership team. Upload headshots and edit bios directly below:</p>
             
-            <form onsubmit="handleAddCoach(event)" style="margin-bottom:2rem; border-bottom:var(--border-thin); padding-bottom:1.5rem;">
-                <h3 style="font-family:'Impact', sans-serif; font-size:1.2rem; text-transform:uppercase; color:var(--gold-accent);">➕ Add New Coach</h3>
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>Coach Name</label>
-                        <input type="text" id="coach_name" placeholder="e.g. Josh Gomez" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Role / Title</label>
-                        <input type="text" id="coach_role" placeholder="e.g. Head Coach — 18U" required>
-                    </div>
-                    <div class="input-group" style="grid-column: 1 / -1;">
-                        <label>Coach Bio</label>
-                        <input type="text" id="coach_bio" placeholder="Brief coaching background and philosophy...">
-                    </div>
-                    <div class="input-group">
-                        <label>Coach Headshot Photo</label>
-                        <input type="file" id="coach_photo" accept="image/*">
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit">➕ Save & Publish Coach Profile</button>
-            </form>
-
-            <h3 style="font-family:'Impact', sans-serif; font-size:1.4rem; text-transform:uppercase; color:#fff; margin-bottom:1rem;">Active Coaching Staff Roster</h3>
             <div id="coachListContainer" class="roster-grid">
                 <div style="color:var(--text-muted);">Loading coaching staff...</div>
             </div>
@@ -323,7 +300,13 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let activePlayers = [];
-        let loadedCoaches = [];
+
+        // DEFAULT LEADERSHIP STAFF FOR EDITING
+        let loadedCoaches = [
+            { id: 'c_1', name: 'Mark Hoyt', role: 'Team Manager & Founder', bio: 'Founder and strategic director of The Rock Baseball Club, overseeing organization growth, program operations, and player development pathways in Summerlin.', photo_url: '', active: true },
+            { id: 'c_2', name: 'Josh Gomez', role: 'Head Coach — 18U & 16U Divisions', bio: 'Dedicated to high-level tactical development, athletic discipline, and preparing players for elite varsity and college competition.', photo_url: '', active: true },
+            { id: 'c_3', name: 'Matthew Evans', role: 'Assistant Coach & Team Manager — 16U & 18U', bio: 'Managing team operations, player development, and roster logistics to ensure seamless execution on and off the field.', photo_url: '', active: true }
+        ];
 
         async function initCoachesHub() {
             await loadSiteSettings();
@@ -349,14 +332,12 @@
         async function loadCoaches() {
             try {
                 let { data: coaches } = await supabaseClient.from('coaches').select('*').order('created_at', { ascending: true });
-                loadedCoaches = coaches || [];
+                if (coaches && coaches.length > 0) {
+                    loadedCoaches = coaches;
+                }
+
                 const container = document.getElementById('coachListContainer');
                 container.innerHTML = '';
-
-                if (loadedCoaches.length === 0) {
-                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No coaches registered yet.</div>`;
-                    return;
-                }
 
                 loadedCoaches.forEach(c => {
                     let photoDisplay = c.photo_url 
@@ -372,11 +353,11 @@
                                 <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.4;">${c.bio || 'No bio provided.'}</p>
                                 
                                 <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
-                                    <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="editCoachDetails('${c.id}')">✏️ Edit Coach</button>
+                                    <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="editCoachDetails('${c.id}')">✏️ Edit Coach Info</button>
                                 </div>
 
                                 <div style="margin-bottom:0.75rem; background:var(--bg-input); padding:0.6rem; border-radius:6px; border:var(--border-thin);">
-                                    <label style="font-size:0.65rem; font-weight:800; color:var(--red-accent); text-transform:uppercase; display:block; margin-bottom:0.2rem;">📷 Update Coach Photo</label>
+                                    <label style="font-size:0.65rem; font-weight:800; color:var(--red-accent); text-transform:uppercase; display:block; margin-bottom:0.2rem;">📷 Upload Photo</label>
                                     <input type="file" id="coach-upload-${c.id}" accept="image/*" onchange="uploadCoachPhoto('${c.id}')" style="font-size:0.75rem; color:var(--text-muted); width:100%;">
                                 </div>
                             </div>
@@ -404,8 +385,8 @@
             let newBio = prompt("Update Coach Bio:", coach.bio || '');
             if (newBio === null) return;
 
-            const updates = { name: newName, role: newRole, bio: newBio };
-            const { error } = await supabaseClient.from('coaches').update(updates).eq('id', coachId);
+            const updates = { id: coachId, name: newName, role: newRole, bio: newBio, active: coach.active };
+            const { error } = await supabaseClient.from('coaches').upsert([updates]);
             
             if (error) alert('Error updating coach: ' + error.message);
             else { alert('✅ Coach details updated!'); loadCoaches(); }
@@ -419,30 +400,8 @@
             if (!publicUrl) return;
 
             const { error } = await supabaseClient.from('coaches').update({ photo_url: publicUrl }).eq('id', coachId);
-            if (error) alert('Error updating coach photo: ' + error.message);
+            if (error) alert('Error updating photo: ' + error.message);
             else { alert('✅ Coach photo updated!'); loadCoaches(); }
-        }
-
-        async function handleAddCoach(event) {
-            event.preventDefault();
-            const coachId = 'c_' + Date.now();
-            let photoUrl = '';
-
-            const photoFile = document.getElementById('coach_photo').files[0];
-            if (photoFile) photoUrl = await uploadImageFile(photoFile, coachId);
-
-            const newCoach = {
-                id: coachId,
-                name: document.getElementById('coach_name').value,
-                role: document.getElementById('coach_role').value,
-                bio: document.getElementById('coach_bio').value,
-                photo_url: photoUrl,
-                active: true
-            };
-
-            const { error } = await supabaseClient.from('coaches').insert([newCoach]);
-            if (error) alert('Error adding coach: ' + error.message);
-            else { alert('🧢 Coach added successfully!'); loadCoaches(); }
         }
 
         async function toggleCoachActive(coachId) {
