@@ -92,7 +92,8 @@
 
         .coaches-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3.5rem; }
         .coach-card { background: linear-gradient(145deg, #15151f 0%, #0a0a0e 100%); border: var(--border-thin); border-top: 4px solid var(--red-accent); border-radius: var(--radius-module); padding: 2rem; display: flex; gap: 1.5rem; align-items: center; }
-        .coach-avatar { width: 80px; height: 80px; border-radius: 12px; background-color: var(--bg-input); border: 1px solid var(--red-accent); display: flex; align-items: center; justify-content: center; font-family: 'Impact', sans-serif; font-size: 2rem; color: var(--red-accent); flex-shrink: 0; }
+        .coach-avatar-img { width: 85px; height: 85px; border-radius: 12px; object-fit: cover; border: 2px solid var(--red-accent); box-shadow: 0 0 15px var(--red-glow); flex-shrink: 0; }
+        .coach-avatar-initials { width: 85px; height: 85px; border-radius: 12px; background-color: var(--bg-input); border: 2px solid var(--red-accent); display: flex; align-items: center; justify-content: center; font-family: 'Impact', sans-serif; font-size: 2rem; color: var(--red-accent); flex-shrink: 0; }
 
         .schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 3.5rem; }
         .schedule-card { background-color: var(--bg-module); border: var(--border-thin); border-radius: var(--radius-module); padding: 1.75rem; }
@@ -115,7 +116,6 @@
                 <div class="logo-text">The Rock <span>Baseball</span><small>Summerlin, Nevada</small></div>
             </a>
 
-            <!-- HAMBURGER MENU BUTTON -->
             <button class="hamburger-toggle" onclick="document.querySelector('nav').classList.toggle('mobile-active')">☰</button>
 
             <nav>
@@ -210,33 +210,8 @@
         </section>
 
         <h2 class="section-title">Coaching Staff & Leadership</h2>
-        <section class="coaches-grid">
-            <div class="coach-card">
-                <div class="coach-avatar">MH</div>
-                <div class="coach-info">
-                    <h3>Mark Hoyt</h3>
-                    <span class="coach-role">Team Manager & Founder</span>
-                    <p class="coach-bio">Founder and strategic director of The Rock Baseball Club, overseeing organization growth, program operations, and player development pathways in Summerlin.</p>
-                </div>
-            </div>
-
-            <div class="coach-card">
-                <div class="coach-avatar">JG</div>
-                <div class="coach-info">
-                    <h3>Josh Gomez</h3>
-                    <span class="coach-role">Head Coach — 18U & 16U Divisions</span>
-                    <p class="coach-bio">Dedicated to high-level tactical development, athletic discipline, and preparing players for elite varsity and college competition.</p>
-                </div>
-            </div>
-
-            <div class="coach-card">
-                <div class="coach-avatar">ME</div>
-                <div class="coach-info">
-                    <h3>Matthew Evans</h3>
-                    <span class="coach-role">Assistant Coach & Team Manager — 16U & 18U</span>
-                    <p class="coach-bio">Managing team operations, player development, and roster logistics to ensure seamless execution on and off the field.</p>
-                </div>
-            </div>
+        <section class="coaches-grid" id="coachesContainer">
+            <div style="color:var(--text-muted); grid-column:1/-1;">Loading leadership staff...</div>
         </section>
 
         <h2 class="section-title">Live GameChanger Schedules</h2>
@@ -313,6 +288,60 @@
                     }
                 }
 
+                // DYNAMIC COACHES LOADING FROM SUPABASE
+                let { data: coaches } = await supabaseClient.from('coaches').select('*').eq('active', true).order('created_at', { ascending: true });
+                const coachesContainer = document.getElementById('coachesContainer');
+                coachesContainer.innerHTML = '';
+
+                if (!coaches || coaches.length === 0) {
+                    // Fallback to default leadership team if table empty
+                    coachesContainer.innerHTML = `
+                        <div class="coach-card">
+                            <div class="coach-avatar-initials">MH</div>
+                            <div>
+                                <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase;">Mark Hoyt</h3>
+                                <span style="font-size:0.8rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.4rem;">Team Manager & Founder</span>
+                                <p style="font-size:0.85rem; color:var(--text-muted);">Founder and strategic director of The Rock Baseball Club, overseeing organization growth, program operations, and player development pathways in Summerlin.</p>
+                            </div>
+                        </div>
+                        <div class="coach-card">
+                            <div class="coach-avatar-initials">JG</div>
+                            <div>
+                                <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase;">Josh Gomez</h3>
+                                <span style="font-size:0.8rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.4rem;">Head Coach — 18U & 16U Divisions</span>
+                                <p style="font-size:0.85rem; color:var(--text-muted);">Dedicated to high-level tactical development, athletic discipline, and preparing players for elite varsity and college competition.</p>
+                            </div>
+                        </div>
+                        <div class="coach-card">
+                            <div class="coach-avatar-initials">ME</div>
+                            <div>
+                                <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase;">Matthew Evans</h3>
+                                <span style="font-size:0.8rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.4rem;">Assistant Coach & Team Manager — 16U & 18U</span>
+                                <p style="font-size:0.85rem; color:var(--text-muted);">Managing team operations, player development, and roster logistics to ensure seamless execution on and off the field.</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    coaches.forEach(c => {
+                        let initials = c.name ? c.name.split(' ').map(n => n[0]).join('') : 'RC';
+                        let avatarHtml = c.photo_url 
+                            ? `<img src="${c.photo_url}" class="coach-avatar-img" alt="${c.name}">`
+                            : `<div class="coach-avatar-initials">${initials}</div>`;
+
+                        coachesContainer.innerHTML += `
+                            <div class="coach-card">
+                                ${avatarHtml}
+                                <div>
+                                    <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase;">${c.name}</h3>
+                                    <span style="font-size:0.8rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.4rem;">${c.role}</span>
+                                    <p style="font-size:0.85rem; color:var(--text-muted);">${c.bio || 'Dedicated coaching staff member at The Rock Baseball Club.'}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                // DYNAMIC VIDEO GALLERY LOADING
                 let { data: videos } = await supabaseClient.from('videos').select('*').order('created_at', { ascending: false });
                 const videoContainer = document.getElementById('videoContainer');
                 videoContainer.innerHTML = '';
