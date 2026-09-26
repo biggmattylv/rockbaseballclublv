@@ -90,10 +90,48 @@
         .div-card:hover { border-color: var(--red-accent); transform: translateY(-4px); }
         .div-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 
-        .coaches-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3.5rem; }
-        .coach-card { background: linear-gradient(145deg, #15151f 0%, #0a0a0e 100%); border: var(--border-thin); border-top: 4px solid var(--red-accent); border-radius: var(--radius-module); padding: 2rem; display: flex; gap: 1.5rem; align-items: center; }
-        .coach-avatar-img { width: 85px; height: 85px; border-radius: 12px; object-fit: cover; border: 2px solid var(--red-accent); box-shadow: 0 0 15px var(--red-glow); flex-shrink: 0; }
-        .coach-avatar-initials { width: 85px; height: 85px; border-radius: 12px; background-color: var(--bg-input); border: 2px solid var(--red-accent); display: flex; align-items: center; justify-content: center; font-family: 'Impact', sans-serif; font-size: 2rem; color: var(--red-accent); flex-shrink: 0; }
+        /* FLIP CARDS FOR COACHES (MATCHES PLAYER CARDS) */
+        .coaches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3.5rem; }
+        .coach-card-container { background-color: transparent; width: 100%; height: 440px; perspective: 1000px; }
+
+        .coach-flipper {
+            position: relative; width: 100%; height: 100%; text-align: left;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d;
+        }
+
+        .coach-card-container.flipped .coach-flipper { transform: rotateY(180deg); }
+
+        .coach-front, .coach-back {
+            position: absolute; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            border-radius: var(--radius-module); border: var(--border-thin);
+            padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.6);
+        }
+
+        .coach-front { background: linear-gradient(145deg, #181822 0%, #0a0a0c 100%); border-top: 4px solid var(--red-accent); }
+        .badge-row { display: flex; justify-content: space-between; align-items: center; }
+
+        .coach-photo-container {
+            width: 100%; height: 160px; background-color: var(--bg-input); border: var(--border-thin);
+            border-radius: 8px; margin: 0.75rem 0; overflow: hidden; display: flex;
+            align-items: center; justify-content: center; color: var(--text-muted);
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+        }
+
+        .coach-photo-img { width: 100%; height: 100%; object-fit: cover; }
+        .coach-name { font-family: 'Impact', sans-serif; font-size: 2.1rem; text-transform: uppercase; letter-spacing: 1px; color: #fff; line-height: 1; margin-bottom: 0.2rem; }
+
+        .btn-flip {
+            background-color: #202028; color: var(--text-light); border: var(--border-thin);
+            padding: 0.65rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
+            border-radius: 6px; cursor: pointer; width: 100%; margin-top: 0.5rem;
+        }
+
+        .btn-flip:hover { background-color: #2c2c38; border-color: var(--red-accent); }
+
+        .coach-back { background: #14141c; transform: rotateY(180deg); border-top: 4px solid var(--gold-accent); }
+        .coach-back h3 { font-family: 'Impact', sans-serif; font-size: 1.5rem; color: var(--gold-accent); text-transform: uppercase; margin-bottom: 0.5rem; }
 
         .schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 3.5rem; }
         .schedule-card { background-color: var(--bg-module); border: var(--border-thin); border-radius: var(--radius-module); padding: 1.75rem; }
@@ -211,7 +249,7 @@
 
         <h2 class="section-title">Coaching Staff & Leadership</h2>
         <section class="coaches-grid" id="coachesContainer">
-            <div style="color:var(--text-muted); grid-column:1/-1;">Loading leadership staff...</div>
+            <div style="color:var(--text-muted); grid-column:1/-1;">Loading coaching staff cards...</div>
         </section>
 
         <h2 class="section-title">Live GameChanger Schedules</h2>
@@ -288,58 +326,62 @@
                     }
                 }
 
-                // DYNAMIC COACHES LOADING FROM SUPABASE
+                // DYNAMIC 3D FLIP COACH CARDS
                 let { data: coaches } = await supabaseClient.from('coaches').select('*').eq('active', true).order('created_at', { ascending: true });
                 const coachesContainer = document.getElementById('coachesContainer');
                 coachesContainer.innerHTML = '';
 
                 if (!coaches || coaches.length === 0) {
-                    // Fallback to default leadership team if table empty
-                    coachesContainer.innerHTML = `
-                        <div class="coach-card">
-                            <div class="coach-avatar-initials">MH</div>
-                            <div>
-                                <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase;">Mark Hoyt</h3>
-                                <span style="font-size:0.8rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.4rem;">Team Manager & Founder</span>
-                                <p style="font-size:0.85rem; color:var(--text-muted);">Founder and strategic director of The Rock Baseball Club, overseeing organization growth, program operations, and player development pathways in Summerlin.</p>
-                            </div>
-                        </div>
-                        <div class="coach-card">
-                            <div class="coach-avatar-initials">JG</div>
-                            <div>
-                                <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase;">Josh Gomez</h3>
-                                <span style="font-size:0.8rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.4rem;">Head Coach — 18U & 16U Divisions</span>
-                                <p style="font-size:0.85rem; color:var(--text-muted);">Dedicated to high-level tactical development, athletic discipline, and preparing players for elite varsity and college competition.</p>
-                            </div>
-                        </div>
-                        <div class="coach-card">
-                            <div class="coach-avatar-initials">ME</div>
-                            <div>
-                                <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase;">Matthew Evans</h3>
-                                <span style="font-size:0.8rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.4rem;">Assistant Coach & Team Manager — 16U & 18U</span>
-                                <p style="font-size:0.85rem; color:var(--text-muted);">Managing team operations, player development, and roster logistics to ensure seamless execution on and off the field.</p>
+                    coaches = [
+                        { id: 'c_1', name: 'Mark Hoyt', role: 'Team Manager & Founder', bio: 'Founder and strategic director of The Rock Baseball Club, overseeing organization growth, program operations, and player development pathways in Summerlin.', photo_url: '' },
+                        { id: 'c_2', name: 'Josh Gomez', role: 'Head Coach — 18U & 16U Divisions', bio: 'Dedicated to high-level tactical development, athletic discipline, and preparing players for elite varsity and college competition.', photo_url: '' },
+                        { id: 'c_3', name: 'Matthew Evans', role: 'Assistant Coach & Team Manager — 16U & 18U', bio: 'Managing team operations, player development, and roster logistics to ensure seamless execution on and off the field.', photo_url: '' }
+                    ];
+                }
+
+                coaches.forEach(c => {
+                    let photoHtml = c.photo_url 
+                        ? `<img src="${c.photo_url}" class="coach-photo-img" alt="${c.name}">`
+                        : `<span style="font-size:0.75rem; color:var(--text-muted); font-weight:800;">🧢 Photo Coming Soon</span>`;
+
+                    coachesContainer.innerHTML += `
+                        <div class="coach-card-container" id="coach-card-${c.id}">
+                            <div class="coach-flipper">
+                                <div class="coach-front">
+                                    <div>
+                                        <div class="badge-row">
+                                            <span class="badge">Coaching Staff</span>
+                                            <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800;">ROCK LV</span>
+                                        </div>
+                                        <div class="coach-photo-container">
+                                            ${photoHtml}
+                                        </div>
+                                        <div class="coach-name">${c.name}</div>
+                                        <div style="font-size:0.75rem; color:var(--red-accent); font-weight:800; text-transform:uppercase;">${c.role}</div>
+                                    </div>
+
+                                    <div>
+                                        <button class="btn-flip" onclick="toggleCoachFlip('${c.id}')">🔄 Flip Card / Coach Bio</button>
+                                    </div>
+                                </div>
+
+                                <div class="coach-back">
+                                    <div>
+                                        <h3>Coach Bio & Role</h3>
+                                        <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-top:0.5rem; max-height:180px; overflow-y:auto;">
+                                            ${c.bio || 'Dedicated leadership team member at The Rock Baseball Club.'}
+                                        </div>
+                                    </div>
+
+                                    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem;">
+                                        <a href="coach.html?id=${c.id}" class="btn-flip" style="text-align:center; text-decoration:none; background:var(--red-accent); color:#fff;">🧢 View Coach Profile →</a>
+                                        <button class="btn-flip" onclick="toggleCoachFlip('${c.id}')">↩️ Back to Front</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
-                } else {
-                    coaches.forEach(c => {
-                        let initials = c.name ? c.name.split(' ').map(n => n[0]).join('') : 'RC';
-                        let avatarHtml = c.photo_url 
-                            ? `<img src="${c.photo_url}" class="coach-avatar-img" alt="${c.name}">`
-                            : `<div class="coach-avatar-initials">${initials}</div>`;
-
-                        coachesContainer.innerHTML += `
-                            <div class="coach-card">
-                                ${avatarHtml}
-                                <div>
-                                    <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase;">${c.name}</h3>
-                                    <span style="font-size:0.8rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.4rem;">${c.role}</span>
-                                    <p style="font-size:0.85rem; color:var(--text-muted);">${c.bio || 'Dedicated coaching staff member at The Rock Baseball Club.'}</p>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
+                });
 
                 // DYNAMIC VIDEO GALLERY LOADING
                 let { data: videos } = await supabaseClient.from('videos').select('*').order('created_at', { ascending: false });
@@ -361,6 +403,11 @@
                 }
 
             } catch (err) { console.error("Error loading homepage modules:", err); }
+        }
+
+        function toggleCoachFlip(id) {
+            let el = document.getElementById(`coach-card-${id}`);
+            if (el) el.classList.toggle('flipped');
         }
 
         function getEmbedUrl(url) {
