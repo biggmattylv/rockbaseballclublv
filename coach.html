@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Profile | The Rock Baseball Club</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        main { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
+
+        .profile-hero {
+            background: linear-gradient(135deg, #161620 0%, #08080b 100%);
+            border: var(--border-thin);
+            border-top: 6px solid var(--red-accent);
+            border-radius: var(--radius-module);
+            padding: 2.5rem;
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.7);
+            margin-bottom: 2.5rem;
+        }
+
+        .profile-photo {
+            width: 220px;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid var(--red-accent);
+            box-shadow: 0 0 25px var(--red-glow);
+            background-color: #000;
+        }
+
+        .profile-info { flex: 1; min-width: 280px; }
+        .profile-name { font-family: 'Impact', sans-serif; font-size: 3.5rem; text-transform: uppercase; letter-spacing: 1px; line-height: 1; margin-bottom: 0.5rem; }
+        .profile-sub { color: var(--red-accent); font-size: 1.25rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1.25rem; letter-spacing: 1px; }
+
+        .section-box {
+            background-color: var(--bg-module);
+            border: var(--border-thin);
+            border-radius: var(--radius-module);
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+
+        .btn-back {
+            background-color: #202028;
+            color: var(--text-light);
+            text-decoration: none;
+            border: var(--border-thin);
+            padding: 0.75rem 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo-group">
+                <img src="brand/logo.jpg" alt="Logo" class="logo-img">
+                <div class="logo-text">The Rock <span>Baseball</span><small>Summerlin, Nevada</small></div>
+            </a>
+            <button class="hamburger-toggle" onclick="document.querySelector('nav').classList.toggle('mobile-active')">☰</button>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="14u.html">14U Roster</a>
+                <a href="16u.html">16U Roster</a>
+                <a href="18u.html">18U Roster</a>
+                <a href="uniforms.html">Uniforms</a>
+                <a href="admin.2.html" class="nav-accent">🔒 Coaches Hub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="coachContent">
+        <div style="color:var(--text-muted);">Loading coach profile...</div>
+    </main>
+
+    <footer>&copy; 2026 The Rock Baseball Club — Summerlin, NV</footer>
+
+    <script>
+        const SUPABASE_URL = "https://lhnizfqdwedvssvsezut.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function loadCoachProfile() {
+            const params = new URLSearchParams(window.location.search);
+            const coachId = params.get('id');
+
+            if (!coachId) {
+                document.getElementById('coachContent').innerHTML = `
+                    <a href="index.html" class="btn-back">← Return Home</a>
+                    <h2>No coach specified.</h2>
+                `;
+                return;
+            }
+
+            let { data: coach, error } = await supabaseClient.from('coaches').select('*').eq('id', coachId).single();
+
+            if (error || !coach) {
+                document.getElementById('coachContent').innerHTML = `
+                    <a href="index.html" class="btn-back">← Return Home</a>
+                    <h2>Coach profile not found.</h2>
+                `;
+                return;
+            }
+
+            let photoUrl = coach.photo_url || 'brand/logo.jpg';
+
+            document.getElementById('coachContent').innerHTML = `
+                <a href="javascript:history.back()" class="btn-back">← Back</a>
+
+                <section class="profile-hero">
+                    <img src="${photoUrl}" class="profile-photo" alt="${coach.name}">
+                    <div class="profile-info">
+                        <span class="badge">Coaching Staff</span>
+                        <h1 class="profile-name" style="margin-top:0.5rem;">${coach.name}</h1>
+                        <div class="profile-sub">${coach.role}</div>
+                    </div>
+                </section>
+
+                <section class="section-box">
+                    <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase; margin-bottom:1rem; color:var(--red-accent);">Coach Bio & Experience</h3>
+                    <p>${coach.bio || 'Dedicated leadership team member focusing on player development, discipline, and game strategy at The Rock Baseball Club.'}</p>
+                </section>
+            `;
+        }
+
+        loadCoachProfile();
+    </script>
+</body>
+</html>
