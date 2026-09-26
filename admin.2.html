@@ -86,7 +86,7 @@
 
         .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
 
-        .player-card {
+        .player-card, .coach-card-hub {
             background-color: var(--bg-module); border: var(--border-thin);
             border-radius: var(--radius-module); padding: 1.75rem; display: flex;
             flex-direction: column; justify-content: space-between;
@@ -131,7 +131,7 @@
             <p>Master Site Controls, Quick Links, Coaching Staff, RSS Feeds, and Ledger</p>
         </div>
 
-        <!-- RESTORED DATABASE & DEPLOYMENT TOOLBAR -->
+        <!-- DATABASE & DEPLOYMENT TOOLBAR -->
         <section class="toolbar-module">
             <h2 class="toolbar-title">⚡ Database & Infrastructure Quick Links</h2>
             <div class="toolbar-grid">
@@ -196,10 +196,12 @@
             </form>
         </section>
 
-        <!-- COACHING STAFF MANAGER -->
+        <!-- COACHING STAFF MANAGER (VIEW & EDIT EXISTING COACHES) -->
         <section class="admin-form-module">
             <h2 class="toolbar-title">🧢 Coaching Staff & Leadership Manager</h2>
-            <form onsubmit="handleAddCoach(event)">
+            
+            <form onsubmit="handleAddCoach(event)" style="margin-bottom:2rem; border-bottom:var(--border-thin); padding-bottom:1.5rem;">
+                <h3 style="font-family:'Impact', sans-serif; font-size:1.2rem; text-transform:uppercase; color:var(--gold-accent);">➕ Add New Coach</h3>
                 <div class="form-grid">
                     <div class="input-group">
                         <label>Coach Name</label>
@@ -221,8 +223,9 @@
                 <button type="submit" class="btn-submit">➕ Save & Publish Coach Profile</button>
             </form>
 
-            <div id="coachListContainer" style="margin-top:1.5rem; display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1rem;">
-                <!-- Dynamically loaded coaches -->
+            <h3 style="font-family:'Impact', sans-serif; font-size:1.4rem; text-transform:uppercase; color:#fff; margin-bottom:1rem;">Active Coaching Staff Roster</h3>
+            <div id="coachListContainer" class="roster-grid">
+                <div style="color:var(--text-muted);">Loading coaching staff...</div>
             </div>
         </section>
 
@@ -320,6 +323,7 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let activePlayers = [];
+        let loadedCoaches = [];
 
         async function initCoachesHub() {
             await loadSiteSettings();
@@ -345,27 +349,78 @@
         async function loadCoaches() {
             try {
                 let { data: coaches } = await supabaseClient.from('coaches').select('*').order('created_at', { ascending: true });
+                loadedCoaches = coaches || [];
                 const container = document.getElementById('coachListContainer');
                 container.innerHTML = '';
 
-                if (!coaches || coaches.length === 0) {
-                    container.innerHTML = `<div style="color:var(--text-muted);">No custom coaches added yet.</div>`;
+                if (loadedCoaches.length === 0) {
+                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No coaches registered yet.</div>`;
                     return;
                 }
 
-                coaches.forEach(c => {
+                loadedCoaches.forEach(c => {
+                    let photoDisplay = c.photo_url 
+                        ? `<img src="${c.photo_url}" class="photo-preview" alt="${c.name}">`
+                        : `<div class="photo-preview" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:700;">🧢 No Coach Photo</div>`;
+
                     container.innerHTML += `
-                        <div style="background:var(--bg-input); border:var(--border-thin); padding:1rem; border-radius:8px;">
-                            <h4 style="font-family:'Impact', sans-serif; font-size:1.3rem;">${c.name}</h4>
-                            <span style="font-size:0.75rem; color:var(--red-accent); font-weight:800; text-transform:uppercase;">${c.role}</span>
-                            <div style="margin-top:0.5rem; display:flex; align-items:center; gap:0.5rem;">
-                                <input type="checkbox" id="coach-active-${c.id}" ${c.active ? 'checked' : ''} onchange="toggleCoachActive('${c.id}')">
-                                <label for="coach-active-${c.id}" style="font-size:0.75rem; color:var(--text-muted);">Display on Website</label>
+                        <div class="coach-card-hub">
+                            <div>
+                                ${photoDisplay}
+                                <h4 style="font-family:'Impact', sans-serif; font-size:1.6rem; text-transform:uppercase; color:#fff;">${c.name}</h4>
+                                <span style="font-size:0.75rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.5rem;">${c.role}</span>
+                                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.4;">${c.bio || 'No bio provided.'}</p>
+                                
+                                <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
+                                    <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="editCoachDetails('${c.id}')">✏️ Edit Coach</button>
+                                </div>
+
+                                <div style="margin-bottom:0.75rem; background:var(--bg-input); padding:0.6rem; border-radius:6px; border:var(--border-thin);">
+                                    <label style="font-size:0.65rem; font-weight:800; color:var(--red-accent); text-transform:uppercase; display:block; margin-bottom:0.2rem;">📷 Update Coach Photo</label>
+                                    <input type="file" id="coach-upload-${c.id}" accept="image/*" onchange="uploadCoachPhoto('${c.id}')" style="font-size:0.75rem; color:var(--text-muted); width:100%;">
+                                </div>
+                            </div>
+
+                            <div class="toggle-group" style="margin-top:0.5rem;">
+                                <input type="checkbox" id="coach-active-${c.id}" ${c.active ? 'checked' : ''} onchange="toggleCoachActive('${c.id}')" style="width:auto;">
+                                <label for="coach-active-${c.id}" style="font-size:0.75rem;">Display on Website</label>
                             </div>
                         </div>
                     `;
                 });
-            } catch (err) { console.error("Coach error:", err); }
+            } catch (err) { console.error("Coach load error:", err); }
+        }
+
+        async function editCoachDetails(coachId) {
+            let coach = loadedCoaches.find(c => c.id === coachId);
+            if (!coach) return;
+
+            let newName = prompt("Update Coach Name:", coach.name);
+            if (newName === null) return;
+
+            let newRole = prompt("Update Coach Role/Title:", coach.role);
+            if (newRole === null) return;
+
+            let newBio = prompt("Update Coach Bio:", coach.bio || '');
+            if (newBio === null) return;
+
+            const updates = { name: newName, role: newRole, bio: newBio };
+            const { error } = await supabaseClient.from('coaches').update(updates).eq('id', coachId);
+            
+            if (error) alert('Error updating coach: ' + error.message);
+            else { alert('✅ Coach details updated!'); loadCoaches(); }
+        }
+
+        async function uploadCoachPhoto(coachId) {
+            const file = document.getElementById(`coach-upload-${coachId}`).files[0];
+            if (!file) return;
+
+            const publicUrl = await uploadImageFile(file, coachId);
+            if (!publicUrl) return;
+
+            const { error } = await supabaseClient.from('coaches').update({ photo_url: publicUrl }).eq('id', coachId);
+            if (error) alert('Error updating coach photo: ' + error.message);
+            else { alert('✅ Coach photo updated!'); loadCoaches(); }
         }
 
         async function handleAddCoach(event) {
@@ -462,6 +517,10 @@
                                     <div><strong>Email:</strong> ${p.email}</div>
                                 </div>
 
+                                <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
+                                    <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="editPlayerDetails('${p.id}')">✏️ Edit Player Details</button>
+                                </div>
+
                                 <div style="margin-bottom: 0.75rem; background: var(--bg-input); padding: 0.6rem; border-radius: 6px; border: var(--border-thin);">
                                     <label style="font-size:0.65rem; font-weight:800; color:var(--red-accent); text-transform:uppercase; display:block; margin-bottom:0.2rem;">📷 Upload Headshot</label>
                                     <input type="file" id="upload-${p.id}" accept="image/*" onchange="uploadPlayerPhoto('${p.id}')" style="font-size:0.75rem; color:var(--text-muted); width:100%;">
@@ -484,6 +543,29 @@
                     `;
                 });
             } catch (err) { console.error("Roster error:", err); }
+        }
+
+        async function editPlayerDetails(playerId) {
+            let player = activePlayers.find(p => p.id === playerId);
+            if (!player) return;
+
+            let newName = prompt("Update Player Name:", player.name);
+            if (newName === null) return;
+
+            let newPos = prompt("Update Positions (e.g. Pitcher, SS):", player.pos);
+            if (newPos === null) return;
+
+            let newTeam = prompt("Update Team/Division (18U Division, 16U Division, 14U Division, or Hybrid):", player.team);
+            if (newTeam === null) return;
+
+            let newEmail = prompt("Update Parent Email:", player.email);
+            if (newEmail === null) return;
+
+            const updates = { name: newName, pos: newPos, team: newTeam, email: newEmail };
+            const { error } = await supabaseClient.from('players').update(updates).eq('id', playerId);
+            
+            if (error) alert('Error updating player: ' + error.message);
+            else { alert('✅ Player details updated successfully!'); loadMasterRoster(); }
         }
 
         async function handleSaveSpotlight(event) {
