@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coaches Hub & Admin Portal | The Rock Baseball Club</title>
 
+    <!-- PASSCODE LOCK SECURITY -->
     <script>
         (function() {
             const COACH_HUB_PASSWORD = "ROCK2026";
@@ -81,7 +82,7 @@
 
         .btn-submit:hover { background-color: #ff334b; }
 
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
 
         .player-card, .coach-card-hub, .rss-card-hub {
             background-color: var(--bg-module); border: var(--border-thin);
@@ -97,7 +98,10 @@
         .add-charge-group { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
         .add-charge-group input { background: #000; border: var(--border-thin); border-radius: 4px; padding: 0.4rem; color: #fff; font-size: 0.8rem; width: 100%; }
 
-        .btn-small { background: var(--red-accent); color: #fff; border: none; padding: 0.4rem 0.75rem; font-weight: 800; border-radius: 4px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; }
+        .btn-small { background: var(--red-accent); color: #fff; border: none; padding: 0.45rem 0.8rem; font-weight: 800; border-radius: 4px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; }
+        .metrics-preview-box { background: var(--bg-input); border: var(--border-thin); border-radius: 6px; padding: 0.65rem; margin: 0.5rem 0; font-size: 0.75rem; color: var(--text-muted); }
+        .metrics-preview-box div { display: flex; justify-content: space-between; padding: 0.15rem 0; }
+        .metrics-preview-box strong { color: #fff; }
     </style>
 </head>
 <body>
@@ -125,7 +129,7 @@
     <main>
         <div class="page-header">
             <h1>Coaches Hub Command Center</h1>
-            <p>Master Site Controls, Quick Links, Coaching Staff Order, RSS Approval, and Ledger</p>
+            <p>Master Site Controls, Quick Links, Player Metrics, Coaching Staff Order, and Ledger</p>
         </div>
 
         <!-- DATABASE TOOLBAR -->
@@ -139,7 +143,7 @@
             </div>
         </section>
 
-        <!-- COACHING STAFF MANAGER & RE-ORDERING -->
+        <!-- COACHING STAFF MANAGER -->
         <section class="admin-form-module">
             <h2 class="toolbar-title">🧢 Coaching Staff & Display Ordering</h2>
             <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">Use the ⬆️ and ⬇️ buttons on each card to change the exact order coaches appear on the homepage.</p>
@@ -217,7 +221,7 @@
             </form>
         </section>
 
-        <h2 class="toolbar-title" style="margin-bottom:1.25rem;">📋 Master Roster & Accounts Ledger</h2>
+        <h2 class="toolbar-title" style="margin-bottom:1.25rem;">📋 Master Roster, Recruiting Metrics & Ledger</h2>
         <div class="roster-grid" id="adminRosterContainer">
             <div style="color:var(--text-muted);">Loading active players from database...</div>
         </div>
@@ -433,7 +437,7 @@
             alert('✅ Site settings saved!');
         }
 
-        /* MASTER ROSTER & LEDGER */
+        /* MASTER ROSTER & LEDGER WITH EDITABLE RECRUITMENT METRICS */
         async function loadMasterRoster() {
             try {
                 let { data: players } = await supabaseClient.from('players').select('*').eq('active', true).order('name', { ascending: true });
@@ -467,13 +471,22 @@
                                     <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase;">${p.name}</h3>
                                     <span class="badge-team">${p.team}</span>
                                 </div>
-                                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
+                                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">
                                     <div><strong>Age:</strong> ${p.age} | <strong>Positions:</strong> ${p.pos}</div>
                                     <div><strong>Email:</strong> ${p.email}</div>
                                 </div>
 
+                                <div class="metrics-preview-box">
+                                    <div><span>High School:</span> <strong>${p.high_school || 'Not Set'}</strong></div>
+                                    <div><span>Grad Year:</span> <strong>Class of ${p.grad_year || '2027'}</strong></div>
+                                    <div><span>Exit Velo:</span> <strong>${p.exit_velo ? p.exit_velo + ' MPH' : '--'}</strong></div>
+                                    <div><span>FB Velo:</span> <strong>${p.fastball_velo ? p.fastball_velo + ' MPH' : '--'}</strong></div>
+                                    <div><span>Status:</span> <strong style="color:var(--gold-accent);">${p.commit_status || 'UNCOMMITTED'}</strong></div>
+                                    <div><span>Twitter/X:</span> <strong>${p.twitter_handle || 'None'}</strong></div>
+                                </div>
+
                                 <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
-                                    <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="editPlayerDetails('${p.id}')">✏️ Edit Player Details</button>
+                                    <button class="btn-small" style="background:#202028; border:1px solid #333; width:100%;" onclick="editPlayerDetails('${p.id}')">✏️ Edit Player & Recruiting Metrics</button>
                                 </div>
 
                                 <div style="margin-bottom: 0.75rem; background: var(--bg-input); padding: 0.6rem; border-radius: 6px; border: var(--border-thin);">
@@ -506,13 +519,50 @@
 
             let newName = prompt("Update Player Name:", player.name);
             if (newName === null) return;
-            let newPos = prompt("Update Positions:", player.pos);
+            
+            let newPos = prompt("Update Primary Positions (e.g. Pitcher, SS):", player.pos);
             if (newPos === null) return;
-            let newTeam = prompt("Update Division:", player.team);
+
+            let newTeam = prompt("Update Division (18U Division, 16U Division, 14U Division, or Hybrid):", player.team);
             if (newTeam === null) return;
 
-            await supabaseClient.from('players').update({ name: newName, pos: newPos, team: newTeam }).eq('id', playerId);
-            loadMasterRoster();
+            let newHS = prompt("Update High School:", player.high_school || "Summerlin High");
+            if (newHS === null) return;
+
+            let newGrad = prompt("Update Grad Year (e.g. 2026, 2027, 2028):", player.grad_year || "2027");
+            if (newGrad === null) return;
+
+            let newExitVelo = prompt("Update Exit Velocity (MPH):", player.exit_velo || "");
+            if (newExitVelo === null) return;
+
+            let newFBVelo = prompt("Update Fastball Velocity (MPH):", player.fastball_velo || "");
+            if (newFBVelo === null) return;
+
+            let newTwitter = prompt("Update Twitter / X Handle (e.g. @PlayerHandle):", player.twitter_handle || "");
+            if (newTwitter === null) return;
+
+            let newStatus = prompt("Update Commitment Status (e.g. UNCOMMITTED, COMMITTED - UNLV):", player.commit_status || "UNCOMMITTED");
+            if (newStatus === null) return;
+
+            const updates = {
+                name: newName,
+                pos: newPos,
+                team: newTeam,
+                high_school: newHS,
+                grad_year: newGrad,
+                exit_velo: newExitVelo,
+                fastball_velo: newFBVelo,
+                twitter_handle: newTwitter,
+                commit_status: newStatus
+            };
+
+            const { error } = await supabaseClient.from('players').update(updates).eq('id', playerId);
+            if (error) {
+                alert('Error updating player metrics: ' + error.message);
+            } else {
+                alert('✅ Player metrics and showcase info updated!');
+                loadMasterRoster();
+            }
         }
 
         async function handleAddPlayer(event) {
