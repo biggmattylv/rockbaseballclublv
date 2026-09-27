@@ -15,15 +15,41 @@
     <style>
         main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
 
-        .page-header {
-            background: linear-gradient(135deg, #161620 0%, #08080b 100%);
-            border: var(--border-thin); border-left: 6px solid var(--red-accent);
-            border-radius: var(--radius-module); padding: 2.5rem; margin-bottom: 2rem;
+        /* HIGH-IMPACT 18U TEAM HERO HEADER */
+        .page-header-hero {
+            position: relative;
+            background: linear-gradient(135deg, rgba(10, 10, 14, 0.75) 0%, rgba(8, 8, 11, 0.9) 100%), 
+                        url('brand/team-hero.jpg') center 30%/cover no-repeat;
+            border: var(--border-thin); 
+            border-left: 6px solid var(--red-accent);
+            border-radius: var(--radius-module); 
+            padding: 3.5rem 2.5rem; 
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.8);
+            overflow: hidden;
         }
 
-        .page-header h1 { font-family: 'Impact', sans-serif; font-size: 3.2rem; text-transform: uppercase; letter-spacing: 2px; }
-        .page-header p { color: var(--text-muted); font-size: 1rem; }
+        .header-content { position: relative; z-index: 2; }
+        .page-header-hero h1 { font-family: 'Impact', sans-serif; font-size: 3.5rem; text-transform: uppercase; letter-spacing: 2px; line-height: 1; text-shadow: 0 4px 12px rgba(0,0,0,0.9); }
+        .page-header-hero p { color: #e2e2ee; font-size: 1.1rem; font-weight: 600; text-shadow: 0 2px 6px rgba(0,0,0,0.9); margin-top: 0.5rem; }
 
+        /* FILTER STRIP FOR COLLEGE SCOUTS */
+        .filter-strip {
+            display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem; align-items: center;
+            background: var(--bg-module); border: var(--border-thin); padding: 1rem 1.5rem; border-radius: 10px;
+        }
+
+        .filter-btn {
+            background: #202028; color: var(--text-light); border: var(--border-thin);
+            padding: 0.5rem 1rem; border-radius: 6px; font-weight: 800; font-size: 0.75rem;
+            text-transform: uppercase; cursor: pointer; transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--red-accent); border-color: var(--red-accent); color: #fff; box-shadow: 0 0 12px var(--red-glow);
+        }
+
+        /* ROSTER CARDS */
         .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
         .card-container { background-color: transparent; width: 100%; height: 440px; perspective: 1000px; }
 
@@ -106,9 +132,21 @@
     </header>
 
     <main>
-        <div class="page-header">
-            <h1>18U Division Roster</h1>
-            <p>High School & College Recruitment Showcase Team</p>
+        <!-- 18U SQUAD HERO BANNER -->
+        <div class="page-header-hero">
+            <div class="header-content">
+                <span class="hero-tag" style="background:var(--red-accent); color:#fff; border:none;">18U Showcase Division</span>
+                <h1>2026 Varsity & Recruitment Squad</h1>
+                <p>High-Level Competition, Showcase Profiles, and Collegiate Recruitment Pathways</p>
+            </div>
+        </div>
+
+        <!-- RECRUITMENT FILTER STRIP -->
+        <div class="filter-strip">
+            <span style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Filter Roster:</span>
+            <button class="filter-btn active" onclick="filterRoster('all')">Show All</button>
+            <button class="filter-btn" onclick="filterRoster('uncommitted')">🎓 Uncommitted</button>
+            <button class="filter-btn" onclick="filterRoster('committed')">⚡ Committed</button>
         </div>
 
         <div class="roster-grid" id="rosterContainer">
@@ -124,84 +162,109 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const COACH_PASSCODE = "ROCK2026";
 
+        let all18uPlayers = [];
+
         async function loadDivisionRoster() {
             try {
                 let { data: players, error } = await supabaseClient.from('players').select('*').eq('active', true).order('name', { ascending: true });
                 if (error) throw error;
 
-                const container = document.getElementById('rosterContainer');
-                container.innerHTML = '';
-
-                let filtered = (players || []).filter(p => {
+                // Filter for 18U or Hybrid players
+                all18uPlayers = (players || []).filter(p => {
                     let teamLower = (p.team || '').toLowerCase();
                     return teamLower.includes('18u') || teamLower.includes('hybrid');
                 });
 
-                if (filtered.length === 0) {
-                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">⏳ Player Roster Still Loading — Summerlin 2026 Season Roster Drops Soon!</div>`;
-                    return;
-                }
+                renderCards(all18uPlayers);
+            } catch (err) { console.error("Roster error:", err); }
+        }
 
-                filtered.forEach(p => {
-                    let savedGPA = localStorage.getItem(`gpa_${p.id}`) || '3.80';
+        function renderCards(playersToRender) {
+            const container = document.getElementById('rosterContainer');
+            container.innerHTML = '';
 
-                    let photoHtml = p.photo_url 
-                        ? `<img src="${p.photo_url}" class="player-photo-img" alt="${p.name}">`
-                        : `<span>⚾ Photo Coming Soon</span>`;
+            if (playersToRender.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">⏳ No players found matching this filter.</div>`;
+                return;
+            }
 
-                    container.innerHTML += `
-                        <div class="card-container" id="card-${p.id}">
-                            <div class="card-flipper">
-                                <div class="card-front">
-                                    <div>
-                                        <div class="badge-row">
-                                            <span class="badge">${p.team}</span>
-                                            <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800;">ROCK LV</span>
-                                        </div>
-                                        <div class="player-photo-container">
-                                            ${photoHtml}
-                                        </div>
-                                        <div class="player-name">${p.name}</div>
+            playersToRender.forEach(p => {
+                let savedGPA = localStorage.getItem(`gpa_${p.id}`) || '3.80';
+                let photoHtml = p.photo_url 
+                    ? `<img src="${p.photo_url}" class="player-photo-img" alt="${p.name}">`
+                    : `<span>⚾ Photo Coming Soon</span>`;
+
+                let statusBadge = p.commit_status && p.commit_status !== 'UNCOMMITTED'
+                    ? `<span class="badge" style="background:var(--gold-accent)!important; color:#000!important; border-color:var(--gold-accent)!important;">${p.commit_status}</span>`
+                    : `<span class="badge">UNCOMMITTED</span>`;
+
+                container.innerHTML += `
+                    <div class="card-container" id="card-${p.id}">
+                        <div class="card-flipper">
+                            <div class="card-front">
+                                <div>
+                                    <div class="badge-row">
+                                        ${statusBadge}
+                                        <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800;">${p.team}</span>
+                                    </div>
+                                    <div class="player-photo-container">
+                                        ${photoHtml}
+                                    </div>
+                                    <div class="player-name">${p.name}</div>
+                                </div>
+
+                                <div>
+                                    <div class="stats-grid">
+                                        <div class="stats-item"><span>Age</span><strong>${p.age}</strong></div>
+                                        <div class="stats-item"><span>Primary Pos</span><strong>${p.pos}</strong></div>
+                                    </div>
+                                    <button class="btn-flip" onclick="toggleFlip('${p.id}')">🔄 Flip Card / Academic Stats</button>
+                                </div>
+                            </div>
+
+                            <div class="card-back">
+                                <div>
+                                    <h3>Athletic & Academic Metrics</h3>
+                                    <div class="stats-grid" style="margin-top:0.5rem;">
+                                        <div class="stats-item"><span>Primary Pos</span><strong>${p.pos}</strong></div>
+                                        <div class="stats-item"><span>Grad Year</span><strong>${p.grad_year || '2027'}</strong></div>
                                     </div>
 
-                                    <div>
-                                        <div class="stats-grid">
-                                            <div class="stats-item"><span>Age</span><strong>${p.age}</strong></div>
-                                            <div class="stats-item"><span>Primary Pos</span><strong>${p.pos}</strong></div>
+                                    <div class="gpa-box">
+                                        <span class="gpa-title">Academic GPA Score</span>
+                                        <span class="gpa-value" id="gpa-display-${p.id}">${savedGPA}</span>
+                                        <div class="gpa-input-group">
+                                            <input type="number" step="0.01" min="0.0" max="5.0" id="gpa-input-${p.id}" placeholder="New GPA (e.g. 3.8)">
+                                            <button onclick="updateGPAWithLock('${p.id}')">Update</button>
                                         </div>
-                                        <button class="btn-flip" onclick="toggleFlip('${p.id}')">🔄 Flip Card / Academic Stats</button>
+                                        <small style="display:block; font-size:0.65rem; color:var(--text-muted); margin-top:0.4rem;">🔒 Passcode required to edit GPA</small>
                                     </div>
                                 </div>
 
-                                <div class="card-back">
-                                    <div>
-                                        <h3>Athletic & Academic Metrics</h3>
-                                        <div class="stats-grid" style="margin-top:0.5rem;">
-                                            <div class="stats-item"><span>Primary Pos</span><strong>${p.pos}</strong></div>
-                                            <div class="stats-item"><span>Club Team</span><strong>${p.team}</strong></div>
-                                        </div>
-
-                                        <div class="gpa-box">
-                                            <span class="gpa-title">Academic GPA Score</span>
-                                            <span class="gpa-value" id="gpa-display-${p.id}">${savedGPA}</span>
-                                            <div class="gpa-input-group">
-                                                <input type="number" step="0.01" min="0.0" max="5.0" id="gpa-input-${p.id}" placeholder="New GPA (e.g. 3.8)">
-                                                <button onclick="updateGPAWithLock('${p.id}')">Update</button>
-                                            </div>
-                                            <small style="display:block; font-size:0.65rem; color:var(--text-muted); margin-top:0.4rem;">🔒 Passcode required to edit GPA</small>
-                                        </div>
-                                    </div>
-
-                                    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem;">
-                                        <a href="player.html?id=${p.id}" class="btn-flip" style="text-align:center; text-decoration:none; background:var(--red-accent); color:#fff;">🌟 View Full Showcase Profile →</a>
-                                        <button class="btn-flip" onclick="toggleFlip('${p.id}')">↩️ Back to Front</button>
-                                    </div>
+                                <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem;">
+                                    <a href="player.html?id=${p.id}" class="btn-flip" style="text-align:center; text-decoration:none; background:var(--red-accent); color:#fff;">🌟 View Full Showcase Profile →</a>
+                                    <button class="btn-flip" onclick="toggleFlip('${p.id}')">↩️ Back to Front</button>
                                 </div>
                             </div>
                         </div>
-                    `;
-                });
-            } catch (err) { console.error("Roster error:", err); }
+                    </div>
+                `;
+            });
+        }
+
+        function filterRoster(filterType) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (filterType === 'all') {
+                renderCards(all18uPlayers);
+            } else if (filterType === 'uncommitted') {
+                let filtered = all18uPlayers.filter(p => !p.commit_status || p.commit_status.toUpperCase() === 'UNCOMMITTED');
+                renderCards(filtered);
+            } else if (filterType === 'committed') {
+                let filtered = all18uPlayers.filter(p => p.commit_status && p.commit_status.toUpperCase() !== 'UNCOMMITTED');
+                renderCards(filtered);
+            }
         }
 
         function toggleFlip(id) {
