@@ -1,25 +1,275 @@
-async function loadCoaches() {
-            try {
-                // Fetch coaches ordered strictly by display_order
-                let { data: coaches, error } = await supabaseClient
-                    .from('coaches')
-                    .select('*')
-                    .order('display_order', { ascending: true });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coaches Hub & Admin Portal | The Rock Baseball Club</title>
 
+    <script>
+        (function() {
+            const COACH_HUB_PASSWORD = "ROCK2026";
+            const authenticated = sessionStorage.getItem("coaches_hub_auth");
+
+            if (authenticated !== "true") {
+                const entry = prompt("🔒 Restricted Access: Enter Coaches Hub Password:");
+                if (entry === COACH_HUB_PASSWORD) {
+                    sessionStorage.setItem("coaches_hub_auth", "true");
+                } else {
+                    alert("❌ Unauthorized access. Redirecting to home page.");
+                    window.location.href = "index.html";
+                }
+            }
+        })();
+    </script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
+
+        .page-header {
+            background: linear-gradient(135deg, #161620 0%, #08080b 100%);
+            border: var(--border-thin); border-left: 6px solid var(--red-accent);
+            border-radius: var(--radius-module); padding: 2.5rem; margin-bottom: 2rem;
+        }
+
+        .page-header h1 { font-family: 'Impact', sans-serif; font-size: 3.2rem; text-transform: uppercase; letter-spacing: 2px; }
+
+        .toolbar-module {
+            background-color: var(--bg-module); border: var(--border-thin);
+            border-radius: var(--radius-module); padding: 1.75rem; margin-bottom: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        .toolbar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+
+        .tool-btn {
+            background: var(--bg-input); border: var(--border-thin); color: var(--text-light);
+            text-decoration: none; padding: 1rem; border-radius: 10px; display: flex;
+            align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.2s ease;
+        }
+
+        .tool-btn:hover { border-color: var(--red-accent); background: #151520; box-shadow: 0 0 15px var(--red-glow); transform: translateY(-2px); }
+
+        .admin-form-module {
+            background-color: var(--bg-module); border: var(--border-thin);
+            border-radius: var(--radius-module); padding: 2rem; margin-bottom: 2rem;
+        }
+
+        .toolbar-title {
+            font-family: 'Impact', sans-serif; font-size: 1.6rem; text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: #fff;
+        }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .input-group label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.75rem; color: #fff; font-weight: 600; }
+
+        .toggle-group { display: flex; align-items: center; gap: 0.75rem; background: var(--bg-input); padding: 0.75rem; border-radius: 8px; border: var(--border-thin); }
+        .toggle-group label { font-size: 0.8rem; font-weight: 800; color: #fff; margin: 0; text-transform: uppercase; }
+
+        .btn-submit {
+            background-color: var(--red-accent); color: #fff; border: none; padding: 0.85rem 1.5rem;
+            font-weight: 800; text-transform: uppercase; border-radius: 8px; cursor: pointer;
+            box-shadow: 0 4px 15px var(--red-glow); transition: all 0.2s ease; margin-top: 1rem;
+        }
+
+        .btn-submit:hover { background-color: #ff334b; }
+
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+
+        .player-card, .coach-card-hub, .rss-card-hub {
+            background-color: var(--bg-module); border: var(--border-thin);
+            border-radius: var(--radius-module); padding: 1.75rem; display: flex;
+            flex-direction: column; justify-content: space-between;
+        }
+
+        .photo-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: var(--border-thin); margin-bottom: 0.75rem; background-color: #000; }
+        .ledger-box { background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 1rem; margin-top: 0.75rem; }
+        .balance-row { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .ledger-list { max-height: 100px; overflow-y: auto; font-size: 0.75rem; color: var(--text-muted); border-top: var(--border-thin); padding-top: 0.5rem; }
+        .ledger-entry { display: flex; justify-content: space-between; padding: 0.2rem 0; }
+        .add-charge-group { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+        .add-charge-group input { background: #000; border: var(--border-thin); border-radius: 4px; padding: 0.4rem; color: #fff; font-size: 0.8rem; width: 100%; }
+
+        .btn-small { background: var(--red-accent); color: #fff; border: none; padding: 0.4rem 0.75rem; font-weight: 800; border-radius: 4px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo-group">
+                <img src="brand/logo.jpg" alt="Logo" class="logo-img">
+                <div class="logo-text">The Rock <span>Baseball</span><small>Summerlin, Nevada</small></div>
+            </a>
+
+            <button class="hamburger-toggle" onclick="document.querySelector('nav').classList.toggle('mobile-active')">☰</button>
+
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="14u.html">14U Roster</a>
+                <a href="16u.html">16U Roster</a>
+                <a href="18u.html">18U Roster</a>
+                <a href="uniforms.html">Uniforms</a>
+                <a href="admin.2.html" class="active nav-accent">🔒 Coaches Hub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-header">
+            <h1>Coaches Hub Command Center</h1>
+            <p>Master Site Controls, Quick Links, Coaching Staff Order, RSS Approval, and Ledger</p>
+        </div>
+
+        <!-- DATABASE TOOLBAR -->
+        <section class="toolbar-module">
+            <h2 class="toolbar-title">⚡ Database & Infrastructure Quick Links</h2>
+            <div class="toolbar-grid">
+                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/editor" target="_blank" class="tool-btn"><span>📊</span><div><div>Players Table</div></div></a>
+                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/storage/buckets/player-photos" target="_blank" class="tool-btn"><span>📷</span><div><div>Photos Storage</div></div></a>
+                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/sql/new" target="_blank" class="tool-btn"><span>>_</span><div><div>SQL Editor</div></div></a>
+                <a href="https://app.netlify.com/projects/redrockbaseball/overview" target="_blank" class="tool-btn"><span>🚀</span><div><div>Netlify Control</div></div></a>
+            </div>
+        </section>
+
+        <!-- COACHING STAFF MANAGER & RE-ORDERING -->
+        <section class="admin-form-module">
+            <h2 class="toolbar-title">🧢 Coaching Staff & Display Ordering</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">Use the ⬆️ and ⬇️ buttons on each card to change the exact order coaches appear on the homepage.</p>
+            
+            <form id="addCoachForm" onsubmit="handleAddCoach(event)" style="margin-bottom:2rem; border-bottom:var(--border-thin); padding-bottom:1.5rem;">
+                <h3 style="font-family:'Impact', sans-serif; font-size:1.2rem; text-transform:uppercase; color:var(--gold-accent);">➕ Add New Coach</h3>
+                <div class="form-grid">
+                    <div class="input-group"><label>Coach Name</label><input type="text" id="new_coach_name" placeholder="e.g. Alex Rodriguez" required></div>
+                    <div class="input-group"><label>Role / Title</label><input type="text" id="new_coach_role" placeholder="e.g. Pitching Coach" required></div>
+                    <div class="input-group" style="grid-column: 1 / -1;"><label>Bio</label><input type="text" id="new_coach_bio" placeholder="Brief background..."></div>
+                    <div class="input-group"><label>Headshot Photo</label><input type="file" id="new_coach_photo" accept="image/*"></div>
+                </div>
+                <button type="submit" class="btn-submit">➕ Save & Add Coach</button>
+            </form>
+
+            <div id="coachListContainer" class="roster-grid">
+                <div style="color:var(--text-muted);">Loading coaching staff...</div>
+            </div>
+        </section>
+
+        <!-- BASEBALL TRAINING RSS FEEDS APPROVAL MODULE -->
+        <section class="admin-form-module">
+            <h2 class="toolbar-title">📡 Baseball Training RSS Feed Moderation Engine</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">Fetch live baseball development articles and toggle "Approve" to display them on the homepage.</p>
+            
+            <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+                <button type="button" class="btn-submit" style="margin-top:0;" onclick="fetchRSSFromSource('Driveline Baseball', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.drivelinebaseball.com%2Ffeed%2F')">📡 Fetch Driveline RSS</button>
+                <button type="button" class="btn-submit" style="margin-top:0; background:#202028; border:var(--border-thin);" onclick="fetchRSSFromSource('Youth Baseball Edge', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.youthbaseballedge.com%2Ffeed%2F')">📡 Fetch Youth Edge RSS</button>
+            </div>
+
+            <div id="rssFeedContainer" class="roster-grid">
+                <div style="color:var(--text-muted);">Click a fetch button above to load articles for moderation...</div>
+            </div>
+        </section>
+
+        <!-- ANNOUNCEMENTS & COACH NOTES -->
+        <section class="admin-form-module">
+            <h2 class="toolbar-title">📢 Announcement Banner & Coach Notes</h2>
+            <form onsubmit="handleSaveSiteSettings(event)">
+                <div class="form-grid">
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label>Top Announcement Banner Text</label>
+                        <input type="text" id="cfg_announcement" placeholder="e.g. Rainout Notice: Practice moved to indoor facility at 5 PM">
+                    </div>
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label>Head Coach's Corner Notes</label>
+                        <textarea id="cfg_coach_notes" rows="3" placeholder="Weekly focus points or tournament notes..."></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">💾 Save Banner & Notes</button>
+            </form>
+        </section>
+
+        <!-- ADD PLAYER MODULE -->
+        <section class="admin-form-module">
+            <h2 class="toolbar-title">➕ Add New Player to Database</h2>
+            <form id="addPlayerForm" onsubmit="handleAddPlayer(event)">
+                <div class="form-grid">
+                    <div class="input-group"><label>Player Name</label><input type="text" id="new_name" placeholder="e.g. John Doe" required></div>
+                    <div class="input-group">
+                        <label>Division / Team</label>
+                        <select id="new_team">
+                            <option value="18U Division">18U Division</option>
+                            <option value="16U Division">16U Division</option>
+                            <option value="14U Division">14U Division</option>
+                            <option value="Hybrid">Hybrid (16U & 18U)</option>
+                        </select>
+                    </div>
+                    <div class="input-group"><label>Age</label><input type="text" id="new_age" placeholder="e.g. 15 Yrs" required></div>
+                    <div class="input-group"><label>Positions</label><input type="text" id="new_pos" placeholder="e.g. Pitcher, SS" required></div>
+                    <div class="input-group"><label>Parent Email</label><input type="email" id="new_email" placeholder="parent@example.com" required></div>
+                    <div class="input-group"><label>Headshot Photo</label><input type="file" id="new_photo" accept="image/*"></div>
+                </div>
+                <button type="submit" class="btn-submit">💾 Save Player to Supabase</button>
+            </form>
+        </section>
+
+        <h2 class="toolbar-title" style="margin-bottom:1.25rem;">📋 Master Roster & Accounts Ledger</h2>
+        <div class="roster-grid" id="adminRosterContainer">
+            <div style="color:var(--text-muted);">Loading active players from database...</div>
+        </div>
+    </main>
+
+    <footer>&copy; 2026 The Rock Baseball Club — Summerlin, NV</footer>
+
+    <script>
+        const SUPABASE_URL = "https://lhnizfqdwedvssvsezut.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let activePlayers = [];
+        let loadedCoaches = [];
+
+        async function initCoachesHub() {
+            await loadSiteSettings();
+            await loadCoaches();
+            await loadMasterRoster();
+            await loadRSSForModeration();
+        }
+
+        async function loadSiteSettings() {
+            try {
+                let { data: settings } = await supabaseClient.from('site_settings').select('*').eq('id', 'global').single();
+                if (settings) {
+                    document.getElementById('cfg_announcement').value = settings.announcement_text || '';
+                    document.getElementById('cfg_coach_notes').value = settings.coach_notes || '';
+                }
+            } catch (err) { console.error("Settings error:", err); }
+        }
+
+        /* COACHES & ORDERING CONTROLS */
+        async function loadCoaches() {
+            try {
+                let { data: coaches } = await supabaseClient.from('coaches').select('*').order('display_order', { ascending: true });
                 loadedCoaches = coaches || [];
 
                 const container = document.getElementById('coachListContainer');
                 container.innerHTML = '';
 
                 if (loadedCoaches.length === 0) {
-                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No coaches registered yet.</div>`;
+                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No coaches found in database.</div>`;
                     return;
                 }
 
-                loadedCoaches.forEach((c, index) => {
+                loadedCoaches.forEach((c, idx) => {
                     let photoDisplay = c.photo_url 
                         ? `<img src="${c.photo_url}" class="photo-preview" alt="${c.name}">`
                         : `<div class="photo-preview" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:700;">🧢 No Coach Photo</div>`;
+
+                    let orderVal = c.display_order || (idx + 1);
 
                     container.innerHTML += `
                         <div class="coach-card-hub">
@@ -27,15 +277,15 @@ async function loadCoaches() {
                                 ${photoDisplay}
                                 <div style="display:flex; justify-content:space-between; align-items:center;">
                                     <h4 style="font-family:'Impact', sans-serif; font-size:1.6rem; text-transform:uppercase; color:#fff;">${c.name}</h4>
-                                    <span style="background:var(--red-accent); color:#fff; font-size:0.65rem; font-weight:900; padding:0.2rem 0.5rem; border-radius:4px;">Position #${c.display_order || (index + 1)}</span>
+                                    <span style="background:var(--red-accent); color:#fff; font-size:0.65rem; font-weight:900; padding:0.2rem 0.5rem; border-radius:4px;">Rank #${orderVal}</span>
                                 </div>
                                 <span style="font-size:0.75rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.5rem;">${c.role}</span>
                                 <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.4;">${c.bio || 'No bio provided.'}</p>
                                 
-                                <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
-                                    <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="editCoachDetails('${c.id}')">✏️ Edit Coach Info</button>
-                                    <button class="btn-small" style="background:#111; border:1px solid #333;" onclick="changeCoachOrder('${c.id}', ${(c.display_order || (index + 1)) - 1})">⬆️</button>
-                                    <button class="btn-small" style="background:#111; border:1px solid #333;" onclick="changeCoachOrder('${c.id}', ${(c.display_order || (index + 1)) + 1})">⬇️</button>
+                                <div style="display:flex; gap:0.4rem; margin-bottom:0.75rem;">
+                                    <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="editCoachDetails('${c.id}')">✏️ Edit</button>
+                                    <button class="btn-small" style="background:#111; border:1px solid #333;" onclick="moveCoachOrder('${c.id}', ${orderVal - 1})">⬆️ Up</button>
+                                    <button class="btn-small" style="background:#111; border:1px solid #333;" onclick="moveCoachOrder('${c.id}', ${orderVal + 1})">⬇️ Down</button>
                                 </div>
 
                                 <div style="margin-bottom:0.75rem; background:var(--bg-input); padding:0.6rem; border-radius:6px; border:var(--border-thin);">
@@ -54,9 +304,265 @@ async function loadCoaches() {
             } catch (err) { console.error("Coach load error:", err); }
         }
 
-        async function changeCoachOrder(coachId, newPosition) {
-            if (newPosition < 1) return;
-            const { error } = await supabaseClient.from('coaches').update({ display_order: newPosition }).eq('id', coachId);
-            if (error) alert('Error changing order: ' + error.message);
-            else loadCoaches();
+        async function moveCoachOrder(coachId, newOrder) {
+            if (newOrder < 1) return;
+            const { error } = await supabaseClient.from('coaches').update({ display_order: newOrder }).eq('id', coachId);
+            if (!error) loadCoaches();
         }
+
+        async function handleAddCoach(event) {
+            event.preventDefault();
+            const coachId = 'c_' + Date.now();
+            let photoUrl = '';
+
+            const photoFile = document.getElementById('new_coach_photo').files[0];
+            if (photoFile) photoUrl = await uploadImageFile(photoFile, coachId);
+
+            const newCoach = {
+                id: coachId,
+                name: document.getElementById('new_coach_name').value,
+                role: document.getElementById('new_coach_role').value,
+                bio: document.getElementById('new_coach_bio').value,
+                photo_url: photoUrl,
+                display_order: loadedCoaches.length + 1,
+                active: true
+            };
+
+            const { error } = await supabaseClient.from('coaches').insert([newCoach]);
+            if (error) alert('Error adding coach: ' + error.message);
+            else { alert('🧢 Coach added successfully!'); document.getElementById('addCoachForm').reset(); loadCoaches(); }
+        }
+
+        async function editCoachDetails(coachId) {
+            let coach = loadedCoaches.find(c => c.id === coachId);
+            if (!coach) return;
+
+            let newName = prompt("Update Coach Name:", coach.name);
+            if (newName === null) return;
+            let newRole = prompt("Update Coach Role/Title:", coach.role);
+            if (newRole === null) return;
+            let newBio = prompt("Update Coach Bio:", coach.bio || '');
+            if (newBio === null) return;
+
+            const updates = { name: newName, role: newRole, bio: newBio };
+            const { error } = await supabaseClient.from('coaches').update(updates).eq('id', coachId);
+            if (!error) loadCoaches();
+        }
+
+        async function uploadCoachPhoto(coachId) {
+            const file = document.getElementById(`coach-upload-${coachId}`).files[0];
+            if (!file) return;
+            const publicUrl = await uploadImageFile(file, coachId);
+            if (!publicUrl) return;
+
+            await supabaseClient.from('coaches').update({ photo_url: publicUrl }).eq('id', coachId);
+            loadCoaches();
+        }
+
+        async function toggleCoachActive(coachId) {
+            const isChecked = document.getElementById(`coach-active-${coachId}`).checked;
+            await supabaseClient.from('coaches').update({ active: isChecked }).eq('id', coachId);
+        }
+
+        /* RSS MODERATION ENGINE */
+        async function fetchRSSFromSource(sourceName, feedApiUrl) {
+            try {
+                let res = await fetch(feedApiUrl);
+                let json = await res.json();
+                
+                if (json.items && json.items.length > 0) {
+                    for (let item of json.items.slice(0, 5)) {
+                        let articleObj = {
+                            id: 'rss_' + btoa(item.link).substring(0, 16),
+                            title: item.title,
+                            link: item.link,
+                            source: sourceName,
+                            snippet: item.description ? item.description.replace(/<[^>]*>?/gm, '').substring(0, 140) + '...' : '',
+                            approved: false
+                        };
+                        await supabaseClient.from('rss_articles').upsert(articleObj);
+                    }
+                    alert(`✅ Fetched fresh articles from ${sourceName}!`);
+                    loadRSSForModeration();
+                }
+            } catch (err) { alert('RSS fetch error: ' + err.message); }
+        }
+
+        async function loadRSSForModeration() {
+            try {
+                let { data: articles } = await supabaseClient.from('rss_articles').select('*').order('created_at', { ascending: false });
+                const container = document.getElementById('rssFeedContainer');
+                container.innerHTML = '';
+
+                if (!articles || articles.length === 0) {
+                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No RSS articles loaded. Click "Fetch" buttons above to pull in training content.</div>`;
+                    return;
+                }
+
+                articles.forEach(art => {
+                    container.innerHTML += `
+                        <div class="rss-card-hub">
+                            <div>
+                                <span style="font-size:0.65rem; color:var(--gold-accent); font-weight:800; text-transform:uppercase;">${art.source}</span>
+                                <h4 style="font-family:'Impact', sans-serif; font-size:1.3rem; margin:0.4rem 0;">${art.title}</h4>
+                                <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.4;">${art.snippet}</p>
+                            </div>
+                            <div class="toggle-group" style="margin-top:0.75rem;">
+                                <input type="checkbox" id="rss-approve-${art.id}" ${art.approved ? 'checked' : ''} onchange="toggleArticleApproval('${art.id}')" style="width:auto;">
+                                <label for="rss-approve-${art.id}" style="font-size:0.75rem;">Approve & Publish to Homepage</label>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) { console.error("RSS load error:", err); }
+        }
+
+        async function toggleArticleApproval(articleId) {
+            const isChecked = document.getElementById(`rss-approve-${articleId}`).checked;
+            await supabaseClient.from('rss_articles').update({ approved: isChecked }).eq('id', articleId);
+        }
+
+        async function handleSaveSiteSettings(event) {
+            event.preventDefault();
+            const updates = {
+                id: 'global',
+                announcement_text: document.getElementById('cfg_announcement').value,
+                coach_notes: document.getElementById('cfg_coach_notes').value
+            };
+            await supabaseClient.from('site_settings').upsert(updates);
+            alert('✅ Site settings saved!');
+        }
+
+        /* MASTER ROSTER & LEDGER */
+        async function loadMasterRoster() {
+            try {
+                let { data: players } = await supabaseClient.from('players').select('*').eq('active', true).order('name', { ascending: true });
+                activePlayers = players || [];
+
+                const container = document.getElementById('adminRosterContainer');
+                container.innerHTML = '';
+
+                activePlayers.forEach(p => {
+                    let ledgerArray = Array.isArray(p.ledger) ? p.ledger : [];
+                    let balance = ledgerArray.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+
+                    let ledgerRowsHtml = ledgerArray.map(item => `
+                        <div class="ledger-entry">
+                            <span>${item.desc || 'Fee'}</span>
+                            <span style="color:${item.amount >= 0 ? 'var(--red-accent)' : 'var(--green-accent)'}; font-weight:700;">
+                                ${item.amount >= 0 ? '+' : ''}$${parseFloat(item.amount).toFixed(2)}
+                            </span>
+                        </div>
+                    `).join('');
+
+                    let photoDisplay = p.photo_url 
+                        ? `<img src="${p.photo_url}" class="photo-preview" alt="${p.name}">`
+                        : `<div class="photo-preview" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:700;">⚾ No Headshot</div>`;
+
+                    container.innerHTML += `
+                        <div class="player-card">
+                            <div>
+                                ${photoDisplay}
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                    <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase;">${p.name}</h3>
+                                    <span class="badge-team">${p.team}</span>
+                                </div>
+                                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
+                                    <div><strong>Age:</strong> ${p.age} | <strong>Positions:</strong> ${p.pos}</div>
+                                    <div><strong>Email:</strong> ${p.email}</div>
+                                </div>
+
+                                <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
+                                    <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="editPlayerDetails('${p.id}')">✏️ Edit Player Details</button>
+                                </div>
+
+                                <div style="margin-bottom: 0.75rem; background: var(--bg-input); padding: 0.6rem; border-radius: 6px; border: var(--border-thin);">
+                                    <label style="font-size:0.65rem; font-weight:800; color:var(--red-accent); text-transform:uppercase; display:block; margin-bottom:0.2rem;">📷 Upload Headshot</label>
+                                    <input type="file" id="upload-${p.id}" accept="image/*" onchange="uploadPlayerPhoto('${p.id}')" style="font-size:0.75rem; color:var(--text-muted); width:100%;">
+                                </div>
+                            </div>
+
+                            <div class="ledger-box">
+                                <div class="balance-row">
+                                    <span>Account Balance:</span>
+                                    <span style="color:${balance > 0 ? 'var(--red-accent)' : 'var(--green-accent)'}">$${balance.toFixed(2)}</span>
+                                </div>
+                                <div class="ledger-list">${ledgerRowsHtml || '<div style="font-style:italic;">No transaction history</div>'}</div>
+                                <div class="add-charge-group">
+                                    <input type="text" id="desc-${p.id}" placeholder="Fee / Payment desc">
+                                    <input type="number" step="0.01" id="amt-${p.id}" placeholder="$ Amt (+/-)" style="width:80px;">
+                                    <button class="btn-small" onclick="addLedgerItem('${p.id}')">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) { console.error("Roster error:", err); }
+        }
+
+        async function editPlayerDetails(playerId) {
+            let player = activePlayers.find(p => p.id === playerId);
+            if (!player) return;
+
+            let newName = prompt("Update Player Name:", player.name);
+            if (newName === null) return;
+            let newPos = prompt("Update Positions:", player.pos);
+            if (newPos === null) return;
+            let newTeam = prompt("Update Division:", player.team);
+            if (newTeam === null) return;
+
+            await supabaseClient.from('players').update({ name: newName, pos: newPos, team: newTeam }).eq('id', playerId);
+            loadMasterRoster();
+        }
+
+        async function handleAddPlayer(event) {
+            event.preventDefault();
+            const playerId = 'p_' + Date.now();
+            let photoUrl = '';
+            const photoFile = document.getElementById('new_photo').files[0];
+            if (photoFile) photoUrl = await uploadImageFile(photoFile, playerId);
+
+            const newPlayer = {
+                id: playerId, name: document.getElementById('new_name').value,
+                team: document.getElementById('new_team').value, age: document.getElementById('new_age').value,
+                pos: document.getElementById('new_pos').value, email: document.getElementById('new_email').value,
+                photo_url: photoUrl, active: true, ledger: []
+            };
+
+            await supabaseClient.from('players').insert([newPlayer]);
+            document.getElementById('addPlayerForm').reset();
+            loadMasterRoster();
+        }
+
+        async function uploadPlayerPhoto(playerId) {
+            const file = document.getElementById(`upload-${playerId}`).files[0];
+            if (!file) return;
+            const publicUrl = await uploadImageFile(file, playerId);
+            await supabaseClient.from('players').update({ photo_url: publicUrl }).eq('id', playerId);
+            loadMasterRoster();
+        }
+
+        async function uploadImageFile(file, prefix) {
+            const filePath = `${prefix}-${Date.now()}.${file.name.split('.').pop()}`;
+            const { error } = await supabaseClient.storage.from('player-photos').upload(filePath, file, { upsert: true });
+            if (error) { alert('Upload error: ' + error.message); return ''; }
+            return supabaseClient.storage.from('player-photos').getPublicUrl(filePath).data.publicUrl;
+        }
+
+        async function addLedgerItem(playerId) {
+            let desc = document.getElementById(`desc-${playerId}`).value || 'Fee';
+            let amt = parseFloat(document.getElementById(`amt-${playerId}`).value);
+            if (isNaN(amt)) return;
+
+            let player = activePlayers.find(p => p.id === playerId);
+            let currentLedger = Array.isArray(player.ledger) ? player.ledger : [];
+            currentLedger.push({ desc: desc, amount: amt, date: new Date().toISOString().split('T')[0] });
+
+            await supabaseClient.from('players').update({ ledger: currentLedger }).eq('id', playerId);
+            loadMasterRoster();
+        }
+
+        initCoachesHub();
+    </script>
+</body>
+</html>
