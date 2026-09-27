@@ -1,38 +1,336 @@
+/* =========================================================
+   THE ROCK BASEBALL CLUB - GLOBAL STYLESHEET (HI-VIZ EDITION)
+   ========================================================= */
+
+:root {
+    --bg-dark: #070709;
+    --bg-module: #111116;
+    --bg-module-hover: #171720;
+    --bg-input: #0a0a0e;
+    
+    /* High-Voltage Sharp Red Accent */
+    --red-accent: #ff1a35;
+    --red-glow: rgba(255, 26, 53, 0.45);
+    
+    --gold-accent: #f59e0b;
+    --green-accent: #10b981;
+    --text-light: #ffffff;
+    --text-muted: #c2c2d6; /* Brightened for high contrast */
+    --border-thin: 1px solid #22222e;
+    --radius-module: 14px;
+}
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* SOLID RED BADGES */
+.badge, .badge-team, .div-badge {
+    background-color: var(--red-accent) !important;
+    color: #ffffff !important;
+    border: 1px solid #ff4d63 !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.75px !important;
+    text-transform: uppercase !important;
+    padding: 0.35rem 0.85rem !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 10px var(--red-glow) !important;
+    display: inline-block !important;
+}
+
+/* GLOBAL NAVIGATION BAR */
+header {
+    background-color: rgba(17, 17, 22, 0.98);
+    backdrop-filter: blur(12px);
+    border-bottom: var(--border-thin);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0.85rem 1.5rem;
+}
+
+.nav-container {
+    max-width: 1250px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.logo-group {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 44px;
+    width: auto;
+    border-radius: 6px;
+    object-fit: contain;
+}
+
+.logo-text {
+    font-family: 'Impact', sans-serif;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fff;
+    line-height: 1;
+}
+
+.logo-text span { color: var(--red-accent); }
+
+.logo-text small {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+/* DESKTOP NAVIGATION */
+nav {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    padding: 0.5rem 0.65rem;
+    border-radius: 6px;
+}
+
+nav a:hover, nav a.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+nav a.nav-accent {
+    color: var(--red-accent);
+    border: 1px solid var(--red-accent);
+    background: rgba(255, 26, 53, 0.12);
+}
+
+nav a.nav-accent:hover {
+    background-color: var(--red-accent);
+    color: #fff;
+    box-shadow: 0 0 15px var(--red-glow);
+}
+
+/* HAMBURGER TOGGLE */
+.hamburger-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--border-thin);
+    color: var(--text-light);
+    font-size: 1.5rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.hamburger-toggle:hover {
+    border-color: var(--red-accent);
+    color: var(--red-accent);
+}
+
+@media (max-width: 900px) {
+    .hamburger-toggle { display: block; }
+    nav {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        background-color: #111118;
+        border-bottom: var(--border-thin);
+        padding: 1rem 1.5rem;
+        gap: 0.75rem;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.9);
+    }
+    nav.mobile-active { display: flex; }
+    nav a { width: 100%; text-align: center; padding: 0.75rem; font-size: 0.9rem; }
+}
+
+/* =========================================================
+   HI-VIZ HERO MODULE WITH 25% BACKGROUND PHOTO OPACITY
+   ========================================================= */
+
 .hero-module {
     position: relative;
-    background: linear-gradient(
-        rgba(7, 7, 9, 0.82), 
-        rgba(7, 7, 9, 0.92)
-    ), 
-    url('brand/team-hero.jpg') center/cover no-repeat;
+    background-color: #070709;
     border: var(--border-thin);
     border-left: 6px solid var(--red-accent);
     border-radius: var(--radius-module);
     padding: 3.5rem 2.5rem;
     margin-bottom: 2.5rem;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.9);
     overflow: hidden;
 }
 
-/* Pseudo-element to control 40% photo opacity precisely */
+/* 25% Opacity Background Layer */
 .hero-module::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: url('brand/team-hero.jpg') center/cover no-repeat;
-    opacity: 0.40; /* 40% Opacity */
+    opacity: 0.25; /* 25% Opacity */
     z-index: 0;
+}
+
+/* Dark Gradient Vignette for Maximum Contrast */
+.hero-module::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(7, 7, 9, 0.9) 0%, rgba(7, 7, 9, 0.75) 50%, rgba(7, 7, 9, 0.95) 100%);
+    z-index: 1;
 }
 
 .hero-container {
     position: relative;
-    z-index: 1; /* Keeps text & logo crisp above the background photo */
+    z-index: 2; /* Keeps all text on top of the overlays */
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 2.5rem;
     flex-wrap: wrap;
+}
+
+.hero-text { flex: 1; min-width: 300px; }
+
+.hero-tag {
+    background-color: rgba(255, 26, 53, 0.25);
+    color: #ffffff;
+    border: 1px solid var(--red-accent);
+    padding: 0.45rem 1.1rem;
+    font-size: 0.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 1.2rem;
+    letter-spacing: 1.5px;
+    box-shadow: 0 0 12px var(--red-glow);
+}
+
+.hero-module h1 {
+    font-family: 'Impact', sans-serif;
+    font-size: 3.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1.05;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.9); /* High contrast shadow */
+}
+
+.tagline {
+    color: var(--red-accent);
+    font-size: 1.3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.2rem;
+    display: block;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+
+.hero-module p {
+    color: #e2e2ee; /* Bright white-gray copy */
+    font-size: 1.1rem;
+    max-width: 720px;
+    font-weight: 600;
+    margin-bottom: 2.2rem;
+    line-height: 1.7;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+.hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+.btn-primary {
+    background-color: var(--red-accent);
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.95rem 1.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 18px var(--red-glow);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    background-color: #ff334b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px var(--red-glow);
+}
+
+.btn-secondary {
+    background-color: rgba(32, 32, 40, 0.95);
+    color: #ffffff;
+    text-decoration: none;
+    border: 1px solid #444455;
+    padding: 0.95rem 1.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #2c2c38;
+    border-color: var(--red-accent);
+}
+
+.hero-logo-box { flex-shrink: 0; text-align: center; }
+
+.hero-logo-img {
+    max-width: 240px;
+    height: auto;
+    border-radius: 16px;
+    border: 2px solid var(--red-accent);
+    box-shadow: 0 0 35px var(--red-glow);
+    background: #000;
+}
+
+/* FOOTER */
+footer {
+    border-top: var(--border-thin);
+    background-color: var(--bg-module);
+    padding: 2.5rem 2rem;
+    margin-top: 4rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
 }
