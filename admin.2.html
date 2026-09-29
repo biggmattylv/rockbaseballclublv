@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coaches Hub & Admin Portal | The Rock Baseball Club</title>
 
-    <!-- PASSCODE LOCK SECURITY -->
     <script>
         (function() {
             const COACH_HUB_PASSWORD = "ROCK2026";
@@ -132,7 +131,6 @@
             <p>Master Site Controls, Quick Links, Player Metrics, Coaching Staff Order, and Ledger</p>
         </div>
 
-        <!-- DATABASE TOOLBAR -->
         <section class="toolbar-module">
             <h2 class="toolbar-title">⚡ Database & Infrastructure Quick Links</h2>
             <div class="toolbar-grid">
@@ -143,7 +141,6 @@
             </div>
         </section>
 
-        <!-- COACHING STAFF MANAGER -->
         <section class="admin-form-module">
             <h2 class="toolbar-title">🧢 Coaching Staff & Display Ordering</h2>
             <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">Use the ⬆️ and ⬇️ buttons on each card to change the exact order coaches appear on the homepage.</p>
@@ -164,7 +161,6 @@
             </div>
         </section>
 
-        <!-- BASEBALL TRAINING RSS FEEDS APPROVAL MODULE -->
         <section class="admin-form-module">
             <h2 class="toolbar-title">📡 Baseball Training RSS Feed Moderation Engine</h2>
             <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">Fetch live baseball development articles and toggle "Approve" to display them on the homepage.</p>
@@ -179,7 +175,6 @@
             </div>
         </section>
 
-        <!-- ANNOUNCEMENTS & COACH NOTES -->
         <section class="admin-form-module">
             <h2 class="toolbar-title">📢 Announcement Banner & Coach Notes</h2>
             <form onsubmit="handleSaveSiteSettings(event)">
@@ -197,7 +192,6 @@
             </form>
         </section>
 
-        <!-- ADD PLAYER MODULE -->
         <section class="admin-form-module">
             <h2 class="toolbar-title">➕ Add New Player to Database</h2>
             <form id="addPlayerForm" onsubmit="handleAddPlayer(event)">
@@ -254,7 +248,6 @@
             } catch (err) { console.error("Settings error:", err); }
         }
 
-        /* COACHES & ORDERING CONTROLS */
         async function loadCoaches() {
             try {
                 let { data: coaches } = await supabaseClient.from('coaches').select('*').order('display_order', { ascending: true });
@@ -368,7 +361,6 @@
             await supabaseClient.from('coaches').update({ active: isChecked }).eq('id', coachId);
         }
 
-        /* RSS MODERATION ENGINE */
         async function fetchRSSFromSource(sourceName, feedApiUrl) {
             try {
                 let res = await fetch(feedApiUrl);
@@ -437,7 +429,6 @@
             alert('✅ Site settings saved!');
         }
 
-        /* MASTER ROSTER & LEDGER WITH EDITABLE RECRUITMENT METRICS */
         async function loadMasterRoster() {
             try {
                 let { data: players } = await supabaseClient.from('players').select('*').eq('active', true).order('name', { ascending: true });
@@ -483,6 +474,7 @@
                                     <div><span>FB Velo:</span> <strong>${p.fastball_velo ? p.fastball_velo + ' MPH' : '--'}</strong></div>
                                     <div><span>Status:</span> <strong style="color:var(--gold-accent);">${p.commit_status || 'UNCOMMITTED'}</strong></div>
                                     <div><span>Twitter/X:</span> <strong>${p.twitter_handle || 'None'}</strong></div>
+                                    <div><span>FieldLevel:</span> <strong>${p.fieldlevel_url ? 'Linked' : 'None'}</strong></div>
                                 </div>
 
                                 <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
@@ -541,6 +533,9 @@
             let newTwitter = prompt("Update Twitter / X Handle (e.g. @PlayerHandle):", player.twitter_handle || "");
             if (newTwitter === null) return;
 
+            let newFieldLevel = prompt("Update FieldLevel URL (e.g. https://www.fieldlevel.com/app/profile/...):", player.fieldlevel_url || "");
+            if (newFieldLevel === null) return;
+
             let newStatus = prompt("Update Commitment Status (e.g. UNCOMMITTED, COMMITTED - UNLV):", player.commit_status || "UNCOMMITTED");
             if (newStatus === null) return;
 
@@ -553,6 +548,7 @@
                 exit_velo: newExitVelo,
                 fastball_velo: newFBVelo,
                 twitter_handle: newTwitter,
+                fieldlevel_url: newFieldLevel,
                 commit_status: newStatus
             };
 
