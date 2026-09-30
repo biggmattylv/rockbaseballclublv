@@ -3,212 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uniform Packages | Red Rock Baseball Club</title>
+    <title>2026 Uniform Package & Rebrand Teaser | The Rock Baseball Club</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Impact&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
 
     <style>
-        :root {
-            --bg-dark: #0a0a0c;
-            --bg-module: #121216;
-            --bg-input: #08080a;
-            --red-accent: #d3122a;
-            --red-glow: rgba(211, 18, 42, 0.4);
-            --text-light: #ffffff;
-            --text-muted: #9a9ab0;
-            --border-thin: 1px solid #23232c;
-            --radius-module: 12px;
-        }
+        main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        header {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-family: 'Impact', sans-serif;
-            font-size: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #fff;
-            text-decoration: none;
-        }
-
-        .logo span {
-            color: var(--red-accent);
-        }
-
-        nav a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.9rem;
-            margin-left: 1.5rem;
-            text-transform: uppercase;
-            transition: color 0.2s ease;
-        }
-
-        nav a:hover, nav a.active {
-            color: var(--red-accent);
-        }
-
-        main {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
-            width: 100%;
-        }
-
-        .hero-card {
-            background-color: var(--bg-module);
+        .reveal-module {
+            background: linear-gradient(135deg, #111118 0%, #070709 100%);
             border: var(--border-thin);
-            border-top: 4px solid var(--red-accent);
+            border-top: 6px solid var(--red-accent);
             border-radius: var(--radius-module);
-            padding: 4rem 2rem;
+            padding: 2.5rem;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-        }
-
-        .hero-card h1 {
-            font-family: 'Impact', sans-serif;
-            font-size: 3.5rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 0.5rem;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            font-weight: 600;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
             margin-bottom: 3rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .coming-soon-box {
-            background: linear-gradient(145deg, #18181f 0%, #0a0a0c 100%);
-            border: 2px dashed var(--red-accent);
-            border-radius: var(--radius-module);
-            padding: 3.5rem 2rem;
-            margin: 0 auto;
-            max-width: 600px;
-            position: relative;
             overflow: hidden;
         }
 
-        .coming-soon-box::before {
-            content: '';
+        .jersey-image-container {
+            position: relative;
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto 2.5rem auto;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--red-accent);
+            box-shadow: 0 0 35px var(--red-glow);
+            background: #000;
+        }
+
+        .jersey-image-container img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .jersey-image-container:hover img {
+            transform: scale(1.02);
+        }
+
+        .teaser-overlay-badge {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle, var(--red-glow) 0%, transparent 70%);
-            opacity: 0.3;
-            pointer-events: none;
-        }
-
-        .coming-soon-title {
-            font-family: 'Impact', sans-serif;
-            font-size: 4rem;
-            color: var(--red-accent);
+            bottom: 20px;
+            right: 20px;
+            background: rgba(10, 10, 14, 0.9);
+            border: 1px solid var(--gold-accent);
+            color: var(--gold-accent);
+            padding: 0.5rem 1.25rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 0 20px var(--red-glow);
-            line-height: 1;
-            margin-bottom: 1rem;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
         }
 
-        .coming-soon-desc {
+        .reveal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .reveal-card {
+            background-color: var(--bg-module);
+            border: var(--border-thin);
+            border-radius: var(--radius-module);
+            padding: 2rem;
+            border-left: 4px solid var(--gold-accent);
+        }
+
+        .reveal-card h3 {
+            font-family: 'Impact', sans-serif;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .reveal-card p {
             color: var(--text-muted);
             font-size: 0.95rem;
-            font-weight: 600;
-        }
-
-        .btn-back {
-            display: inline-block;
-            margin-top: 2.5rem;
-            background-color: #202028;
-            color: var(--text-light);
-            border: var(--border-thin);
-            padding: 0.85rem 1.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .btn-back:hover {
-            background-color: #2c2c38;
-            border-color: var(--red-accent);
-            color: #fff;
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            border-top: var(--border-thin);
-            margin-top: 3rem;
-        }
-
-        @media (max-width: 600px) {
-            header { flex-direction: column; gap: 1rem; text-align: center; }
-            nav a { margin: 0 0.5rem; }
-            .hero-card h1 { font-size: 2.5rem; }
-            .coming-soon-title { font-size: 2.8rem; }
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo">Red Rock <span>Baseball</span></a>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="uniforms.html" class="active">Uniforms</a>
-            <a href="admin.2.html">Coaches Hub</a>
-        </nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo-group">
+                <img src="brand/logo.jpg" alt="Logo" class="logo-img">
+                <div class="logo-text">The Rock <span>Baseball</span><small>Summerlin, Nevada</small></div>
+            </a>
+
+            <button class="hamburger-toggle" onclick="document.querySelector('nav').classList.toggle('mobile-active')">☰</button>
+
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="14u.html">14U Roster</a>
+                <a href="16u.html">16U Roster</a>
+                <a href="18u.html">18U Roster</a>
+                <a href="uniforms.html" class="active">Uniforms</a>
+                <a href="admin.2.html" class="nav-accent">🔒 Coaches Hub</a>
+            </nav>
+        </div>
     </header>
 
     <main>
-        <div class="hero-card">
-            <h1>Official Uniform Package</h1>
-            <p class="subtitle">Red Rock Baseball Club Gear & Apparel</p>
+        <section class="reveal-module">
+            <span class="hero-tag" style="background: rgba(245, 158, 11, 0.15); color: var(--gold-accent); border-color: var(--gold-accent);">
+                🔥 Official Kit & Rebrand Teaser
+            </span>
+            <h1 style="font-family:'Impact', sans-serif; font-size:3.5rem; text-transform:uppercase; margin:0.5rem 0 1rem 0; color:#fff;">
+                2026 Uniform Package
+            </h1>
+            <p style="color:var(--text-muted); max-width:750px; margin:0 auto 2rem auto; font-size:1.1rem; font-weight:500;">
+                Check out the classic pinstripe custom kit for The Rock Baseball Club. Prepare for an elevated uniform package, high-voltage gear, and a national organization rebrand coming Summer 2026!
+            </p>
 
-            <div class="coming-soon-box">
-                <div class="coming-soon-title">Coming Soon</div>
-                <p class="coming-soon-desc">Our 2026 Season Uniform Package details, ordering links, and sizing guides will be posted here shortly.</p>
+            <!-- JERSEY MOCKUP DISPLAY -->
+            <div class="jersey-image-container">
+                <img src="brand/jersey-teaser.jpg" alt="The Rock Baseball Custom Pinstripe Jersey Mockup">
+                <div class="teaser-overlay-badge">⚾ Summer 2026 National Rebrand Teaser</div>
             </div>
 
-            <a href="index.html" class="btn-back">← Back to Main Page</a>
-        </div>
+            <!-- WHAT TO EXPECT CARDS -->
+            <div class="reveal-grid">
+                <div class="reveal-card">
+                    <h3>🏛️ National Brand Affiliation</h3>
+                    <p>Transitioning into a premier national brand gives players expanded tournament access, national ranking visibility, and direct college recruiter pipelines.</p>
+                </div>
+                <div class="reveal-card" style="border-left-color: var(--red-accent);">
+                    <h3>⚡ Elite Custom Kit Package</h3>
+                    <p>Sublimated pinstripe game jerseys, custom caps, player gear, and pro-level apparel engineered for high-performance Summer competition.</p>
+                </div>
+                <div class="reveal-card" style="border-left-color: #3b82f6;">
+                    <h3>🌟 Unmatched Showcase Exposure</h3>
+                    <p>Our updated web platform features synced metrics, video film, FieldLevel links, and direct Scout Links for all 14U, 16U, and 18U showcase athletes.</p>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <footer>
-        &copy; 2026 Red Rock Baseball Club. All Rights Reserved.
-    </footer>
+    <footer>&copy; 2026 The Rock Baseball Club — Summerlin, NV</footer>
 
 </body>
 </html>
