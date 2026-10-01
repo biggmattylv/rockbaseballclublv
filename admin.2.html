@@ -71,12 +71,12 @@
         .input-group label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.75rem; color: #fff; font-weight: 600; }
         
-        /* Expandable Textarea Style */
         .input-group textarea {
             resize: vertical;
             min-height: 120px;
             font-family: 'Montserrat', sans-serif;
             line-height: 1.5;
+            white-space: pre-wrap;
         }
 
         .toggle-group { display: flex; align-items: center; gap: 0.75rem; background: var(--bg-input); padding: 0.75rem; border-radius: 8px; border: var(--border-thin); }
@@ -111,31 +111,25 @@
         .metrics-preview-box div { display: flex; justify-content: space-between; padding: 0.15rem 0; }
         .metrics-preview-box strong { color: #fff; }
 
-        /* Custom Modal for Bio Editing */
-        .bio-modal-overlay {
+        /* EXPANDABLE EDIT MODAL OVERLAYS */
+        .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px);
             display: none; align-items: center; justify-content: center; z-index: 10000;
         }
 
-        .bio-modal-content {
+        .modal-content {
             background: #14141c; border: 2px solid var(--red-accent);
-            border-radius: 12px; padding: 2rem; width: 90%; max-width: 650px;
-            box-shadow: 0 0 35px var(--red-glow);
+            border-radius: 12px; padding: 2rem; width: 92%; max-width: 750px;
+            max-height: 90vh; overflow-y: auto; box-shadow: 0 0 35px var(--red-glow);
         }
 
-        .bio-modal-content h3 {
+        .modal-content h3 {
             font-family: 'Impact', sans-serif; font-size: 1.8rem;
             text-transform: uppercase; color: #fff; margin-bottom: 1rem;
         }
 
-        .bio-modal-content textarea {
-            width: 100%; height: 220px; background: #08080c; border: var(--border-thin);
-            border-radius: 8px; padding: 1rem; color: #fff; font-family: 'Montserrat', sans-serif;
-            font-size: 0.9rem; line-height: 1.6; resize: vertical; margin-bottom: 1rem;
-        }
-
-        .modal-btn-group { display: flex; justify-content: flex-end; gap: 0.75rem; }
+        .modal-btn-group { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
     </style>
 </head>
 <body>
@@ -214,7 +208,7 @@
                     <div class="input-group"><label>Coach Name</label><input type="text" id="new_coach_name" placeholder="e.g. Alex Rodriguez" required></div>
                     <div class="input-group"><label>Role / Title</label><input type="text" id="new_coach_role" placeholder="e.g. Pitching Coach" required></div>
                     <div class="input-group" style="grid-column: 1 / -1;">
-                        <label>Coach Bio (Expandable Text Box)</label>
+                        <label>Coach Bio (Expandable Text Box - Paragraph Breaks Preserved)</label>
                         <textarea id="new_coach_bio" placeholder="Full background, playing experience, coaching philosophy..."></textarea>
                     </div>
                     <div class="input-group"><label>Headshot Photo</label><input type="file" id="new_coach_photo" accept="image/*"></div>
@@ -291,10 +285,10 @@
         </div>
     </main>
 
-    <!-- EXPANDABLE COACH BIO EDITOR MODAL -->
-    <div id="coachBioModal" class="bio-modal-overlay">
-        <div class="bio-modal-content">
-            <h3 id="bioModalTitle">✏️ Edit Coach Bio</h3>
+    <!-- COACH BIO EDITING MODAL -->
+    <div id="coachBioModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>✏️ Edit Coach Bio & Details</h3>
             <div class="input-group" style="margin-bottom:1rem;">
                 <label>Coach Name</label>
                 <input type="text" id="bioModalName">
@@ -304,12 +298,36 @@
                 <input type="text" id="bioModalRole">
             </div>
             <div class="input-group">
-                <label>Biography (Stretch or add paragraph breaks as needed)</label>
+                <label>Biography (Line Breaks & Paragraph Formatting Preserved)</label>
                 <textarea id="bioModalText" placeholder="Write full bio here..."></textarea>
             </div>
             <div class="modal-btn-group">
                 <button class="btn-small" style="background:#333;" onclick="closeBioModal()">Cancel</button>
                 <button class="btn-submit" style="margin-top:0;" onclick="saveCoachBioModal()">💾 Save Coach Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PLAYER METRICS EDITING MODAL -->
+    <div id="playerEditModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="playerModalTitle">✏️ Edit Player Showcase & Metrics</h3>
+            <div class="form-grid">
+                <div class="input-group"><label>Player Name</label><input type="text" id="pm_name"></div>
+                <div class="input-group"><label>Positions</label><input type="text" id="pm_pos"></div>
+                <div class="input-group"><label>Division/Team</label><input type="text" id="pm_team"></div>
+                <div class="input-group"><label>High School</label><input type="text" id="pm_hs"></div>
+                <div class="input-group"><label>Grad Year</label><input type="text" id="pm_grad"></div>
+                <div class="input-group"><label>Exit Velo (MPH)</label><input type="text" id="pm_exit"></div>
+                <div class="input-group"><label>Fastball Velo (MPH)</label><input type="text" id="pm_fb"></div>
+                <div class="input-group"><label>Commitment Status</label><input type="text" id="pm_status"></div>
+                <div class="input-group"><label>Twitter / X Handle</label><input type="text" id="pm_twitter"></div>
+                <div class="input-group"><label>FieldLevel Profile Link</label><input type="text" id="pm_fieldlevel"></div>
+                <div class="input-group"><label>Portal PIN</label><input type="text" id="pm_pin"></div>
+            </div>
+            <div class="modal-btn-group">
+                <button class="btn-small" style="background:#333;" onclick="closePlayerModal()">Cancel</button>
+                <button class="btn-submit" style="margin-top:0;" onclick="savePlayerModal()">💾 Save Player Changes</button>
             </div>
         </div>
     </div>
@@ -324,6 +342,7 @@
         let activePlayers = [];
         let loadedCoaches = [];
         let activeEditingCoachId = null;
+        let activeEditingPlayerId = null;
 
         async function initCoachesHub() {
             await loadSiteSettings();
@@ -342,7 +361,7 @@
             } catch (err) { console.error("Settings error:", err); }
         }
 
-        /* COACHES & DISPLAY ORDER CONTROLS */
+        /* COACH CONTROLS */
         async function loadCoaches() {
             try {
                 let { data: coaches } = await supabaseClient.from('coaches').select('*').order('display_order', { ascending: true });
@@ -377,7 +396,7 @@
                                 <div style="display:flex; gap:0.4rem; margin-bottom:0.75rem;">
                                     <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="openBioModal('${c.id}')">✏️ Edit Bio & Info</button>
                                     <button class="btn-small" style="background:#111; border:1px solid #333;" onclick="moveCoachOrder('${c.id}', ${orderVal - 1})">⬆️ Up</button>
-                                    <button class="btn-small" style="background:#111; border:1px solid #333;" onclick="moveCoachOrder('${c.id}', ${orderVal + 1})">⬇️ Down</button>
+                                    <button class="btn-small" style="background:#111; border:1px solid #333;" onclick="moveCoachOrder('${c.id}', ${orderVal + 1})">⬇️️ Down</button>
                                 </div>
 
                                 <div style="margin-bottom:0.75rem; background:var(--bg-input); padding:0.6rem; border-radius:6px; border:var(--border-thin);">
@@ -422,12 +441,8 @@
             };
 
             const { error } = await supabaseClient.from('coaches').update(updates).eq('id', activeEditingCoachId);
-            if (error) {
-                alert('Error updating coach bio: ' + error.message);
-            } else {
-                closeBioModal();
-                loadCoaches();
-            }
+            if (error) alert('Error updating coach: ' + error.message);
+            else { closeBioModal(); loadCoaches(); }
         }
 
         async function moveCoachOrder(coachId, newOrder) {
@@ -543,7 +558,7 @@
             alert('✅ Site settings saved!');
         }
 
-        /* MASTER ROSTER & PIN MANAGEMENT */
+        /* MASTER ROSTER & PLAYER EDITING MODAL */
         async function loadMasterRoster() {
             try {
                 let { data: players } = await supabaseClient.from('players').select('*').eq('active', true).order('name', { ascending: true });
@@ -595,7 +610,7 @@
                                 </div>
 
                                 <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
-                                    <button class="btn-small" style="background:#202028; border:1px solid #333; width:100%;" onclick="editPlayerDetails('${p.id}')">✏️ Edit Player & Recruiting Metrics</button>
+                                    <button class="btn-small" style="background:#202028; border:1px solid #333; width:100%;" onclick="openPlayerModal('${p.id}')">✏️ Edit Player Showcase & Metrics</button>
                                 </div>
 
                                 <div style="margin-bottom: 0.75rem; background: var(--bg-input); padding: 0.6rem; border-radius: 6px; border: var(--border-thin);">
@@ -620,6 +635,57 @@
                     `;
                 });
             } catch (err) { console.error("Roster error:", err); }
+        }
+
+        function openPlayerModal(playerId) {
+            let player = activePlayers.find(p => p.id === playerId);
+            if (!player) return;
+
+            activeEditingPlayerId = playerId;
+            document.getElementById('pm_name').value = player.name || '';
+            document.getElementById('pm_pos').value = player.pos || '';
+            document.getElementById('pm_team').value = player.team || '';
+            document.getElementById('pm_hs').value = player.high_school || '';
+            document.getElementById('pm_grad').value = player.grad_year || '';
+            document.getElementById('pm_exit').value = player.exit_velo || '';
+            document.getElementById('pm_fb').value = player.fastball_velo || '';
+            document.getElementById('pm_status').value = player.commit_status || 'UNCOMMITTED';
+            document.getElementById('pm_twitter').value = player.twitter_handle || '';
+            document.getElementById('pm_fieldlevel').value = player.fieldlevel_url || '';
+            document.getElementById('pm_pin').value = player.pin || '1234';
+
+            document.getElementById('playerEditModal').style.display = 'flex';
+        }
+
+        function closePlayerModal() {
+            document.getElementById('playerEditModal').style.display = 'none';
+            activeEditingPlayerId = null;
+        }
+
+        async function savePlayerModal() {
+            if (!activeEditingPlayerId) return;
+
+            const updates = {
+                name: document.getElementById('pm_name').value,
+                pos: document.getElementById('pm_pos').value,
+                team: document.getElementById('pm_team').value,
+                high_school: document.getElementById('pm_hs').value,
+                grad_year: document.getElementById('pm_grad').value,
+                exit_velo: document.getElementById('pm_exit').value,
+                fastball_velo: document.getElementById('pm_fb').value,
+                commit_status: document.getElementById('pm_status').value,
+                twitter_handle: document.getElementById('pm_twitter').value,
+                fieldlevel_url: document.getElementById('pm_fieldlevel').value,
+                pin: document.getElementById('pm_pin').value.trim()
+            };
+
+            const { error } = await supabaseClient.from('players').update(updates).eq('id', activeEditingPlayerId);
+            if (error) {
+                alert('Error updating player: ' + error.message);
+            } else {
+                closePlayerModal();
+                loadMasterRoster();
+            }
         }
 
         function populatePINPlayerDropdown() {
@@ -652,73 +718,12 @@
 
             const { error } = await supabaseClient.from('players').update({ pin: newPin.trim() }).eq('id', pId);
 
-            if (error) {
-                alert("Error updating PIN: " + error.message);
-            } else {
+            if (error) alert("Error updating PIN: " + error.message);
+            else {
                 alert("✅ Success! Security PIN overridden successfully.");
                 document.getElementById('pinNewValue').value = '';
                 await loadMasterRoster();
                 populatePINPlayerDropdown();
-            }
-        }
-
-        async function editPlayerDetails(playerId) {
-            let player = activePlayers.find(p => p.id === playerId);
-            if (!player) return;
-
-            let newName = prompt("Update Player Name:", player.name);
-            if (newName === null) return;
-            
-            let newPos = prompt("Update Primary Positions (e.g. Pitcher, SS):", player.pos);
-            if (newPos === null) return;
-
-            let newTeam = prompt("Update Division (18U Division, 16U Division, 14U Division, or Hybrid):", player.team);
-            if (newTeam === null) return;
-
-            let newHS = prompt("Update High School:", player.high_school || "Summerlin High");
-            if (newHS === null) return;
-
-            let newGrad = prompt("Update Grad Year (e.g. 2026, 2027, 2028):", player.grad_year || "2027");
-            if (newGrad === null) return;
-
-            let newExitVelo = prompt("Update Exit Velocity (MPH):", player.exit_velo || "");
-            if (newExitVelo === null) return;
-
-            let newFBVelo = prompt("Update Fastball Velocity (MPH):", player.fastball_velo || "");
-            if (newFBVelo === null) return;
-
-            let newTwitter = prompt("Update Twitter / X Handle (e.g. @PlayerHandle):", player.twitter_handle || "");
-            if (newTwitter === null) return;
-
-            let newFieldLevel = prompt("Update FieldLevel URL:", player.fieldlevel_url || "");
-            if (newFieldLevel === null) return;
-
-            let newStatus = prompt("Update Commitment Status (e.g. UNCOMMITTED, COMMITTED - UNLV):", player.commit_status || "UNCOMMITTED");
-            if (newStatus === null) return;
-
-            let newPin = prompt("Update Security PIN:", player.pin || "1234");
-            if (newPin === null) return;
-
-            const updates = {
-                name: newName,
-                pos: newPos,
-                team: newTeam,
-                high_school: newHS,
-                grad_year: newGrad,
-                exit_velo: newExitVelo,
-                fastball_velo: newFBVelo,
-                twitter_handle: newTwitter,
-                fieldlevel_url: newFieldLevel,
-                commit_status: newStatus,
-                pin: newPin.trim()
-            };
-
-            const { error } = await supabaseClient.from('players').update(updates).eq('id', playerId);
-            if (error) {
-                alert('Error updating player metrics: ' + error.message);
-            } else {
-                alert('✅ Player metrics and showcase info updated!');
-                loadMasterRoster();
             }
         }
 
