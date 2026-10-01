@@ -24,8 +24,8 @@
         .page-header h1 { font-family: 'Impact', sans-serif; font-size: 3.2rem; text-transform: uppercase; letter-spacing: 2px; }
         .page-header p { color: var(--text-muted); font-size: 1rem; }
 
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-        .card-container { background-color: transparent; width: 100%; height: 460px; perspective: 1000px; }
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .card-container { background-color: transparent; width: 100%; height: 500px; perspective: 1000px; }
 
         .card-flipper {
             position: relative; width: 100%; height: 100%; text-align: left;
@@ -38,7 +38,7 @@
             position: absolute; width: 100%; height: 100%;
             -webkit-backface-visibility: hidden; backface-visibility: hidden;
             border-radius: var(--radius-module); border: var(--border-thin);
-            padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;
+            padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;
             box-shadow: 0 8px 22px rgba(0,0,0,0.6);
         }
 
@@ -56,31 +56,26 @@
         .player-name { font-family: 'Impact', sans-serif; font-size: 2.1rem; text-transform: uppercase; letter-spacing: 1px; color: #fff; line-height: 1; margin-bottom: 0.5rem; }
 
         .stats-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
-            background-color: var(--bg-input); padding: 0.75rem; border-radius: 8px; border: var(--border-thin);
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;
+            background-color: var(--bg-input); padding: 0.6rem; border-radius: 8px; border: var(--border-thin);
         }
 
-        .stats-item span { display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
-        .stats-item strong { font-size: 0.95rem; color: #fff; }
+        .stats-item span { display: block; font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+        .stats-item strong { font-size: 0.9rem; color: #fff; }
 
         .btn-flip {
             background-color: #202028; color: var(--text-light); border: var(--border-thin);
-            padding: 0.65rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
-            border-radius: 6px; cursor: pointer; width: 100%; margin-top: 0.5rem;
+            padding: 0.55rem; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+            border-radius: 6px; cursor: pointer; width: 100%; margin-top: 0.35rem;
         }
 
         .btn-flip:hover { background-color: #2c2c38; border-color: var(--red-accent); }
 
         .card-back { background: #14141c; transform: rotateY(180deg); border-top: 4px solid var(--gold-accent); }
-        .card-back h3 { font-family: 'Impact', sans-serif; font-size: 1.5rem; color: var(--gold-accent); text-transform: uppercase; margin-bottom: 0.25rem; }
 
-        .gpa-box { background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.85rem; margin: 0.5rem 0; text-align: center; }
-        .gpa-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 0.3rem; }
-        .gpa-value { font-family: 'Impact', sans-serif; font-size: 2rem; color: var(--gold-accent); display: block; line-height: 1; }
-
-        .gpa-input-group { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
-        .gpa-input-group input { width: 100%; background: #000; border: var(--border-thin); border-radius: 4px; padding: 0.4rem; color: #fff; font-weight: 700; text-align: center; }
-        .gpa-input-group button { background: var(--gold-accent); color: #000; border: none; padding: 0.4rem 0.8rem; font-weight: 800; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; }
+        .gpa-box { background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.5rem; margin-top: 0.4rem; text-align: center; }
+        .gpa-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; display: block; }
+        .gpa-value { font-family: 'Impact', sans-serif; font-size: 1.6rem; color: var(--gold-accent); display: block; line-height: 1; }
     </style>
 </head>
 <body>
@@ -122,7 +117,6 @@
         const SUPABASE_URL = "https://lhnizfqdwedvssvsezut.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const COACH_PASSCODE = "ROCK2026";
 
         async function loadDivisionRoster() {
             try {
@@ -144,13 +138,12 @@
 
                 filtered.forEach(p => {
                     let savedGPA = localStorage.getItem(`gpa_${p.id}`) || '3.80';
+                    let playerPin = p.pin || '1234';
+                    let hasFieldLevel = p.fieldlevel_url && p.fieldlevel_url.trim() !== '';
+
                     let photoHtml = p.photo_url 
                         ? `<img src="${p.photo_url}" class="player-photo-img" alt="${p.name}">`
                         : `<span>⚾ Photo Coming Soon</span>`;
-
-                    let fieldLevelBtn = p.fieldlevel_url 
-                        ? `<a href="${p.fieldlevel_url}" target="_blank" class="btn-flip" style="text-align:center; text-decoration:none; background:#0066cc; color:#fff;">⚾ FieldLevel Profile →</a>`
-                        : '';
 
                     container.innerHTML += `
                         <div class="card-container" id="card-${p.id}">
@@ -172,32 +165,45 @@
                                             <div class="stats-item"><span>Age</span><strong>${p.age}</strong></div>
                                             <div class="stats-item"><span>Primary Pos</span><strong>${p.pos}</strong></div>
                                         </div>
-                                        <button class="btn-flip" onclick="toggleFlip('${p.id}')">🔄 Flip Card / Academic Stats</button>
+                                        <button class="btn-flip" onclick="toggleFlip('${p.id}')">🔄 Flip Card / FieldLevel & Profile</button>
                                     </div>
                                 </div>
 
                                 <div class="card-back">
                                     <div>
-                                        <h3>Athletic & Academic Metrics</h3>
-                                        <div class="stats-grid" style="margin-top:0.4rem;">
-                                            <div class="stats-item"><span>Primary Pos</span><strong>${p.pos}</strong></div>
+                                        <div style="background: linear-gradient(135deg, #0d1b2a 0%, #0a0a10 100%); border: 1px solid #0066cc; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; box-shadow: 0 4px 12px rgba(0,102,204,0.25);">
+                                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+                                                <span style="font-size:0.65rem; font-weight:900; color:#3b82f6; text-transform:uppercase;">⚾ FieldLevel Verified Film</span>
+                                                <span style="font-size:0.55rem; background:${hasFieldLevel ? '#10b981' : '#f59e0b'}; color:#000; font-weight:800; padding:0.15rem 0.35rem; border-radius:4px;">
+                                                    ${hasFieldLevel ? 'LINKED' : 'PENDING'}
+                                                </span>
+                                            </div>
+                                            ${hasFieldLevel 
+                                                ? `<a href="${p.fieldlevel_url}" target="_blank" style="display:block; text-align:center; background:#0066cc; color:#fff; font-size:0.7rem; font-weight:800; text-transform:uppercase; padding:0.45rem; border-radius:4px; text-decoration:none;">🎥 Open FieldLevel Video & Stats →</a>`
+                                                : `<div style="font-size:0.65rem; color:#f59e0b; text-align:center; font-weight:700;">⚠️ FieldLevel link pending</div>`
+                                            }
+                                        </div>
+
+                                        <div class="stats-grid">
                                             <div class="stats-item"><span>Grad Year</span><strong>${p.grad_year || '2028'}</strong></div>
+                                            <div class="stats-item"><span>Primary Pos</span><strong>${p.pos}</strong></div>
                                         </div>
 
                                         <div class="gpa-box">
                                             <span class="gpa-title">Academic GPA Score</span>
                                             <span class="gpa-value" id="gpa-display-${p.id}">${savedGPA}</span>
-                                            <div class="gpa-input-group">
-                                                <input type="number" step="0.01" min="0.0" max="5.0" id="gpa-input-${p.id}" placeholder="New GPA (3.8)">
-                                                <button onclick="updateGPAWithLock('${p.id}')">Update</button>
-                                            </div>
                                         </div>
                                     </div>
 
-                                    <div style="display:flex; flex-direction:column; gap:0.4rem;">
-                                        ${fieldLevelBtn}
+                                    <div style="display:flex; flex-direction:column; gap:0.35rem; margin-top:0.4rem;">
+                                        <button class="btn-flip" style="background:#202028; border-color:#0066cc; color:#fff;" onclick="editPlayerSelfService('${p.id}', '${playerPin}')">
+                                            ✏️ Edit GPA, FieldLevel & Stats 🔒
+                                        </button>
+                                        <button class="btn-flip" style="background:#10b981; color:#000; font-weight:900;" onclick="viewAccountStatement('${p.id}', '${playerPin}')">
+                                            🧾 View / Download Statement 🔒
+                                        </button>
                                         <a href="player.html?id=${p.id}" class="btn-flip" style="text-align:center; text-decoration:none; background:var(--red-accent); color:#fff;">🌟 View Full Showcase Profile →</a>
-                                        <button class="btn-flip" onclick="toggleFlip('${p.id}')">↩️ Back to Front</button>
+                                        <button class="btn-flip" onclick="toggleFlip('${p.id}')">↩ Back to Front</button>
                                     </div>
                                 </div>
                             </div>
@@ -212,19 +218,94 @@
             if (el) el.classList.toggle('flipped');
         }
 
-        function updateGPAWithLock(id) {
-            let valInput = document.getElementById(`gpa-input-${id}`);
-            let val = valInput.value;
-            if (!val || parseFloat(val) <= 0) { alert('Please enter a valid GPA score.'); return; }
+        async function editPlayerSelfService(playerId, correctPin) {
+            let enteredPin = prompt("🔒 Restricted Access: Enter your Player PIN (or Coach Passcode) to update your profile:");
+            if (enteredPin !== correctPin && enteredPin !== "ROCK2026") {
+                if (enteredPin !== null) alert("❌ Incorrect PIN. Check with your coach.");
+                return;
+            }
 
-            let passcode = prompt("🔒 Enter Coach Passcode to edit GPA:");
-            if (passcode === COACH_PASSCODE) {
-                let formattedGPA = parseFloat(val).toFixed(2);
-                localStorage.setItem(`gpa_${id}`, formattedGPA);
-                document.getElementById(`gpa-display-${id}`).innerText = formattedGPA;
-                valInput.value = '';
-                alert(`✅ Success: GPA updated to ${formattedGPA}!`);
-            } else if (passcode !== null) alert("❌ Incorrect Passcode.");
+            let { data: player } = await supabaseClient.from('players').select('*').eq('id', playerId).single();
+            if (!player) return;
+
+            let newGPA = prompt("Update Academic GPA Score (e.g. 3.85):", localStorage.getItem(`gpa_${playerId}`) || "3.80");
+            if (newGPA === null) return;
+
+            let newFieldLevel = prompt("Update FieldLevel Profile Link:", player.fieldlevel_url || "");
+            if (newFieldLevel === null) return;
+
+            let newTwitter = prompt("Update Twitter/X Handle (e.g. @PlayerHandle):", player.twitter_handle || "");
+            if (newTwitter === null) return;
+
+            let newHS = prompt("Update High School:", player.high_school || "Summerlin High");
+            if (newHS === null) return;
+
+            let newGrad = prompt("Update Grad Year:", player.grad_year || "2028");
+            if (newGrad === null) return;
+
+            if (newGPA && !isNaN(parseFloat(newGPA))) localStorage.setItem(`gpa_${playerId}`, parseFloat(newGPA).toFixed(2));
+
+            const updates = { fieldlevel_url: newFieldLevel, twitter_handle: newTwitter, high_school: newHS, grad_year: newGrad };
+            await supabaseClient.from('players').update(updates).eq('id', playerId);
+            alert("✅ Profile details updated successfully!");
+            loadDivisionRoster();
+        }
+
+        async function viewAccountStatement(playerId, correctPin) {
+            let enteredPin = prompt("🔒 Restricted Access: Enter Player PIN to view Account Statement:");
+            if (enteredPin !== correctPin && enteredPin !== "ROCK2026") {
+                if (enteredPin !== null) alert("❌ Incorrect PIN. Access denied.");
+                return;
+            }
+
+            let { data: player } = await supabaseClient.from('players').select('*').eq('id', playerId).single();
+            if (!player) return;
+
+            let ledgerArray = Array.isArray(player.ledger) ? player.ledger : [];
+            let balance = ledgerArray.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+
+            let statementRows = ledgerArray.map(item => `
+                <tr>
+                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.date || 'N/A'}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.desc || 'Fee/Payment'}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right; color: ${item.amount >= 0 ? '#d97706' : '#10b981'}; font-weight: bold;">
+                        ${item.amount >= 0 ? '+' : ''}$${parseFloat(item.amount).toFixed(2)}
+                    </td>
+                </tr>
+            `).join('');
+
+            let win = window.open('', '_blank', 'width=700,height=800');
+            win.document.write(`
+                <html>
+                <head>
+                    <title>Account Statement - ${player.name}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 30px; color: #222; }
+                        .header { border-bottom: 3px solid #ff1a35; padding-bottom: 10px; margin-bottom: 20px; }
+                        .title { font-size: 24px; font-weight: bold; text-transform: uppercase; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th { background: #111; color: #fff; padding: 10px; text-align: left; }
+                        .balance-box { background: #f4f4f5; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: right; font-size: 18px; font-weight: bold; }
+                        .btn-print { background: #ff1a35; color: white; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; margin-top: 20px; border-radius: 5px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="title">The Rock Baseball Club</div>
+                        <div>Official Player Account Ledger & Statement</div>
+                    </div>
+                    <div><strong>Player Name:</strong> ${player.name}</div>
+                    <div><strong>Team/Division:</strong> ${player.team}</div>
+                    <div><strong>Date Issued:</strong> ${new Date().toLocaleDateString()}</div>
+                    <table>
+                        <thead><tr><th>Date</th><th>Description</th><th style="text-align: right;">Amount</th></tr></thead>
+                        <tbody>${statementRows || '<tr><td colspan="3" style="padding:15px; text-align:center;">No statement history recorded.</td></tr>'}</tbody>
+                    </table>
+                    <div class="balance-box">Current Outstanding Balance: <span style="color: ${balance > 0 ? '#ff1a35' : '#10b981'};">$${balance.toFixed(2)}</span></div>
+                    <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF Statement</button>
+                </body>
+                </html>
+            `);
         }
 
         loadDivisionRoster();
