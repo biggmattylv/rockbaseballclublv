@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coaches Hub & Admin Portal | The Rock Baseball Club</title>
+    <title>Coaches Hub Command Center | The Rock Baseball Club</title>
 
     <!-- PASSCODE LOCK SECURITY -->
     <script>
@@ -31,27 +31,109 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
+        /* ADMIN DASHBOARD SIDEBAR LAYOUT */
+        .admin-dashboard-layout {
+            display: flex;
+            min-height: calc(100vh - 160px);
+            max-width: 1400px;
+            margin: 1.5rem auto;
+            padding: 0 1.5rem;
+            gap: 2rem;
+        }
+
+        .admin-sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background: #111118;
+            border: var(--border-thin);
+            border-top: 4px solid var(--red-accent);
+            border-radius: var(--radius-module);
+            padding: 1.25rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        .sidebar-title {
+            font-family: 'Impact', sans-serif;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold-accent);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #222230;
+        }
+
+        .nav-tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.5rem;
+            background: #181822;
+            border: 1px solid #262636;
+            color: var(--text-muted);
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .nav-tab-btn:hover {
+            background: #222230;
+            color: #fff;
+            border-color: var(--red-accent);
+        }
+
+        .nav-tab-btn.active {
+            background: var(--red-accent);
+            color: #fff;
+            border-color: var(--red-accent);
+            box-shadow: 0 0 15px var(--red-glow);
+        }
+
+        .admin-content-panel {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tab-content-section {
+            display: none;
+        }
+
+        .tab-content-section.active {
+            display: block;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .page-header {
             background: linear-gradient(135deg, #161620 0%, #08080b 100%);
-            border: var(--border-thin); border-left: 6px solid var(--red-accent);
-            border-radius: var(--radius-module); padding: 2.5rem; margin-bottom: 2rem;
+            border: var(--border-thin); 
+            border-left: 6px solid var(--red-accent);
+            border-radius: var(--radius-module); 
+            padding: 2rem 2.5rem; 
+            margin-bottom: 2rem;
         }
 
-        .page-header h1 { font-family: 'Impact', sans-serif; font-size: 3.2rem; text-transform: uppercase; letter-spacing: 2px; }
-
-        .toolbar-module {
-            background-color: var(--bg-module); border: var(--border-thin);
-            border-radius: var(--radius-module); padding: 1.75rem; margin-bottom: 2rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        }
+        .page-header h1 { font-family: 'Impact', sans-serif; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        .page-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.3rem; }
 
         .toolbar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
 
         .tool-btn {
             background: var(--bg-input); border: var(--border-thin); color: var(--text-light);
-            text-decoration: none; padding: 1rem; border-radius: 10px; display: flex;
+            text-decoration: none; padding: 1.25rem 1rem; border-radius: 10px; display: flex;
             align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.2s ease;
         }
 
@@ -60,6 +142,7 @@
         .admin-form-module {
             background-color: var(--bg-module); border: var(--border-thin);
             border-radius: var(--radius-module); padding: 2rem; margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
         }
 
         .toolbar-title {
@@ -67,7 +150,7 @@
             letter-spacing: 1px; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: #fff;
         }
 
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
         .input-group label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.75rem; color: #fff; font-weight: 600; }
         
@@ -90,17 +173,17 @@
 
         .btn-submit:hover { background-color: #ff334b; }
 
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
 
         .player-card, .coach-card-hub, .rss-card-hub {
             background-color: var(--bg-module); border: var(--border-thin);
-            border-radius: var(--radius-module); padding: 1.75rem; display: flex;
+            border-radius: var(--radius-module); padding: 1.5rem; display: flex;
             flex-direction: column; justify-content: space-between;
         }
 
         .photo-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: var(--border-thin); margin-bottom: 0.75rem; background-color: #000; }
         .ledger-box { background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 1rem; margin-top: 0.75rem; }
-        .balance-row { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .balance-row { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1rem; margin-bottom: 0.5rem; }
         .ledger-list { max-height: 100px; overflow-y: auto; font-size: 0.75rem; color: var(--text-muted); border-top: var(--border-thin); padding-top: 0.5rem; }
         .ledger-entry { display: flex; justify-content: space-between; padding: 0.2rem 0; }
         .add-charge-group { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
@@ -111,7 +194,7 @@
         .metrics-preview-box div { display: flex; justify-content: space-between; padding: 0.15rem 0; }
         .metrics-preview-box strong { color: #fff; }
 
-        /* EXPANDABLE EDIT MODAL OVERLAYS */
+        /* MODAL OVERLAYS */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px);
@@ -124,12 +207,13 @@
             max-height: 90vh; overflow-y: auto; box-shadow: 0 0 35px var(--red-glow);
         }
 
-        .modal-content h3 {
-            font-family: 'Impact', sans-serif; font-size: 1.8rem;
-            text-transform: uppercase; color: #fff; margin-bottom: 1rem;
-        }
-
+        .modal-content h3 { font-family: 'Impact', sans-serif; font-size: 1.8rem; text-transform: uppercase; color: #fff; margin-bottom: 1rem; }
         .modal-btn-group { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
+
+        @media (max-width: 900px) {
+            .admin-dashboard-layout { flex-direction: column; }
+            .admin-sidebar { width: 100%; position: relative; top: 0; }
+        }
     </style>
 </head>
 <body>
@@ -154,141 +238,195 @@
         </div>
     </header>
 
-    <main>
-        <div class="page-header">
-            <h1>Coaches Hub Command Center</h1>
-            <p>Master Site Controls, Quick Links, Player Metrics, Security PINs, Coaching Staff Order, and Ledger</p>
-        </div>
+    <div class="admin-dashboard-layout">
+        
+        <!-- LEFT SIDEBAR TAB NAVIGATION -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-title">⚙️ Admin Menu</div>
+            <button class="nav-tab-btn active" onclick="switchAdminTab('tab-coaches')">🧢 Coaching Staff</button>
+            <button class="nav-tab-btn" onclick="switchAdminTab('tab-roster')">📋 Master Roster</button>
+            <button class="nav-tab-btn" onclick="switchAdminTab('tab-pins')">🔑 Security PINs</button>
+            <button class="nav-tab-btn" onclick="switchAdminTab('tab-settings')">📢 Site Banner & Notes</button>
+            <button class="nav-tab-btn" onclick="switchAdminTab('tab-add-player')">➕ Add New Player</button>
+            <button class="nav-tab-btn" onclick="switchAdminTab('tab-links')">⚡ Quick Links</button>
+            <button class="nav-tab-btn" onclick="switchAdminTab('tab-rss')">📡 RSS Feeds</button>
+        </aside>
 
-        <!-- DATABASE TOOLBAR -->
-        <section class="toolbar-module">
-            <h2 class="toolbar-title">⚡ Database & Infrastructure Quick Links</h2>
-            <div class="toolbar-grid">
-                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/editor" target="_blank" class="tool-btn"><span>📊</span><div><div>Players Table</div></div></a>
-                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/storage/buckets/player-photos" target="_blank" class="tool-btn"><span>📷</span><div><div>Photos Storage</div></div></a>
-                <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/sql/new" target="_blank" class="tool-btn"><span>>_</span><div><div>SQL Editor</div></div></a>
-                <a href="https://app.netlify.com/projects/redrockbaseball/overview" target="_blank" class="tool-btn"><span>🚀</span><div><div>Netlify Control</div></div></a>
-            </div>
-        </section>
+        <!-- MAIN DASHBOARD CONTENT AREA -->
+        <main class="admin-content-panel">
 
-        <!-- PLAYER SECURITY PIN OVERRIDE ENGINE -->
-        <section class="admin-form-module">
-            <h2 class="toolbar-title">🔑 Player Security PIN Reset Engine</h2>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
-                Select any player from the dropdown to view or override their security PIN for portal access.
-            </p>
-
-            <div class="form-grid">
-                <div class="input-group">
-                    <label>Select Player</label>
-                    <select id="pinSelectPlayer" onchange="displaySelectedPlayerPIN()">
-                        <option value="">-- Choose Player --</option>
-                    </select>
+            <!-- TAB 1: COACHING STAFF MANAGER -->
+            <section id="tab-coaches" class="tab-content-section active">
+                <div class="page-header">
+                    <h1>🧢 Coaching Staff & Rank Order</h1>
+                    <p>Manage bios, headshots, and exact homepage display ranking.</p>
                 </div>
-                <div class="input-group">
-                    <label>Current Assigned PIN</label>
-                    <input type="text" id="pinDisplayCurrent" placeholder="Select player above..." readonly style="background:#000; color:var(--gold-accent); font-weight:900;">
-                </div>
-                <div class="input-group">
-                    <label>New PIN Code</label>
-                    <input type="text" id="pinNewValue" placeholder="e.g. 5678">
-                </div>
-            </div>
-            <button type="button" class="btn-submit" onclick="overridePlayerPIN()">💾 Override & Save Player PIN</button>
-        </section>
 
-        <!-- COACHING STAFF MANAGER -->
-        <section class="admin-form-module">
-            <h2 class="toolbar-title">🧢 Coaching Staff & Display Ordering</h2>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">Use the ⬆️ and ⬇️ buttons on each card to change the exact order coaches appear on the homepage.</p>
-            
-            <form id="addCoachForm" onsubmit="handleAddCoach(event)" style="margin-bottom:2rem; border-bottom:var(--border-thin); padding-bottom:1.5rem;">
-                <h3 style="font-family:'Impact', sans-serif; font-size:1.2rem; text-transform:uppercase; color:var(--gold-accent);">➕ Add New Coach</h3>
-                <div class="form-grid">
-                    <div class="input-group"><label>Coach Name</label><input type="text" id="new_coach_name" placeholder="e.g. Alex Rodriguez" required></div>
-                    <div class="input-group"><label>Role / Title</label><input type="text" id="new_coach_role" placeholder="e.g. Pitching Coach" required></div>
-                    <div class="input-group" style="grid-column: 1 / -1;">
-                        <label>Coach Bio (Expandable Text Box - Paragraph Breaks Preserved)</label>
-                        <textarea id="new_coach_bio" placeholder="Full background, playing experience, coaching philosophy..."></textarea>
+                <div class="admin-form-module">
+                    <form id="addCoachForm" onsubmit="handleAddCoach(event)">
+                        <h3 style="font-family:'Impact', sans-serif; font-size:1.4rem; text-transform:uppercase; color:var(--gold-accent);">➕ Add New Coach</h3>
+                        <div class="form-grid">
+                            <div class="input-group"><label>Coach Name</label><input type="text" id="new_coach_name" placeholder="e.g. Coach Taylor" required></div>
+                            <div class="input-group"><label>Role / Title</label><input type="text" id="new_coach_role" placeholder="e.g. Associate Head Coach" required></div>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label>Coach Bio (Paragraph Breaks Preserved)</label>
+                                <textarea id="new_coach_bio" placeholder="Write full bio and coaching history..."></textarea>
+                            </div>
+                            <div class="input-group"><label>Headshot Photo</label><input type="file" id="new_coach_photo" accept="image/*"></div>
+                        </div>
+                        <button type="submit" class="btn-submit">➕ Save & Add Coach</button>
+                    </form>
+                </div>
+
+                <h2 class="toolbar-title" style="margin-bottom:1.25rem;">Current Coaching Staff Ranking</h2>
+                <div id="coachListContainer" class="roster-grid">
+                    <div style="color:var(--text-muted);">Loading coaching staff...</div>
+                </div>
+            </section>
+
+            <!-- TAB 2: MASTER ROSTER & METRICS -->
+            <section id="tab-roster" class="tab-content-section">
+                <div class="page-header">
+                    <h1>📋 Master Roster & Metrics</h1>
+                    <p>Edit player showcase metrics, FieldLevel links, and ledger balances.</p>
+                </div>
+
+                <div class="roster-grid" id="adminRosterContainer">
+                    <div style="color:var(--text-muted);">Loading active players from database...</div>
+                </div>
+            </section>
+
+            <!-- TAB 3: SECURITY PIN RESET ENGINE -->
+            <section id="tab-pins" class="tab-content-section">
+                <div class="page-header">
+                    <h1>🔑 Security PIN Management</h1>
+                    <p>Assign or override player and parent portal access PINs.</p>
+                </div>
+
+                <div class="admin-form-module">
+                    <h2 class="toolbar-title">Player Security PIN Override</h2>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
+                        Select any player from the dropdown list to inspect or change their security PIN.
+                    </p>
+
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Select Player</label>
+                            <select id="pinSelectPlayer" onchange="displaySelectedPlayerPIN()">
+                                <option value="">-- Choose Player --</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Current Assigned PIN</label>
+                            <input type="text" id="pinDisplayCurrent" placeholder="Select player above..." readonly style="background:#000; color:var(--gold-accent); font-weight:900;">
+                        </div>
+                        <div class="input-group">
+                            <label>New PIN Code</label>
+                            <input type="text" id="pinNewValue" placeholder="e.g. 5678">
+                        </div>
                     </div>
-                    <div class="input-group"><label>Headshot Photo</label><input type="file" id="new_coach_photo" accept="image/*"></div>
+                    <button type="button" class="btn-submit" onclick="overridePlayerPIN()">💾 Override & Save Player PIN</button>
                 </div>
-                <button type="submit" class="btn-submit">➕ Save & Add Coach</button>
-            </form>
+            </section>
 
-            <div id="coachListContainer" class="roster-grid">
-                <div style="color:var(--text-muted);">Loading coaching staff...</div>
-            </div>
-        </section>
+            <!-- TAB 4: ANNOUNCEMENTS & NOTES -->
+            <section id="tab-settings" class="tab-content-section">
+                <div class="page-header">
+                    <h1>📢 Site Announcement Banner & Coach Notes</h1>
+                    <p>Update live top alert messages and Head Coach's Corner text.</p>
+                </div>
 
-        <!-- BASEBALL TRAINING RSS FEEDS APPROVAL MODULE -->
-        <section class="admin-form-module">
-            <h2 class="toolbar-title">📡 Baseball Training RSS Feed Moderation Engine</h2>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">Fetch live baseball development articles and toggle "Approve" to display them on the homepage.</p>
-            
-            <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;">
-                <button type="button" class="btn-submit" style="margin-top:0;" onclick="fetchRSSFromSource('Driveline Baseball', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.drivelinebaseball.com%2Ffeed%2F')">📡 Fetch Driveline RSS</button>
-                <button type="button" class="btn-submit" style="margin-top:0; background:#202028; border:var(--border-thin);" onclick="fetchRSSFromSource('Youth Baseball Edge', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.youthbaseballedge.com%2Ffeed%2F')">📡 Fetch Youth Edge RSS</button>
-            </div>
+                <div class="admin-form-module">
+                    <form onsubmit="handleSaveSiteSettings(event)">
+                        <div class="form-grid">
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label>Top Announcement Banner Text</label>
+                                <input type="text" id="cfg_announcement" placeholder="e.g. Weather Alert: Practice moved inside at 5 PM">
+                            </div>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label>Head Coach's Corner Notes (Paragraph Breaks Preserved)</label>
+                                <textarea id="cfg_coach_notes" rows="5" placeholder="Weekly focus points or tournament notes..."></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">💾 Save Banner & Notes</button>
+                    </form>
+                </div>
+            </section>
 
-            <div id="rssFeedContainer" class="roster-grid">
-                <div style="color:var(--text-muted);">Click a fetch button above to load articles for moderation...</div>
-            </div>
-        </section>
+            <!-- TAB 5: ADD NEW PLAYER -->
+            <section id="tab-add-player" class="tab-content-section">
+                <div class="page-header">
+                    <h1>➕ Add New Player to Database</h1>
+                    <p>Create a new athlete record with default PIN and team assignment.</p>
+                </div>
 
-        <!-- ANNOUNCEMENTS & COACH NOTES -->
-        <section class="admin-form-module">
-            <h2 class="toolbar-title">📢 Announcement Banner & Coach Notes</h2>
-            <form onsubmit="handleSaveSiteSettings(event)">
-                <div class="form-grid">
-                    <div class="input-group" style="grid-column: 1 / -1;">
-                        <label>Top Announcement Banner Text</label>
-                        <input type="text" id="cfg_announcement" placeholder="e.g. Rainout Notice: Practice moved to indoor facility at 5 PM">
-                    </div>
-                    <div class="input-group" style="grid-column: 1 / -1;">
-                        <label>Head Coach's Corner Notes</label>
-                        <textarea id="cfg_coach_notes" rows="3" placeholder="Weekly focus points or tournament notes..."></textarea>
+                <div class="admin-form-module">
+                    <form id="addPlayerForm" onsubmit="handleAddPlayer(event)">
+                        <div class="form-grid">
+                            <div class="input-group"><label>Player Name</label><input type="text" id="new_name" placeholder="e.g. John Doe" required></div>
+                            <div class="input-group">
+                                <label>Division / Team</label>
+                                <select id="new_team">
+                                    <option value="18U Division">18U Division</option>
+                                    <option value="16U Division">16U Division</option>
+                                    <option value="14U Division">14U Division</option>
+                                    <option value="Hybrid">Hybrid (16U & 18U)</option>
+                                </select>
+                            </div>
+                            <div class="input-group"><label>Age</label><input type="text" id="new_age" placeholder="e.g. 15 Yrs" required></div>
+                            <div class="input-group"><label>Positions</label><input type="text" id="new_pos" placeholder="e.g. Pitcher, SS" required></div>
+                            <div class="input-group"><label>Parent Email</label><input type="email" id="new_email" placeholder="parent@example.com" required></div>
+                            <div class="input-group"><label>Initial Security PIN</label><input type="text" id="new_pin" placeholder="1234" value="1234"></div>
+                            <div class="input-group"><label>Headshot Photo</label><input type="file" id="new_photo" accept="image/*"></div>
+                        </div>
+                        <button type="submit" class="btn-submit">💾 Save Player to Supabase</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 6: INFRASTRUCTURE QUICK LINKS -->
+            <section id="tab-links" class="tab-content-section">
+                <div class="page-header">
+                    <h1>⚡ Database & Cloud Quick Links</h1>
+                    <p>Direct access to Supabase database tables, storage, and deployment.</p>
+                </div>
+
+                <div class="toolbar-module">
+                    <div class="toolbar-grid">
+                        <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/editor" target="_blank" class="tool-btn"><span>📊</span><div><div>Players Table</div></div></a>
+                        <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/storage/buckets/player-photos" target="_blank" class="tool-btn"><span>📷</span><div><div>Photos Storage</div></div></a>
+                        <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/sql/new" target="_blank" class="tool-btn"><span>>_</span><div><div>SQL Editor</div></div></a>
+                        <a href="https://app.netlify.com/projects/redrockbaseball/overview" target="_blank" class="tool-btn"><span>🚀</span><div><div>Netlify Control</div></div></a>
                     </div>
                 </div>
-                <button type="submit" class="btn-submit">💾 Save Banner & Notes</button>
-            </form>
-        </section>
+            </section>
 
-        <!-- ADD PLAYER MODULE -->
-        <section class="admin-form-module">
-            <h2 class="toolbar-title">➕ Add New Player to Database</h2>
-            <form id="addPlayerForm" onsubmit="handleAddPlayer(event)">
-                <div class="form-grid">
-                    <div class="input-group"><label>Player Name</label><input type="text" id="new_name" placeholder="e.g. John Doe" required></div>
-                    <div class="input-group">
-                        <label>Division / Team</label>
-                        <select id="new_team">
-                            <option value="18U Division">18U Division</option>
-                            <option value="16U Division">16U Division</option>
-                            <option value="14U Division">14U Division</option>
-                            <option value="Hybrid">Hybrid (16U & 18U)</option>
-                        </select>
-                    </div>
-                    <div class="input-group"><label>Age</label><input type="text" id="new_age" placeholder="e.g. 15 Yrs" required></div>
-                    <div class="input-group"><label>Positions</label><input type="text" id="new_pos" placeholder="e.g. Pitcher, SS" required></div>
-                    <div class="input-group"><label>Parent Email</label><input type="email" id="new_email" placeholder="parent@example.com" required></div>
-                    <div class="input-group"><label>Initial Security PIN</label><input type="text" id="new_pin" placeholder="1234" value="1234"></div>
-                    <div class="input-group"><label>Headshot Photo</label><input type="file" id="new_photo" accept="image/*"></div>
+            <!-- TAB 7: RSS FEED MODERATION -->
+            <section id="tab-rss" class="tab-content-section">
+                <div class="page-header">
+                    <h1>📡 Baseball Training RSS Feed Moderation</h1>
+                    <p>Approve articles to automatically feature them on the homepage.</p>
                 </div>
-                <button type="submit" class="btn-submit">💾 Save Player to Supabase</button>
-            </form>
-        </section>
 
-        <h2 class="toolbar-title" style="margin-bottom:1.25rem;">📋 Master Roster, Recruiting Metrics & Ledger</h2>
-        <div class="roster-grid" id="adminRosterContainer">
-            <div style="color:var(--text-muted);">Loading active players from database...</div>
-        </div>
-    </main>
+                <div class="admin-form-module">
+                    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+                        <button type="button" class="btn-submit" style="margin-top:0;" onclick="fetchRSSFromSource('Driveline Baseball', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.drivelinebaseball.com%2Ffeed%2F')">📡 Fetch Driveline RSS</button>
+                        <button type="button" class="btn-submit" style="margin-top:0; background:#202028; border:var(--border-thin);" onclick="fetchRSSFromSource('Youth Baseball Edge', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.youthbaseballedge.com%2Ffeed%2F')">📡 Fetch Youth Edge RSS</button>
+                    </div>
+
+                    <div id="rssFeedContainer" class="roster-grid">
+                        <div style="color:var(--text-muted);">Click a fetch button above to load articles for moderation...</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
 
     <!-- COACH BIO EDITING MODAL -->
     <div id="coachBioModal" class="modal-overlay">
         <div class="modal-content">
-            <h3>✏️ Edit Coach Bio & Details</h3>
+            <h3>✏️ Edit Coach Bio & Info</h3>
             <div class="input-group" style="margin-bottom:1rem;">
                 <label>Coach Name</label>
                 <input type="text" id="bioModalName">
@@ -298,7 +436,7 @@
                 <input type="text" id="bioModalRole">
             </div>
             <div class="input-group">
-                <label>Biography (Line Breaks & Paragraph Formatting Preserved)</label>
+                <label>Biography (Paragraph Formatting Preserved)</label>
                 <textarea id="bioModalText" placeholder="Write full bio here..."></textarea>
             </div>
             <div class="modal-btn-group">
@@ -311,7 +449,7 @@
     <!-- PLAYER METRICS EDITING MODAL -->
     <div id="playerEditModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 id="playerModalTitle">✏️ Edit Player Showcase & Metrics</h3>
+            <h3>✏️ Edit Player Showcase & Metrics</h3>
             <div class="form-grid">
                 <div class="input-group"><label>Player Name</label><input type="text" id="pm_name"></div>
                 <div class="input-group"><label>Positions</label><input type="text" id="pm_pos"></div>
@@ -344,6 +482,15 @@
         let activeEditingCoachId = null;
         let activeEditingPlayerId = null;
 
+        // TAB SWITCHING FUNCTION
+        function switchAdminTab(tabId) {
+            document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content-section').forEach(sec => sec.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
         async function initCoachesHub() {
             await loadSiteSettings();
             await loadCoaches();
@@ -361,7 +508,7 @@
             } catch (err) { console.error("Settings error:", err); }
         }
 
-        /* COACH CONTROLS */
+        /* COACHES & DROPDOWN RANK ORDERING */
         async function loadCoaches() {
             try {
                 let { data: coaches } = await supabaseClient.from('coaches').select('*').order('display_order', { ascending: true });
@@ -380,23 +527,31 @@
                         ? `<img src="${c.photo_url}" class="photo-preview" alt="${c.name}">`
                         : `<div class="photo-preview" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:700;">🧢 No Coach Photo</div>`;
 
-                    let orderVal = c.display_order || (idx + 1);
+                    let currentOrder = c.display_order || (idx + 1);
+
+                    // Build Rank Position Options Dropdown
+                    let rankOptions = loadedCoaches.map((_, i) => {
+                        let rankNum = i + 1;
+                        return `<option value="${rankNum}" ${rankNum === currentOrder ? 'selected' : ''}>Rank #${rankNum}</option>`;
+                    }).join('');
 
                     container.innerHTML += `
                         <div class="coach-card-hub">
                             <div>
                                 ${photoDisplay}
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
                                     <h4 style="font-family:'Impact', sans-serif; font-size:1.6rem; text-transform:uppercase; color:#fff;">${c.name}</h4>
-                                    <span style="background:var(--red-accent); color:#fff; font-size:0.65rem; font-weight:900; padding:0.2rem 0.5rem; border-radius:4px;">Rank #${orderVal}</span>
+                                    
+                                    <!-- DIRECT DROPDOWN RANK SELECTOR -->
+                                    <select onchange="updateCoachRank('${c.id}', this.value)" style="background:#000; color:var(--gold-accent); font-weight:900; border:1px solid var(--gold-accent); border-radius:6px; padding:0.25rem 0.5rem; font-size:0.75rem;">
+                                        ${rankOptions}
+                                    </select>
                                 </div>
                                 <span style="font-size:0.75rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.5rem;">${c.role}</span>
-                                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.5; white-space: pre-wrap; max-height: 100px; overflow-y: auto; background: var(--bg-input); padding: 0.5rem; border-radius: 6px;">${c.bio || 'No bio provided.'}</div>
+                                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.5; white-space: pre-wrap; max-height: 110px; overflow-y: auto; background: var(--bg-input); padding: 0.6rem; border-radius: 6px;">${c.bio || 'No bio provided.'}</div>
                                 
                                 <div style="display:flex; gap:0.4rem; margin-bottom:0.75rem;">
-                                    <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="openBioModal('${c.id}')">✏️ Edit Bio & Info</button>
-                                    <button class="btn-small" style="background:#111; border:1px solid #333;" onclick="moveCoachOrder('${c.id}', ${orderVal - 1})">⬆️ Up</button>
-                                    <button class="btn-small" style="background:#111; border:1px solid #333;" onclick="moveCoachOrder('${c.id}', ${orderVal + 1})">⬇️️ Down</button>
+                                    <button class="btn-small" style="background:#202028; border:1px solid #333; width:100%;" onclick="openBioModal('${c.id}')">✏️ Edit Bio & Role</button>
                                 </div>
 
                                 <div style="margin-bottom:0.75rem; background:var(--bg-input); padding:0.6rem; border-radius:6px; border:var(--border-thin);">
@@ -413,6 +568,18 @@
                     `;
                 });
             } catch (err) { console.error("Coach load error:", err); }
+        }
+
+        async function updateCoachRank(coachId, newRank) {
+            const parsedRank = parseInt(newRank);
+            if (isNaN(parsedRank)) return;
+
+            const { error } = await supabaseClient.from('coaches').update({ display_order: parsedRank }).eq('id', coachId);
+            if (error) {
+                alert('Error updating coach rank: ' + error.message);
+            } else {
+                await loadCoaches();
+            }
         }
 
         function openBioModal(coachId) {
@@ -443,12 +610,6 @@
             const { error } = await supabaseClient.from('coaches').update(updates).eq('id', activeEditingCoachId);
             if (error) alert('Error updating coach: ' + error.message);
             else { closeBioModal(); loadCoaches(); }
-        }
-
-        async function moveCoachOrder(coachId, newOrder) {
-            if (newOrder < 1) return;
-            const { error } = await supabaseClient.from('coaches').update({ display_order: newOrder }).eq('id', coachId);
-            if (!error) loadCoaches();
         }
 
         async function handleAddCoach(event) {
@@ -680,12 +841,8 @@
             };
 
             const { error } = await supabaseClient.from('players').update(updates).eq('id', activeEditingPlayerId);
-            if (error) {
-                alert('Error updating player: ' + error.message);
-            } else {
-                closePlayerModal();
-                loadMasterRoster();
-            }
+            if (error) alert('Error updating player: ' + error.message);
+            else { closePlayerModal(); loadMasterRoster(); }
         }
 
         function populatePINPlayerDropdown() {
