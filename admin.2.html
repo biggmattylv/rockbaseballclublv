@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coaches Hub & Admin Portal | The Rock Baseball Club</title>
 
+    <!-- PASSCODE LOCK SECURITY -->
     <script>
         (function() {
             const COACH_HUB_PASSWORD = "ROCK2026";
@@ -69,6 +70,14 @@
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
         .input-group label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.75rem; color: #fff; font-weight: 600; }
+        
+        /* Expandable Textarea Style */
+        .input-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.5;
+        }
 
         .toggle-group { display: flex; align-items: center; gap: 0.75rem; background: var(--bg-input); padding: 0.75rem; border-radius: 8px; border: var(--border-thin); }
         .toggle-group label { font-size: 0.8rem; font-weight: 800; color: #fff; margin: 0; text-transform: uppercase; }
@@ -101,6 +110,32 @@
         .metrics-preview-box { background: var(--bg-input); border: var(--border-thin); border-radius: 6px; padding: 0.65rem; margin: 0.5rem 0; font-size: 0.75rem; color: var(--text-muted); }
         .metrics-preview-box div { display: flex; justify-content: space-between; padding: 0.15rem 0; }
         .metrics-preview-box strong { color: #fff; }
+
+        /* Custom Modal for Bio Editing */
+        .bio-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center; z-index: 10000;
+        }
+
+        .bio-modal-content {
+            background: #14141c; border: 2px solid var(--red-accent);
+            border-radius: 12px; padding: 2rem; width: 90%; max-width: 650px;
+            box-shadow: 0 0 35px var(--red-glow);
+        }
+
+        .bio-modal-content h3 {
+            font-family: 'Impact', sans-serif; font-size: 1.8rem;
+            text-transform: uppercase; color: #fff; margin-bottom: 1rem;
+        }
+
+        .bio-modal-content textarea {
+            width: 100%; height: 220px; background: #08080c; border: var(--border-thin);
+            border-radius: 8px; padding: 1rem; color: #fff; font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem; line-height: 1.6; resize: vertical; margin-bottom: 1rem;
+        }
+
+        .modal-btn-group { display: flex; justify-content: flex-end; gap: 0.75rem; }
     </style>
 </head>
 <body>
@@ -128,9 +163,10 @@
     <main>
         <div class="page-header">
             <h1>Coaches Hub Command Center</h1>
-            <p>Master Site Controls, Quick Links, Player Metrics, Coaching Staff Order, and Ledger</p>
+            <p>Master Site Controls, Quick Links, Player Metrics, Security PINs, Coaching Staff Order, and Ledger</p>
         </div>
 
+        <!-- DATABASE TOOLBAR -->
         <section class="toolbar-module">
             <h2 class="toolbar-title">⚡ Database & Infrastructure Quick Links</h2>
             <div class="toolbar-grid">
@@ -141,6 +177,33 @@
             </div>
         </section>
 
+        <!-- PLAYER SECURITY PIN OVERRIDE ENGINE -->
+        <section class="admin-form-module">
+            <h2 class="toolbar-title">🔑 Player Security PIN Reset Engine</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
+                Select any player from the dropdown to view or override their security PIN for portal access.
+            </p>
+
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Select Player</label>
+                    <select id="pinSelectPlayer" onchange="displaySelectedPlayerPIN()">
+                        <option value="">-- Choose Player --</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Current Assigned PIN</label>
+                    <input type="text" id="pinDisplayCurrent" placeholder="Select player above..." readonly style="background:#000; color:var(--gold-accent); font-weight:900;">
+                </div>
+                <div class="input-group">
+                    <label>New PIN Code</label>
+                    <input type="text" id="pinNewValue" placeholder="e.g. 5678">
+                </div>
+            </div>
+            <button type="button" class="btn-submit" onclick="overridePlayerPIN()">💾 Override & Save Player PIN</button>
+        </section>
+
+        <!-- COACHING STAFF MANAGER -->
         <section class="admin-form-module">
             <h2 class="toolbar-title">🧢 Coaching Staff & Display Ordering</h2>
             <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">Use the ⬆️ and ⬇️ buttons on each card to change the exact order coaches appear on the homepage.</p>
@@ -150,7 +213,10 @@
                 <div class="form-grid">
                     <div class="input-group"><label>Coach Name</label><input type="text" id="new_coach_name" placeholder="e.g. Alex Rodriguez" required></div>
                     <div class="input-group"><label>Role / Title</label><input type="text" id="new_coach_role" placeholder="e.g. Pitching Coach" required></div>
-                    <div class="input-group" style="grid-column: 1 / -1;"><label>Bio</label><input type="text" id="new_coach_bio" placeholder="Brief background..."></div>
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label>Coach Bio (Expandable Text Box)</label>
+                        <textarea id="new_coach_bio" placeholder="Full background, playing experience, coaching philosophy..."></textarea>
+                    </div>
                     <div class="input-group"><label>Headshot Photo</label><input type="file" id="new_coach_photo" accept="image/*"></div>
                 </div>
                 <button type="submit" class="btn-submit">➕ Save & Add Coach</button>
@@ -161,6 +227,7 @@
             </div>
         </section>
 
+        <!-- BASEBALL TRAINING RSS FEEDS APPROVAL MODULE -->
         <section class="admin-form-module">
             <h2 class="toolbar-title">📡 Baseball Training RSS Feed Moderation Engine</h2>
             <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">Fetch live baseball development articles and toggle "Approve" to display them on the homepage.</p>
@@ -175,6 +242,7 @@
             </div>
         </section>
 
+        <!-- ANNOUNCEMENTS & COACH NOTES -->
         <section class="admin-form-module">
             <h2 class="toolbar-title">📢 Announcement Banner & Coach Notes</h2>
             <form onsubmit="handleSaveSiteSettings(event)">
@@ -192,6 +260,7 @@
             </form>
         </section>
 
+        <!-- ADD PLAYER MODULE -->
         <section class="admin-form-module">
             <h2 class="toolbar-title">➕ Add New Player to Database</h2>
             <form id="addPlayerForm" onsubmit="handleAddPlayer(event)">
@@ -209,6 +278,7 @@
                     <div class="input-group"><label>Age</label><input type="text" id="new_age" placeholder="e.g. 15 Yrs" required></div>
                     <div class="input-group"><label>Positions</label><input type="text" id="new_pos" placeholder="e.g. Pitcher, SS" required></div>
                     <div class="input-group"><label>Parent Email</label><input type="email" id="new_email" placeholder="parent@example.com" required></div>
+                    <div class="input-group"><label>Initial Security PIN</label><input type="text" id="new_pin" placeholder="1234" value="1234"></div>
                     <div class="input-group"><label>Headshot Photo</label><input type="file" id="new_photo" accept="image/*"></div>
                 </div>
                 <button type="submit" class="btn-submit">💾 Save Player to Supabase</button>
@@ -221,6 +291,29 @@
         </div>
     </main>
 
+    <!-- EXPANDABLE COACH BIO EDITOR MODAL -->
+    <div id="coachBioModal" class="bio-modal-overlay">
+        <div class="bio-modal-content">
+            <h3 id="bioModalTitle">✏️ Edit Coach Bio</h3>
+            <div class="input-group" style="margin-bottom:1rem;">
+                <label>Coach Name</label>
+                <input type="text" id="bioModalName">
+            </div>
+            <div class="input-group" style="margin-bottom:1rem;">
+                <label>Role / Title</label>
+                <input type="text" id="bioModalRole">
+            </div>
+            <div class="input-group">
+                <label>Biography (Stretch or add paragraph breaks as needed)</label>
+                <textarea id="bioModalText" placeholder="Write full bio here..."></textarea>
+            </div>
+            <div class="modal-btn-group">
+                <button class="btn-small" style="background:#333;" onclick="closeBioModal()">Cancel</button>
+                <button class="btn-submit" style="margin-top:0;" onclick="saveCoachBioModal()">💾 Save Coach Details</button>
+            </div>
+        </div>
+    </div>
+
     <footer>&copy; 2026 The Rock Baseball Club — Summerlin, NV</footer>
 
     <script>
@@ -230,6 +323,7 @@
 
         let activePlayers = [];
         let loadedCoaches = [];
+        let activeEditingCoachId = null;
 
         async function initCoachesHub() {
             await loadSiteSettings();
@@ -248,6 +342,7 @@
             } catch (err) { console.error("Settings error:", err); }
         }
 
+        /* COACHES & DISPLAY ORDER CONTROLS */
         async function loadCoaches() {
             try {
                 let { data: coaches } = await supabaseClient.from('coaches').select('*').order('display_order', { ascending: true });
@@ -277,10 +372,10 @@
                                     <span style="background:var(--red-accent); color:#fff; font-size:0.65rem; font-weight:900; padding:0.2rem 0.5rem; border-radius:4px;">Rank #${orderVal}</span>
                                 </div>
                                 <span style="font-size:0.75rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.5rem;">${c.role}</span>
-                                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.4;">${c.bio || 'No bio provided.'}</p>
+                                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem; line-height:1.5; white-space: pre-wrap; max-height: 100px; overflow-y: auto; background: var(--bg-input); padding: 0.5rem; border-radius: 6px;">${c.bio || 'No bio provided.'}</div>
                                 
                                 <div style="display:flex; gap:0.4rem; margin-bottom:0.75rem;">
-                                    <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="editCoachDetails('${c.id}')">✏️ Edit</button>
+                                    <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="openBioModal('${c.id}')">✏️ Edit Bio & Info</button>
                                     <button class="btn-small" style="background:#111; border:1px solid #333;" onclick="moveCoachOrder('${c.id}', ${orderVal - 1})">⬆️ Up</button>
                                     <button class="btn-small" style="background:#111; border:1px solid #333;" onclick="moveCoachOrder('${c.id}', ${orderVal + 1})">⬇️ Down</button>
                                 </div>
@@ -299,6 +394,40 @@
                     `;
                 });
             } catch (err) { console.error("Coach load error:", err); }
+        }
+
+        function openBioModal(coachId) {
+            let coach = loadedCoaches.find(c => c.id === coachId);
+            if (!coach) return;
+
+            activeEditingCoachId = coachId;
+            document.getElementById('bioModalName').value = coach.name;
+            document.getElementById('bioModalRole').value = coach.role;
+            document.getElementById('bioModalText').value = coach.bio || '';
+            document.getElementById('coachBioModal').style.display = 'flex';
+        }
+
+        function closeBioModal() {
+            document.getElementById('coachBioModal').style.display = 'none';
+            activeEditingCoachId = null;
+        }
+
+        async function saveCoachBioModal() {
+            if (!activeEditingCoachId) return;
+
+            const updates = {
+                name: document.getElementById('bioModalName').value,
+                role: document.getElementById('bioModalRole').value,
+                bio: document.getElementById('bioModalText').value
+            };
+
+            const { error } = await supabaseClient.from('coaches').update(updates).eq('id', activeEditingCoachId);
+            if (error) {
+                alert('Error updating coach bio: ' + error.message);
+            } else {
+                closeBioModal();
+                loadCoaches();
+            }
         }
 
         async function moveCoachOrder(coachId, newOrder) {
@@ -330,22 +459,6 @@
             else { alert('🧢 Coach added successfully!'); document.getElementById('addCoachForm').reset(); loadCoaches(); }
         }
 
-        async function editCoachDetails(coachId) {
-            let coach = loadedCoaches.find(c => c.id === coachId);
-            if (!coach) return;
-
-            let newName = prompt("Update Coach Name:", coach.name);
-            if (newName === null) return;
-            let newRole = prompt("Update Coach Role/Title:", coach.role);
-            if (newRole === null) return;
-            let newBio = prompt("Update Coach Bio:", coach.bio || '');
-            if (newBio === null) return;
-
-            const updates = { name: newName, role: newRole, bio: newBio };
-            const { error } = await supabaseClient.from('coaches').update(updates).eq('id', coachId);
-            if (!error) loadCoaches();
-        }
-
         async function uploadCoachPhoto(coachId) {
             const file = document.getElementById(`coach-upload-${coachId}`).files[0];
             if (!file) return;
@@ -361,6 +474,7 @@
             await supabaseClient.from('coaches').update({ active: isChecked }).eq('id', coachId);
         }
 
+        /* RSS MODERATION ENGINE */
         async function fetchRSSFromSource(sourceName, feedApiUrl) {
             try {
                 let res = await fetch(feedApiUrl);
@@ -429,10 +543,13 @@
             alert('✅ Site settings saved!');
         }
 
+        /* MASTER ROSTER & PIN MANAGEMENT */
         async function loadMasterRoster() {
             try {
                 let { data: players } = await supabaseClient.from('players').select('*').eq('active', true).order('name', { ascending: true });
                 activePlayers = players || [];
+
+                populatePINPlayerDropdown();
 
                 const container = document.getElementById('adminRosterContainer');
                 container.innerHTML = '';
@@ -463,8 +580,9 @@
                                     <span class="badge-team">${p.team}</span>
                                 </div>
                                 <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">
-                                    <div><strong>Age:</strong> ${p.age} | <strong>Positions:</strong> ${p.pos}</div>
+                                    <div><strong>Age:</strong> ${p.age} | <strong>Pos:</strong> ${p.pos}</div>
                                     <div><strong>Email:</strong> ${p.email}</div>
+                                    <div><strong>Portal PIN:</strong> <span style="color:var(--gold-accent); font-weight:900;">${p.pin || '1234'}</span></div>
                                 </div>
 
                                 <div class="metrics-preview-box">
@@ -473,7 +591,6 @@
                                     <div><span>Exit Velo:</span> <strong>${p.exit_velo ? p.exit_velo + ' MPH' : '--'}</strong></div>
                                     <div><span>FB Velo:</span> <strong>${p.fastball_velo ? p.fastball_velo + ' MPH' : '--'}</strong></div>
                                     <div><span>Status:</span> <strong style="color:var(--gold-accent);">${p.commit_status || 'UNCOMMITTED'}</strong></div>
-                                    <div><span>Twitter/X:</span> <strong>${p.twitter_handle || 'None'}</strong></div>
                                     <div><span>FieldLevel:</span> <strong>${p.fieldlevel_url ? 'Linked' : 'None'}</strong></div>
                                 </div>
 
@@ -505,6 +622,46 @@
             } catch (err) { console.error("Roster error:", err); }
         }
 
+        function populatePINPlayerDropdown() {
+            const select = document.getElementById('pinSelectPlayer');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Choose Player --</option>';
+
+            activePlayers.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.name} (${p.team})</option>`;
+            });
+        }
+
+        function displaySelectedPlayerPIN() {
+            const pId = document.getElementById('pinSelectPlayer').value;
+            const player = activePlayers.find(p => p.id === pId);
+
+            if (player) {
+                document.getElementById('pinDisplayCurrent').value = player.pin || '1234';
+            } else {
+                document.getElementById('pinDisplayCurrent').value = '';
+            }
+        }
+
+        async function overridePlayerPIN() {
+            const pId = document.getElementById('pinSelectPlayer').value;
+            const newPin = document.getElementById('pinNewValue').value;
+
+            if (!pId) { alert("Please select a player first."); return; }
+            if (!newPin || newPin.trim().length < 4) { alert("Please enter a valid 4-digit PIN."); return; }
+
+            const { error } = await supabaseClient.from('players').update({ pin: newPin.trim() }).eq('id', pId);
+
+            if (error) {
+                alert("Error updating PIN: " + error.message);
+            } else {
+                alert("✅ Success! Security PIN overridden successfully.");
+                document.getElementById('pinNewValue').value = '';
+                await loadMasterRoster();
+                populatePINPlayerDropdown();
+            }
+        }
+
         async function editPlayerDetails(playerId) {
             let player = activePlayers.find(p => p.id === playerId);
             if (!player) return;
@@ -533,11 +690,14 @@
             let newTwitter = prompt("Update Twitter / X Handle (e.g. @PlayerHandle):", player.twitter_handle || "");
             if (newTwitter === null) return;
 
-            let newFieldLevel = prompt("Update FieldLevel URL (e.g. https://www.fieldlevel.com/app/profile/...):", player.fieldlevel_url || "");
+            let newFieldLevel = prompt("Update FieldLevel URL:", player.fieldlevel_url || "");
             if (newFieldLevel === null) return;
 
             let newStatus = prompt("Update Commitment Status (e.g. UNCOMMITTED, COMMITTED - UNLV):", player.commit_status || "UNCOMMITTED");
             if (newStatus === null) return;
+
+            let newPin = prompt("Update Security PIN:", player.pin || "1234");
+            if (newPin === null) return;
 
             const updates = {
                 name: newName,
@@ -549,7 +709,8 @@
                 fastball_velo: newFBVelo,
                 twitter_handle: newTwitter,
                 fieldlevel_url: newFieldLevel,
-                commit_status: newStatus
+                commit_status: newStatus,
+                pin: newPin.trim()
             };
 
             const { error } = await supabaseClient.from('players').update(updates).eq('id', playerId);
@@ -569,10 +730,16 @@
             if (photoFile) photoUrl = await uploadImageFile(photoFile, playerId);
 
             const newPlayer = {
-                id: playerId, name: document.getElementById('new_name').value,
-                team: document.getElementById('new_team').value, age: document.getElementById('new_age').value,
-                pos: document.getElementById('new_pos').value, email: document.getElementById('new_email').value,
-                photo_url: photoUrl, active: true, ledger: []
+                id: playerId, 
+                name: document.getElementById('new_name').value,
+                team: document.getElementById('new_team').value, 
+                age: document.getElementById('new_age').value,
+                pos: document.getElementById('new_pos').value, 
+                email: document.getElementById('new_email').value,
+                pin: document.getElementById('new_pin').value || '1234',
+                photo_url: photoUrl, 
+                active: true, 
+                ledger: []
             };
 
             await supabaseClient.from('players').insert([newPlayer]);
