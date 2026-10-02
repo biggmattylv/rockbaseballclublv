@@ -8,7 +8,7 @@
     <!-- PASSCODE LOCK SECURITY -->
     <script>
         (function() {
-            window.scrollTo(0, 0); // Force top load
+            window.scrollTo(0, 0);
             const COACH_HUB_PASSWORD = "ROCK2026";
             const authenticated = sessionStorage.getItem("coaches_hub_auth");
 
@@ -119,16 +119,6 @@
         .page-header h1 { font-family: 'Impact', sans-serif; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
         .page-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.3rem; }
 
-        .toolbar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-
-        .tool-btn {
-            background: var(--bg-input); border: var(--border-thin); color: var(--text-light);
-            text-decoration: none; padding: 1.25rem 1rem; border-radius: 10px; display: flex;
-            align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.2s ease;
-        }
-
-        .tool-btn:hover { border-color: var(--red-accent); background: #151520; box-shadow: 0 0 15px var(--red-glow); transform: translateY(-2px); }
-
         .admin-form-module {
             background-color: var(--bg-module); border: var(--border-thin);
             border-radius: var(--radius-module); padding: 2rem; margin-bottom: 2rem;
@@ -152,23 +142,10 @@
             white-space: pre-wrap;
         }
 
-        /* TOGGLE SWITCH STYLING */
-        .switch {
-            position: relative; display: inline-block; width: 48px; height: 24px;
-        }
-
+        .switch { position: relative; display: inline-block; width: 48px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #202028; transition: .3s; border-radius: 24px; border: 1px solid #333;
-        }
-
-        .slider:before {
-            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
-            background-color: white; transition: .3s; border-radius: 50%;
-        }
-
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #202028; transition: .3s; border-radius: 24px; border: 1px solid #333; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--red-accent); border-color: var(--red-accent); }
         input:checked + .slider:before { transform: translateX(24px); }
 
@@ -251,6 +228,8 @@
             <div class="sidebar-title">⚙️ Admin Menu</div>
             <button class="nav-tab-btn active" onclick="switchAdminTab('tab-coaches')">🧢 Coaching Staff</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-potw')">🏆 Player of the Week</button>
+            <button class="nav-tab-btn" onclick="switchAdminTab('tab-sponsors')">🤝 Sponsors</button>
+            <button class="nav-tab-btn" onclick="switchAdminTab('tab-events')">📅 Special Events</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-roster')">📋 Master Roster</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-pins')">🔑 Security PINs</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-settings')">📢 Site Banner & Notes</button>
@@ -291,7 +270,7 @@
                 </div>
             </section>
 
-            <!-- TAB 2: PLAYER OF THE WEEK & HIGHLIGHTS -->
+            <!-- TAB 2: PLAYER OF THE WEEK -->
             <section id="tab-potw" class="tab-content-section">
                 <div class="page-header">
                     <h1>🏆 Player of the Week & Division Highlights</h1>
@@ -313,24 +292,56 @@
                                 <label>14U Player of the Week</label>
                                 <input type="text" id="potw_14u" placeholder="e.g. Marcus Vance (.500 OBP, 4 SBs)">
                             </div>
-                            <div class="input-group" style="grid-column: 1 / -1;">
-                                <label>Weekly Tournament Highlights Summary</label>
-                                <textarea id="potw_summary" rows="4" placeholder="Highlight key team wins, championship runs, or top plays..."></textarea>
-                            </div>
                         </div>
-                        <button type="submit" class="btn-submit">💾 Save Player of the Week Highlights</button>
+                        <button type="submit" class="btn-submit">💾 Save Performers of the Week</button>
                     </form>
                 </div>
             </section>
 
-            <!-- TAB 3: MASTER ROSTER & METRICS -->
+            <!-- TAB 3: SPONSORS MANAGER -->
+            <section id="tab-sponsors" class="tab-content-section">
+                <div class="page-header">
+                    <h1>🤝 Official Club Sponsors</h1>
+                    <p>Add corporate sponsor logos and direct links for homepage showcase.</p>
+                </div>
+
+                <div class="admin-form-module">
+                    <form onsubmit="handleAddSponsor(event)">
+                        <div class="form-grid">
+                            <div class="input-group"><label>Sponsor Company Name</label><input type="text" id="spons_name" placeholder="e.g. Summerlin Orthodontics" required></div>
+                            <div class="input-group"><label>Website Link URL</label><input type="text" id="spons_url" placeholder="https://..." required></div>
+                            <div class="input-group"><label>Logo Image URL</label><input type="text" id="spons_logo" placeholder="https://.../logo.png"></div>
+                        </div>
+                        <button type="submit" class="btn-submit">➕ Save Sponsor</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 4: SPECIAL EVENTS MANAGER -->
+            <section id="tab-events" class="tab-content-section">
+                <div class="page-header">
+                    <h1>📅 Special Events & Fundraisers</h1>
+                    <p>Post chili cook-offs, home run derbies, and travel tournaments.</p>
+                </div>
+
+                <div class="admin-form-module">
+                    <form onsubmit="handleAddSpecialEvent(event)">
+                        <div class="form-grid">
+                            <div class="input-group"><label>Event Title</label><input type="text" id="ev_title" placeholder="e.g. Summerlin Home Run Derby" required></div>
+                            <div class="input-group" style="grid-column:1/-1;"><label>Event Details & Date</label><textarea id="ev_desc" placeholder="Date, location, entry details..."></textarea></div>
+                        </div>
+                        <button type="submit" class="btn-submit">➕ Post Special Event</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 5: MASTER ROSTER & METRICS -->
             <section id="tab-roster" class="tab-content-section">
                 <div class="page-header">
                     <h1>📋 Master Roster & Metrics</h1>
                     <p>Edit player metrics, FieldLevel links, and ledger balances.</p>
                 </div>
 
-                <!-- QUICK JUMP TO PLAYER DROPDOWN -->
                 <div class="admin-form-module" style="padding:1.25rem; margin-bottom:1.5rem;">
                     <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
                         <span style="font-weight:800; font-size:0.8rem; color:var(--gold-accent); text-transform:uppercase;">🔍 Jump to Player Card:</span>
@@ -345,7 +356,7 @@
                 </div>
             </section>
 
-            <!-- TAB 4: SECURITY PIN RESET ENGINE -->
+            <!-- TAB 6: SECURITY PIN RESET ENGINE -->
             <section id="tab-pins" class="tab-content-section">
                 <div class="page-header">
                     <h1>🔑 Security PIN Management</h1>
@@ -378,7 +389,7 @@
                 </div>
             </section>
 
-            <!-- TAB 5: ANNOUNCEMENTS & NOTES -->
+            <!-- TAB 7: ANNOUNCEMENTS & NOTES -->
             <section id="tab-settings" class="tab-content-section">
                 <div class="page-header">
                     <h1>📢 Site Announcement Banner & Coach Notes</h1>
@@ -402,7 +413,7 @@
                 </div>
             </section>
 
-            <!-- TAB 6: ADD NEW PLAYER -->
+            <!-- TAB 8: ADD NEW PLAYER -->
             <section id="tab-add-player" class="tab-content-section">
                 <div class="page-header">
                     <h1>➕ Add New Player to Database</h1>
@@ -433,7 +444,7 @@
                 </div>
             </section>
 
-            <!-- TAB 7: INFRASTRUCTURE QUICK LINKS -->
+            <!-- TAB 9: INFRASTRUCTURE QUICK LINKS -->
             <section id="tab-links" class="tab-content-section">
                 <div class="page-header">
                     <h1>⚡ Database & Cloud Quick Links</h1>
@@ -441,7 +452,7 @@
                 </div>
 
                 <div class="toolbar-module">
-                    <div class="toolbar-grid">
+                    <div class="toolbar-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
                         <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/editor" target="_blank" class="tool-btn"><span>📊</span><div><div>Players Table</div></div></a>
                         <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/storage/buckets/player-photos" target="_blank" class="tool-btn"><span>📷</span><div><div>Photos Storage</div></div></a>
                         <a href="https://supabase.com/dashboard/project/lhnizfqdwedvssvsezut/sql/new" target="_blank" class="tool-btn"><span>>_</span><div><div>SQL Editor</div></div></a>
@@ -450,7 +461,7 @@
                 </div>
             </section>
 
-            <!-- TAB 8: RSS FEED MODERATION -->
+            <!-- TAB 10: RSS FEED MODERATION -->
             <section id="tab-rss" class="tab-content-section">
                 <div class="page-header">
                     <h1>📡 Baseball Training RSS Feed Moderation</h1>
@@ -475,7 +486,7 @@
     <!-- COACH BIO EDITING MODAL -->
     <div id="coachBioModal" class="modal-overlay">
         <div class="modal-content">
-            <h3>✏️️ Edit Coach Bio & Info</h3>
+            <h3>✏️ Edit Coach Bio & Info</h3>
             <div class="input-group" style="margin-bottom:1rem;">
                 <label>Coach Name</label>
                 <input type="text" id="bioModalName">
@@ -522,7 +533,7 @@
     <footer>&copy; 2026 The Rock Baseball Club — Summerlin, NV</footer>
 
     <script>
-        window.scrollTo(0, 0); // Always start top
+        window.scrollTo(0, 0);
 
         const SUPABASE_URL = "https://lhnizfqdwedvssvsezut.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
@@ -558,12 +569,39 @@
                     document.getElementById('potw_18u').value = settings.potw_18u || '';
                     document.getElementById('potw_16u').value = settings.potw_16u || '';
                     document.getElementById('potw_14u').value = settings.potw_14u || '';
-                    document.getElementById('potw_summary').value = settings.potw_summary || '';
                 }
             } catch (err) { console.error("Settings error:", err); }
         }
 
-        /* COACHES & TOGGLES & DELETION */
+        /* SPONSORS & EVENTS HANDLERS */
+        async function handleAddSponsor(event) {
+            event.preventDefault();
+            let obj = {
+                id: 'sp_' + Date.now(),
+                title: document.getElementById('spons_name').value,
+                link: document.getElementById('spons_url').value,
+                snippet: document.getElementById('spons_logo').value,
+                source: 'SPONSOR',
+                approved: true
+            };
+            await supabaseClient.from('rss_articles').upsert(obj);
+            alert('✅ Sponsor added successfully!');
+        }
+
+        async function handleAddSpecialEvent(event) {
+            event.preventDefault();
+            let obj = {
+                id: 'ev_' + Date.now(),
+                title: document.getElementById('ev_title').value,
+                snippet: document.getElementById('ev_desc').value,
+                source: 'EVENT',
+                approved: true
+            };
+            await supabaseClient.from('rss_articles').upsert(obj);
+            alert('✅ Special Event posted successfully!');
+        }
+
+        /* COACHES MANAGER */
         async function loadCoaches() {
             try {
                 let { data: coaches } = await supabaseClient.from('coaches').select('*').order('display_order', { ascending: true });
@@ -799,11 +837,10 @@
                 id: 'global',
                 potw_18u: document.getElementById('potw_18u').value,
                 potw_16u: document.getElementById('potw_16u').value,
-                potw_14u: document.getElementById('potw_14u').value,
-                potw_summary: document.getElementById('potw_summary').value
+                potw_14u: document.getElementById('potw_14u').value
             };
             await supabaseClient.from('site_settings').upsert(updates);
-            alert('✅ Player of the Week highlights saved!');
+            alert('✅ Performers of the Week saved!');
         }
 
         /* MASTER ROSTER & JUMP DROPDOWN */
