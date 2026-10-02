@@ -15,7 +15,6 @@
     <style>
         main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
 
-        /* HERO SECTION WITH ADJUSTED BACKDROP OPACITY */
         .hero-banner {
             position: relative;
             background: linear-gradient(135deg, rgba(12, 12, 18, 0.70) 0%, rgba(6, 6, 9, 0.85) 100%), 
@@ -48,32 +47,78 @@
             margin-top: 0.75rem;
         }
 
-        /* POTW MODULE */
-        .potw-container {
+        /* SIDE-BY-SIDE FEATURE GRID (GAMECHANGER & POTW) */
+        .feature-split-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2.5rem;
         }
 
-        .potw-card {
+        .feature-card-box {
             background: linear-gradient(145deg, #181822 0%, #0c0c10 100%);
             border: var(--border-thin);
-            border-top: 4px solid var(--gold-accent);
             border-radius: var(--radius-module);
-            padding: 1.5rem;
+            padding: 1.75rem;
             box-shadow: 0 8px 22px rgba(0,0,0,0.6);
         }
 
-        .potw-card h3 {
+        .feature-card-box h2 {
             font-family: 'Impact', sans-serif;
-            font-size: 1.5rem;
+            font-size: 2rem;
             text-transform: uppercase;
-            color: var(--gold-accent);
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        /* SPONSORS GRID */
+        .sponsor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 3rem;
+        }
+
+        .sponsor-card {
+            background: var(--bg-module);
+            border: var(--border-thin);
+            border-radius: var(--radius-module);
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .sponsor-card:hover {
+            border-color: var(--gold-accent);
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+        }
+
+        .sponsor-logo-img {
+            max-width: 100%;
+            height: 70px;
+            object-fit: contain;
             margin-bottom: 0.5rem;
         }
 
-        /* RSS MODULE */
+        /* EVENTS GRID */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .event-card {
+            background: var(--bg-module);
+            border: var(--border-thin);
+            border-left: 4px solid var(--gold-accent);
+            border-radius: var(--radius-module);
+            padding: 1.5rem;
+        }
+
+        /* RSS GRID */
         .rss-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -90,14 +135,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-        }
-
-        .rss-card h4 {
-            font-family: 'Impact', sans-serif;
-            font-size: 1.4rem;
-            color: #fff;
-            margin: 0.4rem 0;
-            line-height: 1.2;
         }
     </style>
 </head>
@@ -131,24 +168,61 @@
             <p>Developing elite high school student-athletes through advanced player development, competitive tournament play, and direct collegiate recruitment pathways.</p>
         </section>
 
-        <!-- PLAYER OF THE WEEK SECTION -->
+        <!-- FEATURE SPLIT GRID (GAMECHANGER & POTW) -->
+        <div class="feature-split-grid">
+            
+            <!-- GAMECHANGER SIDE-BY-SIDE MODULE -->
+            <div class="feature-card-box" style="border-top: 4px solid #10b981;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                    <h2>⚡ Live GameChanger Hub</h2>
+                    <span style="background:#10b981; color:#000; font-size:0.65rem; font-weight:900; padding:0.2rem 0.5rem; border-radius:4px; text-transform:uppercase;">Live Stats</span>
+                </div>
+                <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5; margin-bottom:1.25rem;">
+                    Track live play-by-play scores, box scores, pitch counts, and team schedules across all division rosters.
+                </p>
+                <a href="https://gc.com" target="_blank" style="display:block; text-align:center; background:#10b981; color:#000; font-weight:900; text-transform:uppercase; padding:0.85rem; border-radius:8px; text-decoration:none; box-shadow:0 0 15px rgba(16,185,129,0.3);">
+                    ⚾ Open Official GameChanger Feed →
+                </a>
+            </div>
+
+            <!-- WEEKLY PERFORMERS MODULE -->
+            <div class="feature-card-box" style="border-top: 4px solid var(--gold-accent);">
+                <h2>🏆 Performers of the Week</h2>
+                <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                    <div style="background:var(--bg-input); padding:0.6rem 0.8rem; border-radius:6px; border:var(--border-thin);">
+                        <span style="font-size:0.65rem; color:var(--gold-accent); font-weight:800; text-transform:uppercase;">18U Division:</span>
+                        <div id="disp_potw_18u" style="color:#fff; font-weight:700; font-size:0.95rem;">Loading...</div>
+                    </div>
+                    <div style="background:var(--bg-input); padding:0.6rem 0.8rem; border-radius:6px; border:var(--border-thin);">
+                        <span style="font-size:0.65rem; color:var(--red-accent); font-weight:800; text-transform:uppercase;">16U Division:</span>
+                        <div id="disp_potw_16u" style="color:#fff; font-weight:700; font-size:0.95rem;">Loading...</div>
+                    </div>
+                    <div style="background:var(--bg-input); padding:0.6rem 0.8rem; border-radius:6px; border:var(--border-thin);">
+                        <span style="font-size:0.65rem; color:#3b82f6; font-weight:800; text-transform:uppercase;">14U Division:</span>
+                        <div id="disp_potw_14u" style="color:#fff; font-weight:700; font-size:0.95rem;">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SPECIAL EVENTS & FUNDRAISERS -->
         <section style="margin-bottom: 2.5rem;">
             <h2 style="font-family:'Impact', sans-serif; font-size:2.2rem; text-transform:uppercase; color:#fff; margin-bottom:1rem;">
-                🏆 Weekly Showcase Performers
+                📅 Upcoming Club Events & Fundraisers
             </h2>
-            <div class="potw-container">
-                <div class="potw-card">
-                    <h3>⚾ 18U Player of the Week</h3>
-                    <p id="disp_potw_18u" style="color:#fff; font-weight:700; font-size:1.1rem;">Loading...</p>
-                </div>
-                <div class="potw-card" style="border-top-color: var(--red-accent);">
-                    <h3>⚡ 16U Player of the Week</h3>
-                    <p id="disp_potw_16u" style="color:#fff; font-weight:700; font-size:1.1rem;">Loading...</p>
-                </div>
-                <div class="potw-card" style="border-top-color: #3b82f6;">
-                    <h3>🌟 14U Player of the Week</h3>
-                    <p id="disp_potw_14u" style="color:#fff; font-weight:700; font-size:1.1rem;">Loading...</p>
-                </div>
+            <div class="events-grid" id="homepageEventsContainer">
+                <div style="color:var(--text-muted);">Loading upcoming events...</div>
+            </div>
+        </section>
+
+        <!-- OFFICIAL SPONSORS & PARTNERS SHOWCASE -->
+        <section style="margin-bottom: 3rem;">
+            <h2 style="font-family:'Impact', sans-serif; font-size:2.2rem; text-transform:uppercase; color:#fff; margin-bottom:1rem;">
+                🤝 Official Team Sponsors & Partners
+            </h2>
+            <div class="sponsor-grid" id="homepageSponsorContainer">
+                <div style="color:var(--text-muted);">Loading club sponsors...</div>
             </div>
         </section>
 
@@ -173,6 +247,7 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function initHomePage() {
+            // Settings & POTW
             let { data: settings } = await supabaseClient.from('site_settings').select('*').eq('id', 'global').single();
             if (settings) {
                 document.getElementById('disp_potw_18u').innerText = settings.potw_18u || 'To be announced';
@@ -180,17 +255,65 @@
                 document.getElementById('disp_potw_14u').innerText = settings.potw_14u || 'To be announced';
             }
 
-            let { data: articles } = await supabaseClient.from('rss_articles').select('*').eq('approved', true).order('created_at', { ascending: false });
-            const container = document.getElementById('homepageRssContainer');
-            container.innerHTML = '';
+            // Events
+            let { data: events } = await supabaseClient.from('rss_articles').select('*').eq('source', 'EVENT').order('created_at', { ascending: false });
+            const eventsContainer = document.getElementById('homepageEventsContainer');
+            eventsContainer.innerHTML = '';
+
+            if (!events || events.length === 0) {
+                eventsContainer.innerHTML = `
+                    <div class="event-card">
+                        <h3 style="font-family:'Impact', sans-serif; color:#fff; font-size:1.4rem;">⚾ Fall Scrimmage & Off-Season Workouts</h3>
+                        <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.4rem;">Pay-per-play workouts held every weekend. Check team chat for schedule.</p>
+                    </div>
+                `;
+            } else {
+                events.forEach(ev => {
+                    eventsContainer.innerHTML += `
+                        <div class="event-card">
+                            <h3 style="font-family:'Impact', sans-serif; color:#fff; font-size:1.4rem; text-transform:uppercase;">${ev.title}</h3>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.4rem; line-height:1.5;">${ev.snippet}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            // Sponsors
+            let { data: sponsors } = await supabaseClient.from('rss_articles').select('*').eq('source', 'SPONSOR');
+            const sponsorContainer = document.getElementById('homepageSponsorContainer');
+            sponsorContainer.innerHTML = '';
+
+            if (!sponsors || sponsors.length === 0) {
+                sponsorContainer.innerHTML = `
+                    <a href="mailto:therocklvbb@gmail.com" class="sponsor-card">
+                        <div style="font-size:2.5rem; margin-bottom:0.5rem;">🤝</div>
+                        <h4 style="color:#fff; font-size:0.9rem; font-weight:800; text-transform:uppercase;">Become a Sponsor</h4>
+                        <span style="color:var(--text-muted); font-size:0.75rem;">Support The Rock Athletes</span>
+                    </a>
+                `;
+            } else {
+                sponsors.forEach(s => {
+                    sponsorContainer.innerHTML += `
+                        <a href="${s.link || '#'}" target="_blank" class="sponsor-card">
+                            ${s.snippet ? `<img src="${s.snippet}" class="sponsor-logo-img" alt="${s.title}">` : '<div style="font-size:2.5rem; margin-bottom:0.5rem;">🤝</div>'}
+                            <h4 style="color:#fff; font-size:0.9rem; font-weight:800; text-transform:uppercase;">${s.title}</h4>
+                        </a>
+                    `;
+                });
+            }
+
+            // RSS Articles
+            let { data: articles } = await supabaseClient.from('rss_articles').select('*').eq('approved', true).neq('source', 'SPONSOR').neq('source', 'EVENT').order('created_at', { ascending: false });
+            const rssContainer = document.getElementById('homepageRssContainer');
+            rssContainer.innerHTML = '';
 
             if (!articles || articles.length === 0) {
-                container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No training articles published yet.</div>`;
+                rssContainer.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No training articles published yet.</div>`;
                 return;
             }
 
             articles.forEach(art => {
-                container.innerHTML += `
+                rssContainer.innerHTML += `
                     <div class="rss-card">
                         <div>
                             <span style="font-size:0.65rem; color:var(--gold-accent); font-weight:800; text-transform:uppercase;">${art.source}</span>
