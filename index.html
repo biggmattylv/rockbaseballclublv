@@ -13,9 +13,7 @@
       --border-color: #ddd;
     }
 
-    /* Force desktop refresh to start at the top */
     html, body {
-      scroll-behavior: auto !important;
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -23,7 +21,6 @@
       color: var(--dark-gray);
     }
 
-    /* Navigation Bar */
     .navbar {
       background-color: var(--dark-gray);
       color: var(--white);
@@ -53,7 +50,6 @@
       color: var(--primary-red);
     }
 
-    /* Hero Banner Module with baseball.bg Background */
     .hero-module {
       position: relative;
       background-image: url('baseball.bg');
@@ -64,7 +60,6 @@
       color: var(--white);
     }
 
-    /* Adjusted Opacity Overlay for Readability */
     .hero-module::before {
       content: "";
       position: absolute;
@@ -94,14 +89,12 @@
       text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
     }
 
-    /* Layout Container */
     .container {
       max-width: 1200px;
       margin: 30px auto;
       padding: 0 20px;
     }
 
-    /* RSS Feed Module Placement */
     .rss-feed-module {
       background: #222;
       color: #fff;
@@ -128,7 +121,6 @@
       border-bottom: none;
     }
 
-    /* Public Grid Cards */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -159,15 +151,6 @@
 </head>
 <body>
 
-  <!-- Force Scroll to Top on Load -->
-  <script>
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
-    window.scrollTo(0, 0);
-  </script>
-
-  <!-- Navigation Bar -->
   <nav class="navbar">
     <div class="logo">The Rock Baseball Club</div>
     <div>
@@ -177,7 +160,6 @@
     </div>
   </nav>
 
-  <!-- Hero Module with baseball.bg Background -->
   <div class="hero-module">
     <div class="hero-content">
       <h1>Where Future Champions Are Built</h1>
@@ -187,7 +169,6 @@
 
   <div class="container">
     
-    <!-- RSS Feeds Module -->
     <div class="rss-feed-module">
       <h2>Latest Baseball RSS News & League Updates</h2>
       <div id="rss-feed-content">
@@ -199,14 +180,12 @@
 
     <div class="grid-container">
       
-      <!-- Player of the Game Display -->
       <div class="card" id="potg-public-module">
         <h2>Player of the Game</h2>
         <p><b>Featured Athlete:</b> Brady (#23)</p>
         <p>Outstanding performance on the mound and key extra-base hits leading the victory!</p>
       </div>
 
-      <!-- Highlights Display -->
       <div class="card" id="highlights-public-module">
         <h2>Game Highlights</h2>
         <div style="background:#000; height:180px; display:flex; align-items:center; justify-content:center; color:#fff; border-radius:4px;">
