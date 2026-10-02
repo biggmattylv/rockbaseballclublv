@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>The Rock Baseball Club - Coaches Hub</title>
+  <title>Coaches Hub - The Rock Baseball Club</title>
   <style>
     :root {
       --primary-red: #cc0000;
@@ -13,7 +13,9 @@
       --border-color: #ddd;
     }
 
-    body {
+    /* Force desktop refresh to start at top */
+    html, body {
+      scroll-behavior: auto !important;
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -21,63 +23,28 @@
       color: var(--dark-gray);
     }
 
-    /* FIX: Force page initialization at top */
-    html, body {
-      scroll-behavior: auto !important;
-    }
-
-    /* Hero Banner / Module with background image and adjusted opacity */
-    .hero-module {
-      position: relative;
-      background-image: url('baseball.bg');
-      background-size: cover;
-      background-position: center;
-      padding: 60px 20px;
-      text-align: center;
-      color: var(--white);
-      overflow: hidden;
-    }
-
-    .hero-module::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0, 0, 0, 0.55); /* Increased overlay opacity so image is noticeable yet text stays readable */
-      z-index: 1;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-    }
-
-    .hero-content h1 {
-      font-size: 2.5rem;
-      margin: 0;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-    }
-
     /* Layout structure */
     .hub-container {
       display: flex;
-      min-height: calc(100vh - 200px);
+      min-height: 100vh;
     }
 
     /* Sidebar Navigation */
     .sidebar {
-      width: 260px;
+      width: 280px;
       background-color: var(--dark-gray);
       color: var(--white);
-      padding: 20px;
+      padding: 25px 20px;
       box-sizing: border-box;
     }
 
-    .sidebar h3 {
+    .sidebar h2 {
+      font-size: 1.2rem;
       border-bottom: 2px solid var(--primary-red);
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       margin-top: 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .nav-btn {
@@ -92,6 +59,7 @@
       text-align: left;
       cursor: pointer;
       font-size: 14px;
+      font-weight: bold;
       transition: background 0.2s;
     }
 
@@ -102,13 +70,13 @@
     /* Main Dashboard Area */
     .main-content {
       flex: 1;
-      padding: 30px;
+      padding: 35px;
       box-sizing: border-box;
     }
 
     .section-card {
       background: var(--white);
-      padding: 25px;
+      padding: 30px;
       margin-bottom: 25px;
       border-radius: 6px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -121,14 +89,14 @@
       padding-bottom: 10px;
     }
 
-    /* Forms & Controls */
+    /* Forms & Inputs */
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 18px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       font-weight: bold;
     }
 
@@ -144,7 +112,7 @@
       background-color: var(--primary-red);
       color: var(--white);
       border: none;
-      padding: 10px 20px;
+      padding: 12px 22px;
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
@@ -154,12 +122,12 @@
       background-color: #a00000;
     }
 
-    /* Toggle Switch Component */
+    /* Toggle Switch Styling */
     .toggle-wrapper {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-top: 10px;
+      margin-top: 8px;
     }
 
     .switch {
@@ -204,12 +172,12 @@
       transform: translateX(26px);
     }
 
-    /* Coach Rendering & List Management */
+    /* Coach Cards Grid & Controls */
     .coach-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 15px;
-      margin-top: 15px;
+      margin: 20px 0;
     }
 
     .coach-card {
@@ -222,6 +190,7 @@
 
     .coach-card h4 {
       margin: 0 0 5px 0;
+      color: var(--dark-gray);
     }
 
     .coach-card p {
@@ -243,12 +212,13 @@
       font-size: 12px;
     }
 
-    /* Scrollable Master Roster */
+    /* Scrollable Master Roster Table */
     .roster-scroll-container {
-      max-height: 250px;
+      max-height: 280px;
       overflow-y: auto;
       border: 1px solid var(--border-color);
       border-radius: 4px;
+      margin-top: 15px;
     }
 
     table {
@@ -257,7 +227,7 @@
     }
 
     th, td {
-      padding: 10px;
+      padding: 12px;
       text-align: left;
       border-bottom: 1px solid var(--border-color);
     }
@@ -268,30 +238,21 @@
       top: 0;
     }
 
-    /* RSS Feed Module Styling */
-    .rss-feed-module {
-      background: #222;
-      color: #fff;
-      padding: 15px 20px;
-      margin: 20px 0;
-      border-left: 4px solid var(--primary-red);
-      border-radius: 4px;
-    }
-
-    /* Tab Layout for Player of the Week */
+    /* Player of the Week Sub-Tabs */
     .tab-nav {
       display: flex;
       border-bottom: 2px solid var(--border-color);
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
 
     .tab-link {
-      padding: 10px 20px;
+      padding: 10px 25px;
       cursor: pointer;
       border: none;
       background: none;
       font-weight: bold;
       color: #555;
+      font-size: 15px;
     }
 
     .tab-link.active {
@@ -310,7 +271,7 @@
 </head>
 <body>
 
-  <!-- Ensure Scroll starts at the very top upon load -->
+  <!-- Force Page Jump to Top on Refresh -->
   <script>
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
@@ -318,41 +279,28 @@
     window.scrollTo(0, 0);
   </script>
 
-  <!-- Hero Module with baseball.bg background -->
-  <div class="hero-module">
-    <div class="hero-content">
-      <h1>Where Future Champions Are Built</h1>
-      <p>The Rock Baseball Club | Doral Red Rock</p>
-    </div>
-  </div>
-
-  <!-- Main Page RSS Feed Module Placement -->
-  <div class="rss-feed-module" id="main-rss-feed">
-    <h3>Latest Baseball News & RSS Updates</h3>
-    <div id="rss-content">
-      <p><i>Loading latest sports feeds...</i></p>
-    </div>
-  </div>
-
   <div class="hub-container">
-    <!-- Sidebar Navigation with Direct Feature Controls -->
+    
+    <!-- Sidebar Navigation Controls -->
     <div class="sidebar">
-      <h3>Coaches Hub</h3>
+      <h2>Coach Admin Hub</h2>
       <button class="nav-btn active" onclick="showSection('passwords-section')">Player Passwords</button>
       <button class="nav-btn" onclick="showSection('media-section')">Player of Game & Highlights</button>
       <button class="nav-btn" onclick="showSection('coaches-section')">Manage Coaches</button>
       <button class="nav-btn" onclick="showSection('potw-section')">Player of the Week (16U/18U)</button>
       <button class="nav-btn" onclick="showSection('roster-section')">Master Roster</button>
+      <br><br>
+      <a href="index.html" style="color:#aaa; text-decoration:none; font-size:13px;">← Return to Main Website</a>
     </div>
 
-    <!-- Main Workspace -->
+    <!-- Main Content Workspace -->
     <div class="main-content">
 
-      <!-- Admin Passwords Section -->
+      <!-- Passwords Section (Direct Player Selection & Admin Entry) -->
       <div id="passwords-section" class="section-card">
         <h2>Reset Player Passwords</h2>
-        <p><small>Admin Access Only: Select a player and enter a new password directly.</small></p>
-        <form onsubmit="event.preventDefault(); alert('Password updated successfully.');">
+        <p><small>Admin Mode: Select a player and input a new password directly.</small></p>
+        <form onsubmit="event.preventDefault(); alert('Password successfully updated.');">
           <div class="form-group">
             <label for="pwd-player-select">Select Player:</label>
             <select id="pwd-player-select" required>
@@ -366,23 +314,23 @@
             <label for="new-password">New Password:</label>
             <input type="password" id="new-password" placeholder="Enter new password" required />
           </div>
-          <button type="submit" class="btn-submit">Update Password</button>
+          <button type="submit" class="btn-submit">Update Password Directly</button>
         </form>
       </div>
 
-      <!-- Player of the Game & Highlights Section -->
+      <!-- Player of Game & Highlights (Toggle Switch & Direct Controls) -->
       <div id="media-section" class="section-card" style="display:none;">
-        <h2>Player of the Game & Highlights</h2>
+        <h2>Player of the Game & Highlights Controls</h2>
         
         <div class="form-group">
-          <label>Module Visibility (Toggle On/Off):</label>
+          <label>Display Modules Active (Toggle Switch):</label>
           <div class="toggle-wrapper">
-            <span>Off</span>
+            <span>Disabled</span>
             <label class="switch">
               <input type="checkbox" id="media-toggle" checked onchange="toggleMediaModules(this.checked)">
               <span class="slider"></span>
             </label>
-            <span>On</span>
+            <span>Enabled</span>
           </div>
         </div>
 
@@ -390,24 +338,23 @@
           <div class="form-group">
             <label for="potg-player">Select Player of the Game:</label>
             <select id="potg-player">
-              <option value="1">John Doe</option>
-              <option value="2">Mike Smith</option>
-              <option value="3">Brady</option>
+              <option value="3">Brady (#23)</option>
+              <option value="1">John Doe (#10)</option>
+              <option value="2">Mike Smith (#14)</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="highlight-url">Highlight Video URL / Embed Link:</label>
+            <label for="highlight-url">Highlight Video Embed / Link:</label>
             <input type="text" id="highlight-url" placeholder="https://..." />
           </div>
-          <button class="btn-submit" onclick="alert('Highlights and Player of the Game saved!')">Save Module Updates</button>
+          <button class="btn-submit" onclick="alert('Media modules updated successfully!')">Save Changes</button>
         </div>
       </div>
 
-      <!-- Improved Coach Rendering & Deletion Section -->
+      <!-- Coaching Staff Management (Dynamic Render & Delete) -->
       <div id="coaches-section" class="section-card" style="display:none;">
-        <h2>Coach Management</h2>
+        <h2>Coaching Staff Directory</h2>
         
-        <h3>Current Coaching Staff</h3>
         <div class="coach-grid" id="coach-grid-container">
           <!-- Rendered dynamically -->
         </div>
@@ -416,19 +363,19 @@
         <form onsubmit="addCoach(event)">
           <div class="form-group">
             <label for="coach-name">Coach Name:</label>
-            <input type="text" id="coach-name" required />
+            <input type="text" id="coach-name" placeholder="e.g. Reggie" required />
           </div>
           <div class="form-group">
             <label for="coach-role">Role/Title:</label>
-            <input type="text" id="coach-role" placeholder="e.g. Pitching Coach" required />
+            <input type="text" id="coach-role" placeholder="e.g. Head Coach" required />
           </div>
           <button type="submit" class="btn-submit">Add Coach</button>
         </form>
       </div>
 
-      <!-- Tabbed Player of the Week (16U / 18U) -->
+      <!-- Player of the Week (Dedicated Tab System for 16U & 18U) -->
       <div id="potw-section" class="section-card" style="display:none;">
-        <h2>Player of the Week Selection</h2>
+        <h2>Player of the Week Submissions</h2>
 
         <div class="tab-nav">
           <button class="tab-link active" onclick="openPotwTab('tab-16u', this)">16U Division</button>
@@ -437,48 +384,49 @@
 
         <div id="tab-16u" class="tab-content active">
           <div class="form-group">
-            <label for="potw-16u-select">16U Player of the Week:</label>
+            <label for="potw-16u-select">Select 16U Player:</label>
             <select id="potw-16u-select">
-              <option value="">-- Choose 16U Player --</option>
-              <option value="1">Player A</option>
-              <option value="2">Player B</option>
+              <option value="">-- Select Player --</option>
+              <option value="1">John Doe (#10)</option>
+              <option value="2">Mike Smith (#14)</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="potw-16u-notes">Performance Notes:</label>
-            <textarea id="potw-16u-notes" rows="3" placeholder="Stats, highlights, key plays..."></textarea>
+            <label for="potw-16u-notes">Weekly Stats & Performance Notes:</label>
+            <textarea id="potw-16u-notes" rows="3" placeholder="4-for-5, 3 RBIs, 2 stolen bases..."></textarea>
           </div>
           <button class="btn-submit" onclick="alert('16U Player of the Week Saved!')">Save 16U Selection</button>
         </div>
 
         <div id="tab-18u" class="tab-content">
           <div class="form-group">
-            <label for="potw-18u-select">18U Player of the Week:</label>
+            <label for="potw-18u-select">Select 18U Player:</label>
             <select id="potw-18u-select">
-              <option value="">-- Choose 18U Player --</option>
-              <option value="3">Brady</option>
-              <option value="4">Player D</option>
+              <option value="">-- Select Player --</option>
+              <option value="3">Brady (#23)</option>
+              <option value="4">Alex R. (#05)</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="potw-18u-notes">Performance Notes:</label>
-            <textarea id="potw-18u-notes" rows="3" placeholder="Stats, highlights, key plays..."></textarea>
+            <label for="potw-18u-notes">Weekly Stats & Performance Notes:</label>
+            <textarea id="potw-18u-notes" rows="3" placeholder="Complete game shutout, 10 strikeouts..."></textarea>
           </div>
           <button class="btn-submit" onclick="alert('18U Player of the Week Saved!')">Save 18U Selection</button>
         </div>
       </div>
 
-      <!-- Master Roster with Header Dropdown and Scrollable Table -->
+      <!-- Master Roster Section (Scrollable Table with Header Filter Dropdown) -->
       <div id="roster-section" class="section-card" style="display:none;">
         <h2>Master Roster</h2>
         
         <div class="form-group" style="background: #f0f0f0; padding: 15px; border-radius: 4px;">
           <label for="roster-quick-select">Quick Select Player Filter:</label>
           <select id="roster-quick-select" onchange="filterRoster(this.value)">
-            <option value="ALL">-- View All Players --</option>
+            <option value="ALL">-- View Full Roster --</option>
             <option value="John Doe">John Doe (#10)</option>
             <option value="Mike Smith">Mike Smith (#14)</option>
             <option value="Brady">Brady (#23)</option>
+            <option value="Alex R.">Alex R. (#05)</option>
           </select>
         </div>
 
@@ -489,7 +437,7 @@
                 <th>#</th>
                 <th>Name</th>
                 <th>Position</th>
-                <th>Age Group</th>
+                <th>Division</th>
               </tr>
             </thead>
             <tbody>
@@ -507,7 +455,7 @@
   </div>
 
   <script>
-    // Initial Coaches Data
+    // Initial Coaching Staff Array
     let coaches = [
       { id: 1, name: "Reggie", role: "Head Coach" },
       { id: 2, name: "Jamal", role: "Assistant Coach" },
@@ -523,7 +471,7 @@
       event.currentTarget.classList.add('active');
     }
 
-    // Dynamic Coach Rendering & Deletion
+    // Dynamic Coach Rendering & Deletion Logic
     function renderCoaches() {
       const container = document.getElementById('coach-grid-container');
       container.innerHTML = '';
@@ -544,13 +492,12 @@
       const nameInput = document.getElementById('coach-name');
       const roleInput = document.getElementById('coach-role');
       
-      const newCoach = {
+      coaches.push({
         id: Date.now(),
         name: nameInput.value,
         role: roleInput.value
-      };
+      });
       
-      coaches.push(newCoach);
       nameInput.value = '';
       roleInput.value = '';
       renderCoaches();
@@ -561,14 +508,14 @@
       renderCoaches();
     }
 
-    // Media Toggle
+    // Media Toggle Logic
     function toggleMediaModules(isEnabled) {
       const controls = document.getElementById('media-editor-controls');
       controls.style.opacity = isEnabled ? '1' : '0.4';
       controls.querySelectorAll('input, select, button').forEach(el => el.disabled = !isEnabled);
     }
 
-    // Player of the Week Tabs
+    // Player of the Week Tab System
     function openPotwTab(tabId, btn) {
       document.querySelectorAll('#potw-section .tab-content').forEach(c => c.classList.remove('active'));
       document.querySelectorAll('#potw-section .tab-link').forEach(l => l.classList.remove('active'));
@@ -577,7 +524,7 @@
       btn.classList.add('active');
     }
 
-    // Roster Filtering
+    // Master Roster Dropdown Filter
     function filterRoster(selectedName) {
       const rows = document.querySelectorAll('#roster-table tbody tr');
       rows.forEach(row => {
@@ -590,7 +537,7 @@
       });
     }
 
-    // Initialize Page
+    // Initialize Page Controls
     window.addEventListener('DOMContentLoaded', () => {
       window.scrollTo(0, 0);
       renderCoaches();
