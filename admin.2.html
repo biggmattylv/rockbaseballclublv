@@ -157,9 +157,9 @@
 
         .btn-submit:hover { background-color: #ff334b; }
 
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
 
-        .player-card, .coach-card-hub, .rss-card-hub {
+        .player-card, .coach-card-hub, .rss-card-hub, .sponsor-card-hub {
             background-color: var(--bg-module); border: var(--border-thin);
             border-radius: var(--radius-module); padding: 1.5rem; display: flex;
             flex-direction: column; justify-content: space-between;
@@ -228,7 +228,7 @@
             <div class="sidebar-title">⚙️ Admin Menu</div>
             <button class="nav-tab-btn active" onclick="switchAdminTab('tab-coaches')">🧢 Coaching Staff</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-potw')">🏆 Player of the Week</button>
-            <button class="nav-tab-btn" onclick="switchAdminTab('tab-sponsors')">🤝 Sponsors</button>
+            <button class="nav-tab-btn" onclick="switchAdminTab('tab-sponsors')">🤝 Sponsors (4 Slots)</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-events')">📅 Special Events</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-roster')">📋 Master Roster</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-pins')">🔑 Security PINs</button>
@@ -273,8 +273,8 @@
             <!-- TAB 2: PLAYER OF THE WEEK -->
             <section id="tab-potw" class="tab-content-section">
                 <div class="page-header">
-                    <h1>🏆 Player of the Week & Division Highlights</h1>
-                    <p>Select showcase players of the week for 14U, 16U, and 18U divisions.</p>
+                    <h1>🏆 Player of the Week Highlights</h1>
+                    <p>Select showcase players of the week to display on the homepage.</p>
                 </div>
 
                 <div class="admin-form-module">
@@ -298,22 +298,15 @@
                 </div>
             </section>
 
-            <!-- TAB 3: SPONSORS MANAGER -->
+            <!-- TAB 3: SPONSORS MANAGER (4 SLOTS WITH TOGGLES) -->
             <section id="tab-sponsors" class="tab-content-section">
                 <div class="page-header">
-                    <h1>🤝 Official Club Sponsors</h1>
-                    <p>Add corporate sponsor logos and direct links for homepage showcase.</p>
+                    <h1>🤝 Official Club Sponsor Showcase (4 Slots)</h1>
+                    <p>Edit corporate sponsor logos, links, copy, and toggle each slot ON or OFF.</p>
                 </div>
 
-                <div class="admin-form-module">
-                    <form onsubmit="handleAddSponsor(event)">
-                        <div class="form-grid">
-                            <div class="input-group"><label>Sponsor Company Name</label><input type="text" id="spons_name" placeholder="e.g. Summerlin Orthodontics" required></div>
-                            <div class="input-group"><label>Website Link URL</label><input type="text" id="spons_url" placeholder="https://..." required></div>
-                            <div class="input-group"><label>Logo Image URL</label><input type="text" id="spons_logo" placeholder="https://.../logo.png"></div>
-                        </div>
-                        <button type="submit" class="btn-submit">➕ Save Sponsor</button>
-                    </form>
+                <div class="roster-grid" id="sponsorsListContainer">
+                    <div style="color:var(--text-muted);">Loading sponsor cards...</div>
                 </div>
             </section>
 
@@ -506,6 +499,23 @@
         </div>
     </div>
 
+    <!-- SPONSOR EDITING MODAL -->
+    <div id="sponsorEditModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="sponsorModalTitle">✏️ Edit Sponsor Card</h3>
+            <div class="form-grid">
+                <div class="input-group" style="grid-column:1/-1;"><label>Sponsor Business Name</label><input type="text" id="sm_title"></div>
+                <div class="input-group" style="grid-column:1/-1;"><label>Website URL</label><input type="text" id="sm_link"></div>
+                <div class="input-group" style="grid-column:1/-1;"><label>Logo Image URL</label><input type="text" id="sm_logo"></div>
+                <div class="input-group" style="grid-column:1/-1;"><label>Sponsor Description / Tier</label><textarea id="sm_snippet" placeholder="e.g. Official Orthodontics Partner of The Rock Baseball Club"></textarea></div>
+            </div>
+            <div class="modal-btn-group">
+                <button class="btn-small" style="background:#333;" onclick="closeSponsorModal()">Cancel</button>
+                <button class="btn-submit" style="margin-top:0;" onclick="saveSponsorModal()">💾 Save Sponsor Card</button>
+            </div>
+        </div>
+    </div>
+
     <!-- PLAYER METRICS EDITING MODAL -->
     <div id="playerEditModal" class="modal-overlay">
         <div class="modal-content">
@@ -541,8 +551,10 @@
 
         let activePlayers = [];
         let loadedCoaches = [];
+        let loadedSponsors = [];
         let activeEditingCoachId = null;
         let activeEditingPlayerId = null;
+        let activeEditingSponsorId = null;
 
         function switchAdminTab(tabId) {
             document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -556,6 +568,7 @@
         async function initCoachesHub() {
             await loadSiteSettings();
             await loadCoaches();
+            await loadSponsorsHub();
             await loadMasterRoster();
             await loadRSSForModeration();
         }
@@ -573,21 +586,115 @@
             } catch (err) { console.error("Settings error:", err); }
         }
 
-        /* SPONSORS & EVENTS HANDLERS */
-        async function handleAddSponsor(event) {
-            event.preventDefault();
-            let obj = {
-                id: 'sp_' + Date.now(),
-                title: document.getElementById('spons_name').value,
-                link: document.getElementById('spons_url').value,
-                snippet: document.getElementById('spons_logo').value,
-                source: 'SPONSOR',
-                approved: true
-            };
-            await supabaseClient.from('rss_articles').upsert(obj);
-            alert('✅ Sponsor added successfully!');
+        /* 4 SPONSOR SLOTS MANAGEMENT */
+        async function loadSponsorsHub() {
+            try {
+                let { data: sponsors } = await supabaseClient.from('rss_articles').select('*').eq('source', 'SPONSOR');
+                loadedSponsors = sponsors || [];
+
+                const container = document.getElementById('sponsorsListContainer');
+                container.innerHTML = '';
+
+                // Ensure 4 sponsor slots exist
+                for (let i = 1; i <= 4; i++) {
+                    let sponsId = `sp_slot_${i}`;
+                    let spons = loadedSponsors.find(s => s.id === sponsId) || {
+                        id: sponsId,
+                        title: `Official Sponsor Slot #${i}`,
+                        link: '',
+                        snippet: '',
+                        approved: false
+                    };
+
+                    container.innerHTML += `
+                        <div class="sponsor-card-hub">
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                                    <span style="font-size:0.7rem; color:var(--gold-accent); font-weight:900; text-transform:uppercase;">Sponsor Slot #${i}</span>
+                                    <span style="font-size:0.65rem; background:${spons.approved ? '#10b981' : '#333'}; color:${spons.approved ? '#000' : '#fff'}; font-weight:800; padding:0.2rem 0.5rem; border-radius:4px;">
+                                        ${spons.approved ? 'ACTIVE ON SITE' : 'OFFLINE'}
+                                    </span>
+                                </div>
+
+                                <div style="height:100px; background:#000; border:var(--border-thin); border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:0.75rem; padding:0.5rem;">
+                                    ${spons.snippet && spons.snippet.startsWith('http') 
+                                        ? `<img src="${spons.snippet}" style="max-height:100\%; max-width:100\%; object-fit:contain;" alt="${spons.title}">` 
+                                        : `<span style="color:var(--text-muted); font-size:0.8rem; font-weight:700;">🤝 No Logo Linked</span>`
+                                    }
+                                </div>
+
+                                <h4 style="font-family:'Impact', sans-serif; font-size:1.5rem; text-transform:uppercase; color:#fff; margin-bottom:0.2rem;">${spons.title}</h4>
+                                <a href="${spons.link || '#'}" target="_blank" style="font-size:0.75rem; color:var(--red-accent); word-break:break-all; display:block; margin-bottom:0.5rem;">${spons.link || 'No URL attached'}</a>
+                            </div>
+
+                            <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.75rem;">
+                                <button class="btn-small" style="background:#202028; border:1px solid #333;" onclick="openSponsorModal('${spons.id}')">✏️ Edit Sponsor Details</button>
+                                
+                                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:0.6rem 0.8rem; border-radius:8px; border:var(--border-thin);">
+                                    <span style="font-size:0.75rem; font-weight:800; color:#fff; text-transform:uppercase;">Toggle Active</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="spons-active-${spons.id}" ${spons.approved ? 'checked' : ''} onchange="toggleSponsorActive('${spons.id}')">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (err) { console.error("Sponsors error:", err); }
         }
 
+        function openSponsorModal(sponsorId) {
+            let spons = loadedSponsors.find(s => s.id === sponsorId) || { id: sponsorId, title: '', link: '', snippet: '' };
+            activeEditingSponsorId = sponsorId;
+
+            document.getElementById('sm_title').value = spons.title || '';
+            document.getElementById('sm_link').value = spons.link || '';
+            document.getElementById('sm_logo').value = spons.snippet || '';
+            document.getElementById('sponsorEditModal').style.display = 'flex';
+        }
+
+        function closeSponsorModal() {
+            document.getElementById('sponsorEditModal').style.display = 'none';
+            activeEditingSponsorId = null;
+        }
+
+        async function saveSponsorModal() {
+            if (!activeEditingSponsorId) return;
+
+            let currentSpons = loadedSponsors.find(s => s.id === activeEditingSponsorId);
+            let obj = {
+                id: activeEditingSponsorId,
+                title: document.getElementById('sm_title').value || 'Sponsor Partner',
+                link: document.getElementById('sm_link').value,
+                snippet: document.getElementById('sm_logo').value,
+                source: 'SPONSOR',
+                approved: currentSpons ? currentSpons.approved : true
+            };
+
+            await supabaseClient.from('rss_articles').upsert(obj);
+            closeSponsorModal();
+            loadSponsorsHub();
+        }
+
+        async function toggleSponsorActive(sponsorId) {
+            const isChecked = document.getElementById(`spons-active-${sponsorId}`).checked;
+            let currentSpons = loadedSponsors.find(s => s.id === sponsorId);
+
+            let obj = {
+                id: sponsorId,
+                title: currentSpons ? currentSpons.title : 'Sponsor Partner',
+                link: currentSpons ? currentSpons.link : '',
+                snippet: currentSpons ? currentSpons.snippet : '',
+                source: 'SPONSOR',
+                approved: isChecked
+            };
+
+            await supabaseClient.from('rss_articles').upsert(obj);
+            loadSponsorsHub();
+        }
+
+        /* SPECIAL EVENTS HANDLER */
         async function handleAddSpecialEvent(event) {
             event.preventDefault();
             let obj = {
@@ -599,6 +706,8 @@
             };
             await supabaseClient.from('rss_articles').upsert(obj);
             alert('✅ Special Event posted successfully!');
+            document.getElementById('ev_title').value = '';
+            document.getElementById('ev_desc').value = '';
         }
 
         /* COACHES MANAGER */
