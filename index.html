@@ -20,7 +20,6 @@
     <style>
         main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
 
-        /* HERO BANNER */
         .hero-banner {
             position: relative;
             background: linear-gradient(135deg, rgba(12, 12, 18, 0.70) 0%, rgba(6, 6, 9, 0.85) 100%), 
@@ -53,7 +52,6 @@
             margin-top: 0.75rem;
         }
 
-        /* ANNOUNCEMENT BANNER & COACH NOTES */
         .announcement-bar {
             background: linear-gradient(135deg, #ff1a35 0%, #b91c1c 100%);
             color: #fff;
@@ -86,7 +84,6 @@
             margin-bottom: 0.5rem;
         }
 
-        /* COACHES DISPLAY GRID */
         .coaches-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -116,7 +113,6 @@
             background-color: #000;
         }
 
-        /* PLAYER OF THE WEEK CARDS */
         .potw-cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -146,7 +142,6 @@
             background: #000;
         }
 
-        /* SPONSORS GRID */
         .sponsor-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -180,7 +175,6 @@
             margin-bottom: 0.75rem;
         }
 
-        /* GAMECHANGER SCHEDULE GRID */
         .gamechanger-schedule-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -196,7 +190,6 @@
             box-shadow: 0 8px 25px rgba(16,185,129,0.2);
         }
 
-        /* RSS ARTICLES GRID */
         .rss-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -363,8 +356,15 @@
                 }
             }
 
-            // 2. PLAYERS OF THE WEEK SHOWCASE CARDS
-            let potwIds = settings && Array.isArray(settings.potw_player_ids) ? settings.potw_player_ids : [];
+            // 2. PLAYERS OF THE WEEK SHOWCASE CARDS (PARSED FROM POTW_SUMMARY JSON)
+            let potwData = {};
+            try {
+                potwData = JSON.parse(settings.potw_summary || '{}');
+            } catch (e) { potwData = {}; }
+
+            let potwIds = Array.isArray(potwData.ids) ? potwData.ids : [];
+            let potwHeadlines = (potwData.headlines && typeof potwData.headlines === 'object') ? potwData.headlines : {};
+
             const potwContainer = document.getElementById('homepagePotwContainer');
             potwContainer.innerHTML = '';
 
@@ -378,7 +378,7 @@
                             ? `<img src="${p.photo_url}" class="potw-photo" alt="${p.name}">`
                             : `<div class="potw-photo" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:700;">⚾ Player Headshot</div>`;
 
-                        let customHeadline = settings[`potw_headline_${p.id}`] || 'Standout Weekly Performer';
+                        let customHeadline = potwHeadlines[p.id] || 'Standout Weekly Performer';
 
                         potwContainer.innerHTML += `
                             <div class="potw-card-box">
