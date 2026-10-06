@@ -225,7 +225,7 @@
         
         <!-- LEFT SIDEBAR TAB NAVIGATION -->
         <aside class="admin-sidebar">
-            <div class="sidebar-title">⚙️ Admin Menu</div>
+            <div class="sidebar-title">⚙️️ Admin Menu</div>
             <button class="nav-tab-btn active" onclick="switchAdminTab('tab-coaches')">🧢 Coaching Staff</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-potw')">🏆 Performers of Week</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-sponsors')">🤝 Sponsors (4 Slots)</button>
@@ -586,6 +586,7 @@
             listContainer.innerHTML = '';
 
             let currentPotwIds = Array.isArray(globalSettings.potw_player_ids) ? globalSettings.potw_player_ids : [];
+            let currentHeadlines = (globalSettings.potw_headlines && typeof globalSettings.potw_headlines === 'object') ? globalSettings.potw_headlines : {};
 
             if (activePlayers.length === 0) {
                 listContainer.innerHTML = `<div style="color:var(--text-muted);">No active players loaded.</div>`;
@@ -594,7 +595,7 @@
 
             activePlayers.forEach(p => {
                 let isChecked = currentPotwIds.includes(p.id);
-                let customHeadline = globalSettings[`potw_headline_${p.id}`] || '3-for-4, 2 HRs & 5 RBIs in Championship Game';
+                let customHeadline = currentHeadlines[p.id] || '3-for-4, 2 HRs & 5 RBIs in Championship Game';
 
                 listContainer.innerHTML += `
                     <div style="background:#000; padding:0.75rem; border-radius:8px; border:var(--border-thin);">
@@ -612,18 +613,19 @@
             let selectedCheckboxes = Array.from(document.querySelectorAll('.potw-checkbox:checked'));
             let selectedIds = selectedCheckboxes.map(cb => cb.value);
 
-            const updates = {
-                id: 'global',
-                potw_player_ids: selectedIds
-            };
-
-            // Save individual custom headlines
+            let headlinesObj = {};
             activePlayers.forEach(p => {
                 let headlineInput = document.getElementById(`headline_${p.id}`);
                 if (headlineInput) {
-                    updates[`potw_headline_${p.id}`] = headlineInput.value;
+                    headlinesObj[p.id] = headlineInput.value;
                 }
             });
+
+            const updates = {
+                id: 'global',
+                potw_player_ids: selectedIds,
+                potw_headlines: headlinesObj
+            };
 
             const { error } = await supabaseClient.from('site_settings').upsert(updates);
             if (error) {
@@ -665,7 +667,7 @@
 
                                 <div style="height:100px; background:#000; border:var(--border-thin); border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:0.75rem; padding:0.5rem;">
                                     ${spons.snippet && spons.snippet.startsWith('http') 
-                                        ? `<img src="${spons.snippet}" style="max-height:100%; max-width:100%; object-fit:contain;" alt="${spons.title}">` 
+                                        ? `<img src="${spons.snippet}" style="max-height:100\%; max-width:100\%; object-fit:contain;" alt="${spons.title}">` 
                                         : `<span style="color:var(--text-muted); font-size:0.8rem; font-weight:700;">🤝 No Logo Linked</span>`
                                     }
                                 </div>
