@@ -20,6 +20,7 @@
     <style>
         main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
 
+        /* HERO BANNER */
         .hero-banner {
             position: relative;
             background: linear-gradient(135deg, rgba(12, 12, 18, 0.70) 0%, rgba(6, 6, 9, 0.85) 100%), 
@@ -356,7 +357,7 @@
                 }
             }
 
-            // 2. PLAYERS OF THE WEEK SHOWCASE CARDS (PARSED FROM POTW_SUMMARY JSON)
+            // 2. PLAYERS OF THE WEEK SHOWCASE CARDS
             let potwData = {};
             try {
                 potwData = JSON.parse(settings.potw_summary || '{}');
@@ -429,12 +430,13 @@
                 });
             }
 
-            // 4. SPONSORS MODULE (4 SLOTS)
+            // 4. SPONSORS MODULE (STRICT 4-SLOT FILTER, CLEARS STRAY MMG)
             let { data: sponsors } = await supabaseClient.from('rss_articles').select('*').eq('source', 'SPONSOR');
             const sponsorContainer = document.getElementById('homepageSponsorContainer');
             sponsorContainer.innerHTML = '';
 
-            let activeSponsors = (sponsors || []).filter(s => s.approved === true);
+            let validSlots = ['sp_slot_1', 'sp_slot_2', 'sp_slot_3', 'sp_slot_4'];
+            let activeSponsors = (sponsors || []).filter(s => s.approved === true && validSlots.includes(s.id));
 
             if (activeSponsors.length === 0) {
                 sponsorContainer.innerHTML = `
