@@ -579,7 +579,7 @@
             } catch (err) { console.error("Settings error:", err); }
         }
 
-        /* PERFORMERS OF THE WEEK SELECTION (SAFE JSON IN POTW_SUMMARY) */
+        /* PERFORMERS OF THE WEEK SELECTION (SAFE DEDICATED OBJECT UPDATE) */
         function renderPotwPlayerCheckboxes() {
             const listContainer = document.getElementById('potwPlayerSelectionList');
             if (!listContainer) return;
@@ -633,6 +633,7 @@
                 headlines: headlinesObj
             });
 
+            // STRICT EXPLICIT COLUMNS ONLY (prevents schema cache errors)
             const updates = {
                 id: 'global',
                 potw_summary: combinedPayload
@@ -678,7 +679,7 @@
 
                                 <div style="height:100px; background:#000; border:var(--border-thin); border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:0.75rem; padding:0.5rem;">
                                     ${spons.snippet && spons.snippet.startsWith('http') 
-                                        ? `<img src="${spons.snippet}" style="max-height:100\%; max-width:100\%; object-fit:contain;" alt="${spons.title}">` 
+                                        ? `<img src="${spons.snippet}" style="max-height:100%; max-width:100%; object-fit:contain;" alt="${spons.title}">` 
                                         : `<span style="color:var(--text-muted); font-size:0.8rem; font-weight:700;">🤝 No Logo Linked</span>`
                                     }
                                 </div>
