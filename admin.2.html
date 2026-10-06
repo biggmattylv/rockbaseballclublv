@@ -225,7 +225,7 @@
         
         <!-- LEFT SIDEBAR TAB NAVIGATION -->
         <aside class="admin-sidebar">
-            <div class="sidebar-title">⚙️️ Admin Menu</div>
+            <div class="sidebar-title">⚙ Admin Menu</div>
             <button class="nav-tab-btn active" onclick="switchAdminTab('tab-coaches')">🧢 Coaching Staff</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-potw')">🏆 Performers of Week</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-sponsors')">🤝 Sponsors (4 Slots)</button>
@@ -579,14 +579,21 @@
             } catch (err) { console.error("Settings error:", err); }
         }
 
-        /* PERFORMERS OF THE WEEK SELECTION WITH CUSTOM HEADLINES */
+        /* PERFORMERS OF THE WEEK SELECTION (SAFE JSON IN POTW_SUMMARY) */
         function renderPotwPlayerCheckboxes() {
             const listContainer = document.getElementById('potwPlayerSelectionList');
             if (!listContainer) return;
             listContainer.innerHTML = '';
 
-            let currentPotwIds = Array.isArray(globalSettings.potw_player_ids) ? globalSettings.potw_player_ids : [];
-            let currentHeadlines = (globalSettings.potw_headlines && typeof globalSettings.potw_headlines === 'object') ? globalSettings.potw_headlines : {};
+            let savedData = {};
+            try {
+                savedData = JSON.parse(globalSettings.potw_summary || '{}');
+            } catch (e) {
+                savedData = {};
+            }
+
+            let currentPotwIds = Array.isArray(savedData.ids) ? savedData.ids : [];
+            let currentHeadlines = (savedData.headlines && typeof savedData.headlines === 'object') ? savedData.headlines : {};
 
             if (activePlayers.length === 0) {
                 listContainer.innerHTML = `<div style="color:var(--text-muted);">No active players loaded.</div>`;
@@ -621,10 +628,14 @@
                 }
             });
 
+            let combinedPayload = JSON.stringify({
+                ids: selectedIds,
+                headlines: headlinesObj
+            });
+
             const updates = {
                 id: 'global',
-                potw_player_ids: selectedIds,
-                potw_headlines: headlinesObj
+                potw_summary: combinedPayload
             };
 
             const { error } = await supabaseClient.from('site_settings').upsert(updates);
