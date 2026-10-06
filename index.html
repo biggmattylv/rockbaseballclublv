@@ -20,7 +20,6 @@
     <style>
         main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
 
-        /* HERO BANNER */
         .hero-banner {
             position: relative;
             background: linear-gradient(135deg, rgba(12, 12, 18, 0.70) 0%, rgba(6, 6, 9, 0.85) 100%), 
@@ -357,7 +356,7 @@
                 }
             }
 
-            // 2. PLAYERS OF THE WEEK SHOWCASE CARDS
+            // 2. PLAYERS OF THE WEEK SHOWCASE CARDS (PARSED FROM POTW_SUMMARY JSON)
             let potwData = {};
             try {
                 potwData = JSON.parse(settings.potw_summary || '{}');
@@ -430,7 +429,7 @@
                 });
             }
 
-            // 4. SPONSORS MODULE (STRICT 4-SLOT FILTER, CLEARS STRAY MMG)
+            // 4. SPONSORS MODULE (STRICT 4-SLOT FILTER WITH IMAGE LOAD FALLBACK)
             let { data: sponsors } = await supabaseClient.from('rss_articles').select('*').eq('source', 'SPONSOR');
             const sponsorContainer = document.getElementById('homepageSponsorContainer');
             sponsorContainer.innerHTML = '';
@@ -448,13 +447,15 @@
                 `;
             } else {
                 activeSponsors.forEach(s => {
+                    let logoHtml = (s.snippet && s.snippet.startsWith('http'))
+                        ? `<img src="${s.snippet}" class="sponsor-logo-img" alt="${s.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                           <div style="font-size:2.2rem; margin-bottom:0.5rem; display:none;">🤝</div>`
+                        : `<div style="font-size:2.2rem; margin-bottom:0.5rem;">🤝</div>`;
+
                     sponsorContainer.innerHTML += `
                         <a href="${s.link || '#'}" target="_blank" class="sponsor-card">
                             <div>
-                                ${s.snippet && s.snippet.startsWith('http') 
-                                    ? `<img src="${s.snippet}" class="sponsor-logo-img" alt="${s.title}">` 
-                                    : `<div style="font-size:2.2rem; margin-bottom:0.5rem;">🤝</div>`
-                                }
+                                ${logoHtml}
                                 <h4 style="color:#fff; font-size:1rem; font-weight:800; text-transform:uppercase; margin-bottom:0.4rem;">${s.title}</h4>
                             </div>
                             <span style="color:var(--red-accent); font-weight:800; font-size:0.75rem; text-transform:uppercase; margin-top:0.75rem;">Visit Sponsor Site →</span>
