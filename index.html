@@ -360,12 +360,14 @@
                 `;
             } else {
                 sponsors.forEach(s => {
-                    sponsorContainer.innerHTML += `
-                        <a href="${s.link || '#'}" target="_blank" class="sponsor-card">
-                            ${s.snippet ? `<img src="${s.snippet}" class="sponsor-logo-img" alt="${s.title}">` : '<div style="font-size:2.5rem; margin-bottom:0.5rem;">🤝</div>'}
-                            <h4 style="color:#fff; font-size:0.9rem; font-weight:800; text-transform:uppercase;">${s.title}</h4>
-                        </a>
-                    `;
+                    if (s.approved) {
+                        sponsorContainer.innerHTML += `
+                            <a href="${s.link || '#'}" target="_blank" class="sponsor-card">
+                                ${s.snippet ? `<img src="${s.snippet}" class="sponsor-logo-img" alt="${s.title}">` : '<div style="font-size:2.5rem; margin-bottom:0.5rem;">🤝</div>'}
+                                <h4 style="color:#fff; font-size:0.9rem; font-weight:800; text-transform:uppercase;">${s.title}</h4>
+                            </a>
+                        `;
+                    }
                 });
             }
 
