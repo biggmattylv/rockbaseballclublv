@@ -15,6 +15,7 @@
     <style>
         main { max-width: 1250px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
 
+        /* HERO BANNER WITH ADJUSTED BACKDROP */
         .hero-banner {
             position: relative;
             background: linear-gradient(135deg, rgba(12, 12, 18, 0.70) 0%, rgba(6, 6, 9, 0.85) 100%), 
@@ -47,7 +48,7 @@
             margin-top: 0.75rem;
         }
 
-        /* SIDE-BY-SIDE FEATURE GRID (GAMECHANGER & POTW) */
+        /* FEATURE SPLIT GRID (GAMECHANGER & POTW) */
         .feature-split-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -69,6 +70,36 @@
             text-transform: uppercase;
             color: #fff;
             margin-bottom: 1rem;
+        }
+
+        /* COACHES DISPLAY GRID */
+        .coaches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .coach-card {
+            background-color: var(--bg-module);
+            border: var(--border-thin);
+            border-top: 4px solid var(--red-accent);
+            border-radius: var(--radius-module);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.6);
+        }
+
+        .coach-photo-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: var(--border-thin);
+            margin-bottom: 1rem;
+            background-color: #000;
         }
 
         /* SPONSORS GRID */
@@ -206,6 +237,16 @@
 
         </div>
 
+        <!-- COACHES & PROGRAM LEADERSHIP MODULE -->
+        <section style="margin-bottom: 3rem;">
+            <h2 style="font-family:'Impact', sans-serif; font-size:2.2rem; text-transform:uppercase; color:#fff; margin-bottom:1rem;">
+                🧢 Coaching Staff & Leadership
+            </h2>
+            <div class="coaches-grid" id="homepageCoachesContainer">
+                <div style="color:var(--text-muted);">Loading coaching staff...</div>
+            </div>
+        </section>
+
         <!-- SPECIAL EVENTS & FUNDRAISERS -->
         <section style="margin-bottom: 2.5rem;">
             <h2 style="font-family:'Impact', sans-serif; font-size:2.2rem; text-transform:uppercase; color:#fff; margin-bottom:1rem;">
@@ -253,6 +294,32 @@
                 document.getElementById('disp_potw_18u').innerText = settings.potw_18u || 'To be announced';
                 document.getElementById('disp_potw_16u').innerText = settings.potw_16u || 'To be announced';
                 document.getElementById('disp_potw_14u').innerText = settings.potw_14u || 'To be announced';
+            }
+
+            // COACHES MODULE (Fetches active coaches ordered by display_order)
+            let { data: coaches, error: coachErr } = await supabaseClient.from('coaches').select('*').eq('active', true).order('display_order', { ascending: true });
+            const coachContainer = document.getElementById('homepageCoachesContainer');
+            coachContainer.innerHTML = '';
+
+            if (coachErr || !coaches || coaches.length === 0) {
+                coachContainer.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">Coaching staff profiles loading...</div>`;
+            } else {
+                coaches.forEach(c => {
+                    let photoDisplay = c.photo_url 
+                        ? `<img src="${c.photo_url}" class="coach-photo-img" alt="${c.name}">`
+                        : `<div class="coach-photo-img" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:700;">🧢 No Photo</div>`;
+
+                    coachContainer.innerHTML += `
+                        <div class="coach-card">
+                            <div>
+                                ${photoDisplay}
+                                <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase; color:#fff; line-height:1; margin-bottom:0.3rem;">${c.name}</h3>
+                                <span style="font-size:0.75rem; color:var(--red-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:0.75rem;">${c.role}</span>
+                                <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; white-space: pre-wrap; max-height:140px; overflow-y:auto; background:var(--bg-input); padding:0.65rem; border-radius:6px; border:var(--border-thin);">${c.bio || 'No bio provided.'}</div>
+                            </div>
+                        </div>
+                    `;
+                });
             }
 
             // Events
