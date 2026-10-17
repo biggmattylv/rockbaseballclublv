@@ -119,6 +119,36 @@
         .page-header h1 { font-family: 'Impact', sans-serif; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
         .page-header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.3rem; }
 
+        /* FINANCIAL SUMMARY BANNER */
+        .financial-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .financial-metric-card {
+            background: #12121a;
+            border: var(--border-thin);
+            border-radius: var(--radius-module);
+            padding: 1.25rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+
+        .financial-metric-card .title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .financial-metric-card .amount {
+            font-family: 'Impact', sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+
         .admin-form-module {
             background-color: var(--bg-module); border: var(--border-thin);
             border-radius: var(--radius-module); padding: 2rem; margin-bottom: 2rem;
@@ -133,14 +163,6 @@
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
         .input-group label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.75rem; color: #fff; font-weight: 600; }
-        
-        .input-group textarea {
-            resize: vertical;
-            min-height: 120px;
-            font-family: 'Montserrat', sans-serif;
-            line-height: 1.5;
-            white-space: pre-wrap;
-        }
 
         .switch { position: relative; display: inline-block; width: 48px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -165,11 +187,51 @@
             flex-direction: column; justify-content: space-between;
         }
 
+        /* 3D FLIP CARD FOR ACCOUNT BALANCES */
+        .flip-card-container {
+            perspective: 1000px;
+            height: 480px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s ease;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card-container.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background-color: var(--bg-module);
+            border: var(--border-thin);
+            border-radius: var(--radius-module);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+            background: #0d0d14;
+            border-color: var(--gold-accent);
+        }
+
         .photo-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: var(--border-thin); margin-bottom: 0.75rem; background-color: #000; }
         .ledger-box { background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 1rem; margin-top: 0.75rem; }
         .balance-row { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1rem; margin-bottom: 0.5rem; }
-        .ledger-list { max-height: 100px; overflow-y: auto; font-size: 0.75rem; color: var(--text-muted); border-top: var(--border-thin); padding-top: 0.5rem; }
-        .ledger-entry { display: flex; justify-content: space-between; padding: 0.2rem 0; }
+        .ledger-list { max-height: 140px; overflow-y: auto; font-size: 0.75rem; color: var(--text-muted); border-top: var(--border-thin); padding-top: 0.5rem; }
+        .ledger-entry { display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid #1a1a24; }
         .add-charge-group { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
         .add-charge-group input { background: #000; border: var(--border-thin); border-radius: 4px; padding: 0.4rem; color: #fff; font-size: 0.8rem; width: 100%; }
 
@@ -227,6 +289,7 @@
         <aside class="admin-sidebar">
             <div class="sidebar-title">⚙ Admin Menu</div>
             <button class="nav-tab-btn active" onclick="switchAdminTab('tab-coaches')">🧢 Coaching Staff</button>
+            <button class="nav-tab-btn" onclick="switchAdminTab('tab-balances')">💳 Account Balances</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-potw')">🏆 Performers of Week</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-sponsors')">🤝 Sponsors (4 Slots)</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-events')">📅 Special Events</button>
@@ -241,11 +304,27 @@
         <!-- MAIN DASHBOARD CONTENT PANEL -->
         <main class="admin-content-panel">
 
-            <!-- TAB 1: COACHING STAFF MANAGER -->
+            <!-- TAB 1: COACHING STAFF MANAGER WITH FINANCIAL SUMMARY -->
             <section id="tab-coaches" class="tab-content-section active">
                 <div class="page-header">
-                    <h1>🧢 Coaching Staff & Rank Order</h1>
-                    <p>Re-order rank using the dropdown, edit bios, or remove coaches.</p>
+                    <h1>🧢 Coaching Staff & Command Center</h1>
+                    <p>Re-order rank using the dropdown, edit bios, or review club dues.</p>
+                </div>
+
+                <!-- OVERALL DUES TABULATION METRICS CARD -->
+                <div class="financial-summary-grid">
+                    <div class="financial-metric-card" style="border-left: 4px solid var(--red-accent);">
+                        <div class="title">Total Billed Dues Owed</div>
+                        <div class="amount" id="totalBilledDues" style="color: var(--red-accent);">$0.00</div>
+                    </div>
+                    <div class="financial-metric-card" style="border-left: 4px solid var(--green-accent);">
+                        <div class="title">Total Payments Collected</div>
+                        <div class="amount" id="totalPaidDues" style="color: var(--green-accent);">$0.00</div>
+                    </div>
+                    <div class="financial-metric-card" style="border-left: 4px solid var(--gold-accent);">
+                        <div class="title">Net Unpaid Balance Due</div>
+                        <div class="amount" id="netOutstandingBalance" style="color: var(--gold-accent);">$0.00</div>
+                    </div>
                 </div>
 
                 <div class="admin-form-module">
@@ -270,7 +349,29 @@
                 </div>
             </section>
 
-            <!-- TAB 2: PLAYER OF THE WEEK SELECTOR -->
+            <!-- TAB 2: ACCOUNT BALANCES & STATEMENTS (FLIP CARDS) -->
+            <section id="tab-balances" class="tab-content-section">
+                <div class="page-header">
+                    <h1>💳 Account Balances & Player Statements</h1>
+                    <p>Select any player to inspect charges, payments, and print full financial statements.</p>
+                </div>
+
+                <!-- JUMP TO PLAYER STATEMENT DROPDOWN -->
+                <div class="admin-form-module" style="padding:1.25rem; margin-bottom:1.5rem;">
+                    <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+                        <span style="font-weight:800; font-size:0.8rem; color:var(--gold-accent); text-transform:uppercase;">🔍 Select Player Statement:</span>
+                        <select id="jumpStatementSelect" onchange="scrollToStatementCard(this.value)" style="flex:1; max-width:400px; background:#000; border:var(--border-thin); color:#fff; padding:0.6rem; border-radius:6px; font-weight:700;">
+                            <option value="">-- Choose Player --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="roster-grid" id="accountBalancesContainer">
+                    <div style="color:var(--text-muted);">Loading player account balances...</div>
+                </div>
+            </section>
+
+            <!-- TAB 3: PLAYER OF THE WEEK SELECTOR -->
             <section id="tab-potw" class="tab-content-section">
                 <div class="page-header">
                     <h1>🏆 Performers of the Week Selection</h1>
@@ -291,7 +392,7 @@
                 </div>
             </section>
 
-            <!-- TAB 3: SPONSORS MANAGER (4 SLOTS WITH TOGGLES) -->
+            <!-- TAB 4: SPONSORS MANAGER (4 SLOTS WITH TOGGLES) -->
             <section id="tab-sponsors" class="tab-content-section">
                 <div class="page-header">
                     <h1>🤝 Official Club Sponsor Showcase (4 Slots)</h1>
@@ -303,7 +404,7 @@
                 </div>
             </section>
 
-            <!-- TAB 4: SPECIAL EVENTS MANAGER -->
+            <!-- TAB 5: SPECIAL EVENTS MANAGER -->
             <section id="tab-events" class="tab-content-section">
                 <div class="page-header">
                     <h1>📅 Special Events & Fundraisers</h1>
@@ -321,7 +422,7 @@
                 </div>
             </section>
 
-            <!-- TAB 5: MASTER ROSTER & METRICS -->
+            <!-- TAB 6: MASTER ROSTER & METRICS -->
             <section id="tab-roster" class="tab-content-section">
                 <div class="page-header">
                     <h1>📋 Master Roster & Metrics</h1>
@@ -342,7 +443,7 @@
                 </div>
             </section>
 
-            <!-- TAB 6: SECURITY PIN RESET ENGINE -->
+            <!-- TAB 7: SECURITY PIN RESET ENGINE -->
             <section id="tab-pins" class="tab-content-section">
                 <div class="page-header">
                     <h1>🔑 Security PIN Management</h1>
@@ -375,7 +476,7 @@
                 </div>
             </section>
 
-            <!-- TAB 7: ANNOUNCEMENTS & NOTES -->
+            <!-- TAB 8: ANNOUNCEMENTS & NOTES -->
             <section id="tab-settings" class="tab-content-section">
                 <div class="page-header">
                     <h1>📢 Site Announcement Banner & Coach Notes</h1>
@@ -399,7 +500,7 @@
                 </div>
             </section>
 
-            <!-- TAB 8: ADD NEW PLAYER -->
+            <!-- TAB 9: ADD NEW PLAYER -->
             <section id="tab-add-player" class="tab-content-section">
                 <div class="page-header">
                     <h1>➕ Add New Player to Database</h1>
@@ -430,7 +531,7 @@
                 </div>
             </section>
 
-            <!-- TAB 9: INFRASTRUCTURE QUICK LINKS -->
+            <!-- TAB 10: INFRASTRUCTURE QUICK LINKS -->
             <section id="tab-links" class="tab-content-section">
                 <div class="page-header">
                     <h1>⚡ Database & Cloud Quick Links</h1>
@@ -447,7 +548,7 @@
                 </div>
             </section>
 
-            <!-- TAB 10: RSS FEED MODERATION -->
+            <!-- TAB 11: RSS FEED MODERATION -->
             <section id="tab-rss" class="tab-content-section">
                 <div class="page-header">
                     <h1>📡 Baseball Training RSS Feed Moderation</h1>
@@ -579,7 +680,141 @@
             } catch (err) { console.error("Settings error:", err); }
         }
 
-        /* PERFORMERS OF THE WEEK SELECTION (SAFE DEDICATED OBJECT UPDATE) */
+        /* ACCOUNT BALANCES & FLIP CARD STATEMENTS */
+        function renderAccountBalancesTab() {
+            const container = document.getElementById('accountBalancesContainer');
+            const selectDropdown = document.getElementById('jumpStatementSelect');
+            if (!container) return;
+
+            container.innerHTML = '';
+            if (selectDropdown) selectDropdown.innerHTML = '<option value="">-- Choose Player --</option>';
+
+            let totalBilled = 0;
+            let totalPaid = 0;
+
+            if (activePlayers.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted);">No players found.</div>`;
+                return;
+            }
+
+            activePlayers.forEach(p => {
+                let ledgerArray = Array.isArray(p.ledger) ? p.ledger : [];
+                
+                let playerBilled = ledgerArray.filter(i => i.amount > 0).reduce((sum, item) => sum + parseFloat(item.amount), 0);
+                let playerPaid = ledgerArray.filter(i => i.amount < 0).reduce((sum, item) => sum + Math.abs(parseFloat(item.amount)), 0);
+                let balance = playerBilled - playerPaid;
+
+                totalBilled += playerBilled;
+                totalPaid += playerPaid;
+
+                if (selectDropdown) {
+                    selectDropdown.innerHTML += `<option value="${p.id}">${p.name} ($${balance.toFixed(2)})</option>`;
+                }
+
+                let ledgerRowsHtml = ledgerArray.map(item => `
+                    <div class="ledger-entry">
+                        <div>
+                            <div style="font-weight:700; color:#fff;">${item.desc || 'Charge/Fee'}</div>
+                            <div style="font-size:0.65rem; color:var(--text-muted);">${item.date || 'Record'}</div>
+                        </div>
+                        <span style="color:${item.amount >= 0 ? 'var(--red-accent)' : 'var(--green-accent)'}; font-weight:800;">
+                            ${item.amount >= 0 ? '+' : '-'}$${Math.abs(parseFloat(item.amount)).toFixed(2)}
+                        </span>
+                    </div>
+                `).join('');
+
+                container.innerHTML += `
+                    <div class="flip-card-container" id="balcard-${p.id}">
+                        <div class="flip-card-inner">
+                            
+                            <!-- CARD FRONT SIDE -->
+                            <div class="flip-card-front">
+                                <div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                                        <span class="badge-team">${p.team}</span>
+                                        <span style="font-size:0.65rem; color:var(--text-muted); font-weight:800;">PIN: ${p.pin || '1234'}</span>
+                                    </div>
+                                    <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; text-transform:uppercase; color:#fff; margin-bottom:0.2rem;">${p.name}</h3>
+                                    <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:0.75rem;">Parent: ${p.email}</span>
+
+                                    <div style="background:var(--bg-input); border:var(--border-thin); border-radius:8px; padding:1rem; margin-bottom:0.75rem;">
+                                        <div style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:var(--text-muted);">Current Outstanding Balance</div>
+                                        <div style="font-family:'Impact', sans-serif; font-size:2.2rem; color:${balance > 0 ? 'var(--red-accent)' : 'var(--green-accent)'}; margin-top:0.2rem;">
+                                            $${balance.toFixed(2)}
+                                        </div>
+                                    </div>
+
+                                    <div class="add-charge-group">
+                                        <input type="text" id="bal-desc-${p.id}" placeholder="Fee or payment note">
+                                        <input type="number" step="0.01" id="bal-amt-${p.id}" placeholder="$ (+/-)" style="width:80px;">
+                                        <button class="btn-small" onclick="addLedgerFromBalances('${p.id}')">Add</button>
+                                    </div>
+                                </div>
+
+                                <button class="btn-small" style="background:#202028; border:1px solid #333; width:100%; margin-top:0.75rem;" onclick="toggleFlipCard('${p.id}')">
+                                    🔄 View Itemized Statement →
+                                </button>
+                            </div>
+
+                            <!-- CARD BACK SIDE (ITEMIZED STATEMENT) -->
+                            <div class="flip-card-back">
+                                <div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; border-bottom:1px solid #333; padding-bottom:0.5rem;">
+                                        <h4 style="font-family:'Impact', sans-serif; font-size:1.4rem; color:var(--gold-accent); margin:0;">STATEMENT: ${p.name}</h4>
+                                        <button class="btn-small" style="background:#000; border:1px solid #333; padding:0.2rem 0.5rem;" onclick="toggleFlipCard('${p.id}')">✕ Close</button>
+                                    </div>
+                                    
+                                    <div class="ledger-list" style="max-height:280px;">
+                                        ${ledgerRowsHtml || '<div style="font-style:italic;">No charges recorded on account.</div>'}
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #333; padding-top:0.75rem; margin-top:0.5rem;">
+                                    <div>
+                                        <span style="font-size:0.65rem; color:var(--text-muted); display:block;">Total Balance Due:</span>
+                                        <strong style="font-size:1.1rem; color:${balance > 0 ? 'var(--red-accent)' : 'var(--green-accent)'}">$${balance.toFixed(2)}</strong>
+                                    </div>
+                                    <button class="btn-small" style="background:var(--gold-accent); color:#000;" onclick="window.print()">🖨 Print Statement</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Update Header Tabulation Metrics
+            document.getElementById('totalBilledDues').innerText = `$${totalBilled.toFixed(2)}`;
+            document.getElementById('totalPaidDues').innerText = `$${totalPaid.toFixed(2)}`;
+            document.getElementById('netOutstandingBalance').innerText = `$${(totalBilled - totalPaid).toFixed(2)}`;
+        }
+
+        function toggleFlipCard(playerId) {
+            let card = document.getElementById(`balcard-${playerId}`);
+            if (card) card.classList.toggle('flipped');
+        }
+
+        function scrollToStatementCard(playerId) {
+            if (!playerId) return;
+            let el = document.getElementById(`balcard-${playerId}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        async function addLedgerFromBalances(playerId) {
+            let desc = document.getElementById(`bal-desc-${playerId}`).value || 'Fee';
+            let amt = parseFloat(document.getElementById(`bal-amt-${playerId}`).value);
+            if (isNaN(amt)) return;
+
+            let player = activePlayers.find(p => p.id === playerId);
+            let currentLedger = Array.isArray(player.ledger) ? player.ledger : [];
+            currentLedger.push({ desc: desc, amount: amt, date: new Date().toISOString().split('T')[0] });
+
+            await supabaseClient.from('players').update({ ledger: currentLedger }).eq('id', playerId);
+            await loadMasterRoster();
+            renderAccountBalancesTab();
+        }
+
+        /* PERFORMERS OF THE WEEK SELECTION */
         function renderPotwPlayerCheckboxes() {
             const listContainer = document.getElementById('potwPlayerSelectionList');
             if (!listContainer) return;
@@ -588,9 +823,7 @@
             let savedData = {};
             try {
                 savedData = JSON.parse(globalSettings.potw_summary || '{}');
-            } catch (e) {
-                savedData = {};
-            }
+            } catch (e) { savedData = {}; }
 
             let currentPotwIds = Array.isArray(savedData.ids) ? savedData.ids : [];
             let currentHeadlines = (savedData.headlines && typeof savedData.headlines === 'object') ? savedData.headlines : {};
@@ -623,9 +856,7 @@
             let headlinesObj = {};
             activePlayers.forEach(p => {
                 let headlineInput = document.getElementById(`headline_${p.id}`);
-                if (headlineInput) {
-                    headlinesObj[p.id] = headlineInput.value;
-                }
+                if (headlineInput) headlinesObj[p.id] = headlineInput.value;
             });
 
             let combinedPayload = JSON.stringify({
@@ -633,19 +864,14 @@
                 headlines: headlinesObj
             });
 
-            // STRICT EXPLICIT COLUMNS ONLY (prevents schema cache errors)
             const updates = {
                 id: 'global',
                 potw_summary: combinedPayload
             };
 
             const { error } = await supabaseClient.from('site_settings').upsert(updates);
-            if (error) {
-                alert('Error publishing performers: ' + error.message);
-            } else {
-                alert('✅ Performers of the week published to homepage!');
-                await loadSiteSettings();
-            }
+            if (error) alert('Error publishing performers: ' + error.message);
+            else { alert('✅ Performers of the week published to homepage!'); await loadSiteSettings(); }
         }
 
         /* 4 SPONSOR SLOTS MANAGEMENT */
@@ -679,7 +905,7 @@
 
                                 <div style="height:100px; background:#000; border:var(--border-thin); border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:0.75rem; padding:0.5rem;">
                                     ${spons.snippet && spons.snippet.startsWith('http') 
-                                        ? `<img src="${spons.snippet}" style="max-height:100%; max-width:100%; object-fit:contain;" alt="${spons.title}">` 
+                                        ? `<img src="${spons.snippet}" style="max-height:100\%; max-width:100\%; object-fit:contain;" alt="${spons.title}">` 
                                         : `<span style="color:var(--text-muted); font-size:0.8rem; font-weight:700;">🤝 No Logo Linked</span>`
                                     }
                                 </div>
@@ -1012,6 +1238,7 @@
                 populatePINPlayerDropdown();
                 populateJumpPlayerDropdown();
                 renderPotwPlayerCheckboxes();
+                renderAccountBalancesTab();
 
                 const container = document.getElementById('adminRosterContainer');
                 container.innerHTML = '';
@@ -1057,7 +1284,7 @@
                                 </div>
 
                                 <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
-                                    <button class="btn-small" style="background:#202028; border:1px solid #333; width:100%;" onclick="openPlayerModal('${p.id}')">✏️ Edit Player Showcase & Metrics</button>
+                                    <button class="btn-small" style="background:#202028; border:1px solid #333; width:100%;" onclick="openPlayerModal('${p.id}')">✏ Edit Player Showcase & Metrics</button>
                                 </div>
 
                                 <div style="margin-bottom: 0.75rem; background: var(--bg-input); padding: 0.6rem; border-radius: 6px; border: var(--border-thin);">
@@ -1235,7 +1462,8 @@
             currentLedger.push({ desc: desc, amount: amt, date: new Date().toISOString().split('T')[0] });
 
             await supabaseClient.from('players').update({ ledger: currentLedger }).eq('id', playerId);
-            loadMasterRoster();
+            await loadMasterRoster();
+            renderAccountBalancesTab();
         }
 
         initCoachesHub();
