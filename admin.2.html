@@ -255,6 +255,65 @@
         .modal-content h3 { font-family: 'Impact', sans-serif; font-size: 1.8rem; text-transform: uppercase; color: #fff; margin-bottom: 1rem; }
         .modal-btn-group { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
 
+        /* PRINT MEDIA STYLES FOR ISOLATED PLAYER STATEMENTS */
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+
+            body, main, .admin-dashboard-layout {
+                background: #fff !important;
+                color: #000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+            }
+
+            .flip-card-container.printing-statement,
+            .flip-card-container.printing-statement * {
+                visibility: visible !important;
+            }
+
+            .flip-card-container.printing-statement {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                perspective: none !important;
+            }
+
+            .flip-card-container.printing-statement .flip-card-front {
+                display: none !important;
+            }
+
+            .flip-card-container.printing-statement .flip-card-inner {
+                transform: none !important;
+                transition: none !important;
+            }
+
+            .flip-card-container.printing-statement .flip-card-back {
+                position: static !important;
+                transform: none !important;
+                background: #fff !important;
+                color: #000 !important;
+                border: 2px solid #000 !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                height: auto !important;
+                padding: 2rem !important;
+            }
+
+            .flip-card-container.printing-statement .flip-card-back * {
+                color: #000 !important;
+                background: transparent !important;
+            }
+
+            .flip-card-container.printing-statement button {
+                display: none !important;
+            }
+        }
+
         @media (max-width: 900px) {
             .admin-dashboard-layout { flex-direction: column; }
             .admin-sidebar { width: 100%; position: relative; top: 0; }
@@ -287,7 +346,7 @@
         
         <!-- LEFT SIDEBAR TAB NAVIGATION -->
         <aside class="admin-sidebar">
-            <div class="sidebar-title">⚙ Admin Menu</div>
+            <div class="sidebar-title">GM Admin Menu</div>
             <button class="nav-tab-btn active" onclick="switchAdminTab('tab-coaches')">🧢 Coaching Staff</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-balances')">💳 Account Balances</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-potw')">🏆 Performers of Week</button>
@@ -680,6 +739,22 @@
             } catch (err) { console.error("Settings error:", err); }
         }
 
+        /* PRINT ISOLATED STATEMENT FUNCTION */
+        function printPlayerStatement(playerId) {
+            document.querySelectorAll('.flip-card-container').forEach(card => {
+                card.classList.remove('printing-statement');
+            });
+
+            const cardToPrint = document.getElementById(`balcard-${playerId}`);
+            if (cardToPrint) {
+                cardToPrint.classList.add('printing-statement');
+                window.print();
+                setTimeout(() => {
+                    cardToPrint.classList.remove('printing-statement');
+                }, 1000);
+            }
+        }
+
         /* ACCOUNT BALANCES & FLIP CARD STATEMENTS */
         function renderAccountBalancesTab() {
             const container = document.getElementById('accountBalancesContainer');
@@ -774,7 +849,7 @@
                                         <span style="font-size:0.65rem; color:var(--text-muted); display:block;">Total Balance Due:</span>
                                         <strong style="font-size:1.1rem; color:${balance > 0 ? 'var(--red-accent)' : 'var(--green-accent)'}">$${balance.toFixed(2)}</strong>
                                     </div>
-                                    <button class="btn-small" style="background:var(--gold-accent); color:#000;" onclick="window.print()">🖨 Print Statement</button>
+                                    <button class="btn-small" style="background:var(--gold-accent); color:#000;" onclick="printPlayerStatement('${p.id}')">🖨 Print Statement</button>
                                 </div>
                             </div>
 
