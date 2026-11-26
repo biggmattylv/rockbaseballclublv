@@ -73,9 +73,9 @@
 
         .card-back { background: #14141c; transform: rotateY(180deg); border-top: 4px solid var(--gold-accent); }
 
-        .gpa-box { background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.5rem; margin-top: 0.4rem; text-align: center; }
-        .gpa-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; display: block; }
-        .gpa-value { font-family: 'Impact', sans-serif; font-size: 1.6rem; color: var(--gold-accent); display: block; line-height: 1; }
+        .gpa-box { background-color: var(--bg-input); border: var(--border-thin); border-radius: 8px; padding: 0.55rem; margin-top: 0.4rem; text-align: center; }
+        .gpa-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 0.15rem; }
+        .gpa-value { font-family: 'Impact', sans-serif; font-size: 1.45rem; color: var(--gold-accent); display: block; line-height: 1.1; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -128,7 +128,7 @@
 
                 let filtered = (players || []).filter(p => {
                     let teamLower = (p.team || '').toLowerCase();
-                    return teamLower.includes('14u');
+                    return teamLower.includes('14u') || teamLower.includes('hybrid') || teamLower.includes('both');
                 });
 
                 if (filtered.length === 0) {
@@ -137,7 +137,7 @@
                 }
 
                 filtered.forEach(p => {
-                    let savedGPA = localStorage.getItem(`gpa_${p.id}`) || '3.80';
+                    let savedGPA = localStorage.getItem(`gpa_${p.id}`) || 'Not Yet Recorded';
                     let playerPin = p.pin || '1234';
                     let hasFieldLevel = p.fieldlevel_url && p.fieldlevel_url.trim() !== '';
 
@@ -246,7 +246,7 @@
             let { data: player } = await supabaseClient.from('players').select('*').eq('id', playerId).single();
             if (!player) return;
 
-            let newGPA = prompt("Update Academic GPA Score (e.g. 3.85):", localStorage.getItem(`gpa_${playerId}`) || "3.80");
+            let newGPA = prompt("Update Academic GPA Score (e.g. 3.85):", localStorage.getItem(`gpa_${playerId}`) || "");
             if (newGPA === null) return;
 
             let newFieldLevel = prompt("Update FieldLevel Profile Link:", player.fieldlevel_url || "");
@@ -258,19 +258,19 @@
             let newGameChanger = prompt("Update GameChanger Profile URL:", player.gamechanger_url || "");
             if (newGameChanger === null) return;
 
-            let newHW = prompt("Update Height & Weight (e.g. 5'8\" / 145 lbs):", player.height_weight || "");
+            let newHW = prompt("Update Height & Weight (e.g. 5'10\" / 155 lbs):", player.height_weight || "");
             if (newHW === null) return;
 
             let newBT = prompt("Update Bats / Throws (e.g. R/R, L/R):", player.bats_throws || "R/R");
             if (newBT === null) return;
 
-            let new60 = prompt("Update 60-Yard Dash Time (e.g. 7.20s):", player.sixty_time || "");
+            let new60 = prompt("Update 60-Yard Dash Time (e.g. 7.05s):", player.sixty_time || "");
             if (new60 === null) return;
 
             let newPop = prompt("Update Catcher Pop Time (e.g. 2.15s):", player.pop_time || "");
             if (newPop === null) return;
 
-            let newHS = prompt("Update High School / Middle School:", player.high_school || "Summerlin School");
+            let newHS = prompt("Update High School:", player.high_school || "Summerlin High");
             if (newHS === null) return;
 
             let newGrad = prompt("Update Grad Year:", player.grad_year || "2030");
@@ -362,7 +362,7 @@
                         <tbody>${statementRows || '<tr><td colspan="3" style="padding:15px; text-align:center;">No statement history recorded.</td></tr>'}</tbody>
                     </table>
                     <div class="balance-box">Current Outstanding Balance: <span style="color: ${balance > 0 ? '#ff1a35' : '#10b981'};">$${balance.toFixed(2)}</span></div>
-                    <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF Statement</button>
+                    <button class="btn-print" onclick="window.print()">🖨 Print / Save as PDF Statement</button>
                 </body>
                 </html>
             `);
