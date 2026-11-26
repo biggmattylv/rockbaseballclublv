@@ -41,7 +41,7 @@
         .showcase-name { font-family: 'Impact', sans-serif; font-size: 3.5rem; text-transform: uppercase; letter-spacing: 1px; line-height: 1; margin-bottom: 0.5rem; color: #fff; }
         .showcase-sub { color: var(--red-accent); font-size: 1.25rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1.25rem; letter-spacing: 1px; }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
 
         .metric-card {
             background-color: var(--bg-module); border: var(--border-thin);
@@ -49,7 +49,7 @@
         }
 
         .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 0.3rem; }
-        .metric-value { font-family: 'Impact', sans-serif; font-size: 2.2rem; color: #fff; display: block; line-height: 1; }
+        .metric-value { font-family: 'Impact', sans-serif; font-size: 1.85rem; color: #fff; display: block; line-height: 1.1; }
 
         .section-box {
             background-color: var(--bg-module); border: var(--border-thin);
@@ -94,6 +94,16 @@
         const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        function getCleanGPA(player) {
+            let stored = localStorage.getItem(`gpa_${player.id}`);
+            if (stored === '3.80' || stored === '3.8') {
+                localStorage.removeItem(`gpa_${player.id}`);
+                stored = null;
+            }
+            let dbGpa = (player.gpa && player.gpa !== '3.80' && player.gpa !== '3.8') ? player.gpa : null;
+            return stored || dbGpa || 'Not Yet Recorded';
+        }
+
         async function loadPlayerProfile() {
             const params = new URLSearchParams(window.location.search);
             const playerId = params.get('id');
@@ -110,7 +120,7 @@
                 return;
             }
 
-            let savedGPA = localStorage.getItem(`gpa_${player.id}`) || '3.80';
+            let savedGPA = getCleanGPA(player);
             let photoUrl = player.photo_url || 'brand/logo.jpg';
             let statusBadge = player.commit_status && player.commit_status !== 'UNCOMMITTED'
                 ? `<span class="badge" style="background:var(--gold-accent)!important; color:#000!important; border-color:var(--gold-accent)!important;">${player.commit_status}</span>`
