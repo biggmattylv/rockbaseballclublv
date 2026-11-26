@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>16U Division Roster | The Rock Baseball Club</title>
+    <title>18U Division Roster | The Rock Baseball Club</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,13 +28,13 @@
 
         .btn-gc-header {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            background: #3b82f6; color: #fff; font-weight: 900; font-size: 0.85rem;
+            background: #10b981; color: #000; font-weight: 900; font-size: 0.85rem;
             text-transform: uppercase; padding: 0.85rem 1.4rem; border-radius: 8px;
-            text-decoration: none; box-shadow: 0 4px 18px rgba(59, 130, 246, 0.35);
+            text-decoration: none; box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);
             transition: all 0.2s ease;
         }
 
-        .btn-gc-header:hover { background: #2563eb; transform: translateY(-2px); }
+        .btn-gc-header:hover { background: #059669; color: #fff; transform: translateY(-2px); }
 
         .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
         .card-container { background-color: transparent; width: 100%; height: 500px; perspective: 1000px; }
@@ -104,8 +104,8 @@
             <nav>
                 <a href="index.html">Home</a>
                 <a href="14u.html">14U Roster</a>
-                <a href="16u.html" class="active">16U Roster</a>
-                <a href="18u.html">18U Roster</a>
+                <a href="16u.html">16U Roster</a>
+                <a href="18u.html" class="active">18U Roster</a>
                 <a href="uniforms.html">Uniforms</a>
                 <a href="admin.2.html" class="nav-accent">🔒 Coaches Hub</a>
             </nav>
@@ -115,16 +115,16 @@
     <main>
         <div class="page-header">
             <div>
-                <h1>16U Division Roster</h1>
-                <p>High School Preparation & Skill Refinement Team</p>
+                <h1>18U Division Roster</h1>
+                <p>High School & College Recruitment Showcase Team</p>
             </div>
-            <a href="https://web.gc.com/teams/EXmyvqr5F9UA?utm_source=Web&utm_campaign=team_share_link" target="_blank" class="btn-gc-header">
-                ⚾ 16U GameChanger Team Page →
+            <a href="https://web.gc.com/teams/QajxhRe8yxv7?utm_source=Web&utm_campaign=team_share_link" target="_blank" class="btn-gc-header">
+                ⚾ 18U GameChanger Team Page →
             </a>
         </div>
 
         <div class="roster-grid" id="rosterContainer">
-            <div style="color:var(--text-muted);">Loading 16U roster...</div>
+            <div style="color:var(--text-muted);">Loading 18U roster...</div>
         </div>
     </main>
 
@@ -135,6 +135,16 @@
         const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        function getCleanGPA(player) {
+            let stored = localStorage.getItem(`gpa_${player.id}`);
+            if (stored === '3.80' || stored === '3.8') {
+                localStorage.removeItem(`gpa_${player.id}`);
+                stored = null;
+            }
+            let dbGpa = (player.gpa && player.gpa !== '3.80' && player.gpa !== '3.8') ? player.gpa : null;
+            return stored || dbGpa || 'Not Yet Recorded';
+        }
+
         async function loadDivisionRoster() {
             try {
                 let { data: players, error } = await supabaseClient.from('players').select('*').eq('active', true).order('name', { ascending: true });
@@ -143,10 +153,10 @@
                 const container = document.getElementById('rosterContainer');
                 container.innerHTML = '';
 
-                // 16U AND HYBRID PLAYERS
+                // 18U AND HYBRID PLAYERS
                 let filtered = (players || []).filter(p => {
                     let teamLower = (p.team || '').toLowerCase();
-                    return teamLower.includes('16u') || teamLower.includes('hybrid') || teamLower.includes('both');
+                    return teamLower.includes('18u') || teamLower.includes('hybrid') || teamLower.includes('both');
                 });
 
                 if (filtered.length === 0) {
@@ -155,12 +165,7 @@
                 }
 
                 filtered.forEach(p => {
-                    let rawGPA = localStorage.getItem(`gpa_${p.id}`);
-                    if (rawGPA === '3.80') {
-                        localStorage.removeItem(`gpa_${p.id}`);
-                        rawGPA = null;
-                    }
-                    let savedGPA = rawGPA || 'Not Yet Recorded';
+                    let savedGPA = getCleanGPA(p);
                     let playerPin = p.pin || '1234';
                     let hasFieldLevel = p.fieldlevel_url && p.fieldlevel_url.trim() !== '';
 
@@ -208,7 +213,7 @@
                                         </div>
 
                                         <div class="stats-grid">
-                                            <div class="stats-item"><span>Grad Year</span><strong>${p.grad_year || '2028'}</strong></div>
+                                            <div class="stats-item"><span>Grad Year</span><strong>${p.grad_year || '2027'}</strong></div>
                                             <div class="stats-item"><span>Frame / B-T</span><strong>${p.height_weight || 'N/A'} (${p.bats_throws || 'R/R'})</strong></div>
                                             <div class="stats-item"><span>FB Velo</span><strong>${p.fastball_velo ? p.fastball_velo + ' MPH' : '--'}</strong></div>
                                             <div class="stats-item"><span>Exit Velo</span><strong>${p.exit_velo ? p.exit_velo + ' MPH' : '--'}</strong></div>
@@ -270,7 +275,7 @@
             if (!player) return;
 
             let currentStored = localStorage.getItem(`gpa_${playerId}`);
-            if (currentStored === '3.80') currentStored = '';
+            if (currentStored === '3.80' || currentStored === '3.8') currentStored = '';
             let newGPA = prompt("Update Academic GPA Score (e.g. 3.85):", currentStored || "");
             if (newGPA === null) return;
 
@@ -298,7 +303,7 @@
             let newHS = prompt("Update High School:", player.high_school || "Summerlin High");
             if (newHS === null) return;
 
-            let newGrad = prompt("Update Grad Year:", player.grad_year || "2028");
+            let newGrad = prompt("Update Grad Year:", player.grad_year || "2027");
             if (newGrad === null) return;
 
             if (newGPA && !isNaN(parseFloat(newGPA))) localStorage.setItem(`gpa_${playerId}`, parseFloat(newGPA).toFixed(2));
