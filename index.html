@@ -186,8 +186,20 @@
             background: linear-gradient(145deg, #0d1f17 0%, #080d0a 100%);
             border: 1px solid #10b981;
             border-radius: var(--radius-module);
-            padding: 1.75rem;
+            padding: 1.5rem;
             box-shadow: 0 8px 25px rgba(16,185,129,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .gc-widget-frame {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin: 0.75rem 0 1rem 0;
+            min-height: 260px;
+            overflow: hidden;
         }
 
         .rss-grid {
@@ -278,41 +290,47 @@
             </div>
         </section>
 
-        <!-- GAMECHANGER SCHEDULES MODULE -->
+        <!-- LIVE GAMECHANGER EMBEDDED SCHEDULES MODULE -->
         <section style="margin-bottom: 3.5rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
                 <h2 style="font-family:'Impact', sans-serif; font-size:2.2rem; text-transform:uppercase; color:#fff; margin:0;">
                     ⚡ Live GameChanger Division Schedules
                 </h2>
                 <span style="background:#10b981; color:#000; font-size:0.75rem; font-weight:900; padding:0.3rem 0.7rem; border-radius:6px; text-transform:uppercase;">
-                    Official GameChanger Hub
+                    Real-Time Game Feed
                 </span>
             </div>
 
             <div class="gamechanger-schedule-grid">
+                <!-- 18U EMBEDDED SCHEDULE -->
                 <div class="gc-schedule-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-                        <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; color:#fff; text-transform:uppercase; margin:0;">18U Showcase Schedule</h3>
-                        <span style="color:#10b981; font-weight:900; font-size:0.8rem;">VARSITY</span>
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; color:#fff; text-transform:uppercase; margin:0;">18U Showcase Schedule</h3>
+                            <span style="color:#10b981; font-weight:900; font-size:0.8rem;">VARSITY</span>
+                        </div>
+                        <div class="gc-widget-frame">
+                            <div id="gc-schedule-widget-by0a"></div>
+                        </div>
                     </div>
-                    <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5; margin-bottom:1.25rem;">
-                        Live game tracking, box scores, pitch metrics, and upcoming tournament times for the 18U Varsity squad.
-                    </p>
-                    <a href="https://gc.com" target="_blank" style="display:block; text-align:center; background:#10b981; color:#000; font-weight:900; text-transform:uppercase; padding:0.85rem; border-radius:8px; text-decoration:none;">
-                        ⚾ Open 18U GameChanger Feed →
+                    <a href="https://web.gc.com/teams/QajxhRe8yxv7?utm_source=Web&utm_campaign=team_share_link" target="_blank" style="display:block; text-align:center; background:#10b981; color:#000; font-weight:900; text-transform:uppercase; padding:0.75rem; border-radius:8px; text-decoration:none; font-size:0.85rem;">
+                        ⚾ Open 18U Team Page on GameChanger →
                     </a>
                 </div>
 
-                <div class="gc-schedule-card" style="border-color: #3b82f6; background: linear-gradient(145deg, #0b1528 0%, #080c14 100%);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-                        <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; color:#fff; text-transform:uppercase; margin:0;">16U / Hybrid Schedule</h3>
-                        <span style="color:#3b82f6; font-weight:900; font-size:0.8rem;">PROSPECT</span>
+                <!-- 16U EMBEDDED SCHEDULE -->
+                <div class="gc-schedule-card" style="border-color: #3b82f6; background: linear-gradient(145deg, #0b1528 0%, #080c14 100%); box-shadow: 0 8px 25px rgba(59,130,246,0.2);">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 style="font-family:'Impact', sans-serif; font-size:1.8rem; color:#fff; text-transform:uppercase; margin:0;">16U / Hybrid Schedule</h3>
+                            <span style="color:#3b82f6; font-weight:900; font-size:0.8rem;">PROSPECT</span>
+                        </div>
+                        <div class="gc-widget-frame">
+                            <div id="gc-schedule-widget-tyvq"></div>
+                        </div>
                     </div>
-                    <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5; margin-bottom:1.25rem;">
-                        Live game tracking, box scores, pitch metrics, and upcoming tournament times for the 16U Prospect squad.
-                    </p>
-                    <a href="https://gc.com" target="_blank" style="display:block; text-align:center; background:#3b82f6; color:#fff; font-weight:900; text-transform:uppercase; padding:0.85rem; border-radius:8px; text-decoration:none;">
-                        ⚾ Open 16U GameChanger Feed →
+                    <a href="https://web.gc.com/teams/EXmyvqr5F9UA?utm_source=Web&utm_campaign=team_share_link" target="_blank" style="display:block; text-align:center; background:#3b82f6; color:#fff; font-weight:900; text-transform:uppercase; padding:0.75rem; border-radius:8px; text-decoration:none; font-size:0.85rem;">
+                        ⚾ Open 16U Team Page on GameChanger →
                     </a>
                 </div>
             </div>
@@ -330,6 +348,22 @@
     </main>
 
     <footer>&copy; 2026 The Rock Baseball Club — Summerlin, NV</footer>
+
+    <!-- GAMECHANGER LIVE SCHEDULE WIDGET SDK -->
+    <script src="https://widgets.gc.com/static/js/sdk.v1.js"></script>
+    <script>
+        window.GC.team.schedule.init({
+            target: "#gc-schedule-widget-by0a",
+            widgetId: "8144e17d-4dff-4613-9eea-506dd1fec46c",
+            maxVerticalGamesVisible: 4,
+        });
+
+        window.GC.team.schedule.init({
+            target: "#gc-schedule-widget-tyvq",
+            widgetId: "61ff513f-bfbe-454b-9318-d6ff6434874e",
+            maxVerticalGamesVisible: 4,
+        });
+    </script>
 
     <script>
         window.scrollTo(0, 0);
