@@ -118,6 +118,16 @@
         const SUPABASE_ANON_KEY = "sb_publishable_oGrtOIu1em1FXuYY9roobA_VmxuJdyi";
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        function getCleanGPA(player) {
+            let stored = localStorage.getItem(`gpa_${player.id}`);
+            if (stored === '3.80' || stored === '3.8') {
+                localStorage.removeItem(`gpa_${player.id}`);
+                stored = null;
+            }
+            let dbGpa = (player.gpa && player.gpa !== '3.80' && player.gpa !== '3.8') ? player.gpa : null;
+            return stored || dbGpa || 'Not Yet Recorded';
+        }
+
         async function loadDivisionRoster() {
             try {
                 let { data: players, error } = await supabaseClient.from('players').select('*').eq('active', true).order('name', { ascending: true });
@@ -138,12 +148,7 @@
                 }
 
                 filtered.forEach(p => {
-                    let rawGPA = localStorage.getItem(`gpa_${p.id}`);
-                    if (rawGPA === '3.80') {
-                        localStorage.removeItem(`gpa_${p.id}`);
-                        rawGPA = null;
-                    }
-                    let savedGPA = rawGPA || 'Not Yet Recorded';
+                    let savedGPA = getCleanGPA(p);
                     let playerPin = p.pin || '1234';
                     let hasFieldLevel = p.fieldlevel_url && p.fieldlevel_url.trim() !== '';
 
@@ -253,7 +258,7 @@
             if (!player) return;
 
             let currentStored = localStorage.getItem(`gpa_${playerId}`);
-            if (currentStored === '3.80') currentStored = '';
+            if (currentStored === '3.80' || currentStored === '3.8') currentStored = '';
             let newGPA = prompt("Update Academic GPA Score (e.g. 3.85):", currentStored || "");
             if (newGPA === null) return;
 
