@@ -357,7 +357,7 @@
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-settings')">📢 Site Banner & Notes</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-add-player')">➕ Add New Player</button>
             <button class="nav-tab-btn" onclick="switchAdminTab('tab-links')">⚡ Quick Links</button>
-            <button class="nav-tab-btn" onclick="switchAdminTab('tab-rss')">📡 RSS Feeds</button>
+            <button class="nav-tab-btn" onclick="switchAdminTab('tab-rss')">📡 RSS & Articles</button>
         </aside>
 
         <!-- MAIN DASHBOARD CONTENT PANEL -->
@@ -613,21 +613,62 @@
                 </div>
             </section>
 
-            <!-- TAB 11: RSS FEED MODERATION -->
+            <!-- TAB 11: RSS & ARTICLES MODERATION ENGINE -->
             <section id="tab-rss" class="tab-content-section">
                 <div class="page-header">
-                    <h1>📡 Baseball Training RSS Feed Moderation</h1>
-                    <p>Approve articles to automatically feature them on the homepage.</p>
+                    <h1>📡 Baseball Training &amp; News Articles Manager</h1>
+                    <p>Import any article manually, pull from RSS feeds, toggle which ones appear on the homepage, or delete articles.</p>
                 </div>
 
+                <!-- MANUAL ARTICLE IMPORTER -->
                 <div class="admin-form-module">
-                    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+                    <h2 class="toolbar-title">➕ Import Any Article Manually</h2>
+                    <form id="manualArticleForm" onsubmit="handleManualArticleImport(event)">
+                        <div class="form-grid">
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label>Article Headline / Title</label>
+                                <input type="text" id="art_title" placeholder="e.g. Off-Season Arm Care & Velocity Development Guide" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Source / Category Tag</label>
+                                <input type="text" id="art_source" placeholder="e.g. Baseball America, Driveline, Club News" value="Pro Training" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Article Web URL (Link)</label>
+                                <input type="url" id="art_link" placeholder="https://..." required>
+                            </div>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label>Short Summary / Description</label>
+                                <textarea id="art_snippet" rows="2" placeholder="Brief 1-2 sentence summary shown on the homepage card..." required></textarea>
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:1rem; margin-top:1rem; flex-wrap:wrap;">
+                            <button type="submit" class="btn-submit" style="margin-top:0;">💾 Import Article</button>
+                            <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.8rem; font-weight:800; color:var(--gold-accent); cursor:pointer;">
+                                <input type="checkbox" id="art_auto_approve" checked style="width:auto;">
+                                Immediately post live on homepage
+                            </label>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- RSS FEED IMPORTER & ARTICLE MODERATION GRID -->
+                <div class="admin-form-module">
+                    <h2 class="toolbar-title">📡 Import from RSS Feeds</h2>
+                    <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.25rem;">
                         <button type="button" class="btn-submit" style="margin-top:0;" onclick="fetchRSSFromSource('Driveline Baseball', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.drivelinebaseball.com%2Ffeed%2F')">📡 Fetch Driveline RSS</button>
                         <button type="button" class="btn-submit" style="margin-top:0; background:#202028; border:var(--border-thin);" onclick="fetchRSSFromSource('Youth Baseball Edge', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.youthbaseballedge.com%2Ffeed%2F')">📡 Fetch Youth Edge RSS</button>
                     </div>
 
+                    <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.75rem; background:var(--bg-input); padding:1rem; border-radius:8px; border:var(--border-thin);">
+                        <input type="text" id="custom_rss_name" placeholder="Source Label (e.g. MLB Pipeline)" style="flex:1; min-width:180px; background:#000; border:var(--border-thin); border-radius:6px; padding:0.65rem; color:#fff; font-weight:600;">
+                        <input type="url" id="custom_rss_url" placeholder="Paste any RSS Feed URL (https://.../feed/)" style="flex:2; min-width:240px; background:#000; border:var(--border-thin); border-radius:6px; padding:0.65rem; color:#fff; font-weight:600;">
+                        <button type="button" class="btn-submit" style="margin-top:0; background:var(--gold-accent); color:#000;" onclick="fetchCustomRSS()">📥 Pull Feed</button>
+                    </div>
+
+                    <h2 class="toolbar-title">Manage Imported Articles (Toggle Live or Delete)</h2>
                     <div id="rssFeedContainer" class="roster-grid">
-                        <div style="color:var(--text-muted);">Click a fetch button above to load articles for moderation...</div>
+                        <div style="color:var(--text-muted);">Loading imported articles...</div>
                     </div>
                 </div>
             </section>
@@ -1443,7 +1484,48 @@
             await supabaseClient.from('coaches').update({ active: isChecked }).eq('id', coachId);
         }
 
-        /* RSS MODERATION ENGINE */
+        /* RSS & MANUAL ARTICLE MODERATION ENGINE */
+        async function handleManualArticleImport(event) {
+            event.preventDefault();
+            const titleVal = document.getElementById('art_title').value.trim();
+            const sourceVal = document.getElementById('art_source').value.trim() || 'Pro Training';
+            const linkVal = document.getElementById('art_link').value.trim();
+            const snippetVal = document.getElementById('art_snippet').value.trim();
+            const autoApprove = document.getElementById('art_auto_approve').checked;
+
+            const articleObj = {
+                id: 'art_' + Date.now(),
+                title: titleVal,
+                link: linkVal,
+                source: sourceVal,
+                snippet: snippetVal,
+                approved: autoApprove
+            };
+
+            const { error } = await supabaseClient.from('rss_articles').upsert(articleObj);
+            if (error) {
+                alert('Error importing article: ' + error.message);
+            } else {
+                document.getElementById('manualArticleForm').reset();
+                document.getElementById('art_source').value = 'Pro Training';
+                document.getElementById('art_auto_approve').checked = true;
+                await loadRSSForModeration();
+                alert(autoApprove ? '✅ Article imported and published to homepage!' : '✅ Article imported to moderation queue!');
+            }
+        }
+
+        async function fetchCustomRSS() {
+            const sourceLabel = document.getElementById('custom_rss_name').value.trim() || 'Baseball Feed';
+            const rawUrl = document.getElementById('custom_rss_url').value.trim();
+            if (!rawUrl) {
+                alert('Please paste a valid RSS Feed URL first.');
+                return;
+            }
+            const apiEndpoint = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rawUrl)}`;
+            await fetchRSSFromSource(sourceLabel, apiEndpoint);
+            document.getElementById('custom_rss_url').value = '';
+        }
+
         async function fetchRSSFromSource(sourceName, feedApiUrl) {
             try {
                 let res = await fetch(feedApiUrl);
@@ -1452,17 +1534,19 @@
                 if (json.items && json.items.length > 0) {
                     for (let item of json.items.slice(0, 5)) {
                         let articleObj = {
-                            id: 'rss_' + btoa(item.link).substring(0, 16),
+                            id: 'rss_' + btoa(unescape(encodeURIComponent(item.link))).replace(/[^a-zA-Z0-9]/g, '').substring(0, 20),
                             title: item.title,
                             link: item.link,
                             source: sourceName,
-                            snippet: item.description ? item.description.replace(/<[^>]*>?/gm, '').substring(0, 140) + '...' : '',
+                            snippet: item.description ? item.description.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...' : '',
                             approved: false
                         };
                         await supabaseClient.from('rss_articles').upsert(articleObj);
                     }
                     alert(`✅ Fetched fresh articles from ${sourceName}!`);
                     loadRSSForModeration();
+                } else {
+                    alert('No articles returned from that RSS feed URL.');
                 }
             } catch (err) { alert('RSS fetch error: ' + err.message); }
         }
@@ -1476,24 +1560,36 @@
                 let filteredArticles = (articles || []).filter(a => a.source !== 'SPONSOR' && a.source !== 'EVENT');
 
                 if (filteredArticles.length === 0) {
-                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No RSS articles loaded. Click "Fetch" buttons above to pull in training content.</div>`;
+                    container.innerHTML = `<div style="color:var(--text-muted); grid-column:1/-1;">No articles imported yet. Use the form above or click a Fetch button to pull articles.</div>`;
                     return;
                 }
 
                 filteredArticles.forEach(art => {
                     container.innerHTML += `
-                        <div class="rss-card-hub">
+                        <div class="rss-card-hub" id="rss-card-${art.id}">
                             <div>
-                                <span style="font-size:0.65rem; color:var(--gold-accent); font-weight:800; text-transform:uppercase;">${art.source}</span>
-                                <h4 style="font-family:'Impact', sans-serif; font-size:1.3rem; margin:0.4rem 0;">${art.title}</h4>
-                                <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.4;">${art.snippet}</p>
+                                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; margin-bottom:0.35rem;">
+                                    <span style="font-size:0.65rem; color:var(--gold-accent); font-weight:800; text-transform:uppercase;">${art.source}</span>
+                                    <span id="rss-status-${art.id}" style="font-size:0.6rem; background:${art.approved ? '#10b981' : '#333'}; color:${art.approved ? '#000' : '#fff'}; font-weight:900; padding:0.15rem 0.45rem; border-radius:4px;">
+                                        ${art.approved ? 'LIVE ON SITE' : 'HIDDEN'}
+                                    </span>
+                                </div>
+                                <h4 style="font-family:'Impact', sans-serif; font-size:1.3rem; margin:0.4rem 0; color:#fff;">${art.title}</h4>
+                                <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.4; margin-bottom:0.5rem;">${art.snippet || ''}</p>
+                                <a href="${art.link}" target="_blank" style="font-size:0.72rem; color:var(--red-accent); font-weight:800; text-decoration:none; word-break:break-all;">🔗 Open Source Article →</a>
                             </div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:0.6rem 0.8rem; border-radius:8px; border:var(--border-thin); margin-top:0.75rem;">
-                                <span style="font-size:0.75rem; font-weight:800; color:#fff; text-transform:uppercase;">Approve for Homepage</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="rss-approve-${art.id}" ${art.approved ? 'checked' : ''} onchange="toggleArticleApproval('${art.id}')">
-                                    <span class="slider"></span>
-                                </label>
+
+                            <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.85rem;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:0.6rem 0.8rem; border-radius:8px; border:var(--border-thin);">
+                                    <span style="font-size:0.75rem; font-weight:800; color:#fff; text-transform:uppercase;">Post to Homepage</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="rss-approve-${art.id}" ${art.approved ? 'checked' : ''} onchange="toggleArticleApproval('${art.id}')">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <button type="button" class="btn-small" style="background:#7f1d1d; border:1px solid #ff1a35; width:100%;" onclick="deleteArticle('${art.id}')">
+                                    🗑️ Delete Article
+                                </button>
                             </div>
                         </div>
                     `;
@@ -1503,7 +1599,25 @@
 
         async function toggleArticleApproval(articleId) {
             const isChecked = document.getElementById(`rss-approve-${articleId}`).checked;
-            await supabaseClient.from('rss_articles').update({ approved: isChecked }).eq('id', articleId);
+            const { error } = await supabaseClient.from('rss_articles').update({ approved: isChecked }).eq('id', articleId);
+            if (!error) {
+                const badge = document.getElementById(`rss-status-${articleId}`);
+                if (badge) {
+                    badge.innerText = isChecked ? 'LIVE ON SITE' : 'HIDDEN';
+                    badge.style.background = isChecked ? '#10b981' : '#333';
+                    badge.style.color = isChecked ? '#000' : '#fff';
+                }
+            }
+        }
+
+        async function deleteArticle(articleId) {
+            if (!confirm('Are you sure you want to permanently delete this article?')) return;
+            const { error } = await supabaseClient.from('rss_articles').delete().eq('id', articleId);
+            if (error) {
+                alert('Error deleting article: ' + error.message);
+            } else {
+                loadRSSForModeration();
+            }
         }
 
         async function handleSaveSiteSettings(event) {
