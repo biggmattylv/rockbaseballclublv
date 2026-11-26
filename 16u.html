@@ -126,6 +126,7 @@
                 const container = document.getElementById('rosterContainer');
                 container.innerHTML = '';
 
+                // 16U AND HYBRID PLAYERS
                 let filtered = (players || []).filter(p => {
                     let teamLower = (p.team || '').toLowerCase();
                     return teamLower.includes('16u') || teamLower.includes('hybrid') || teamLower.includes('both');
@@ -137,7 +138,12 @@
                 }
 
                 filtered.forEach(p => {
-                    let savedGPA = localStorage.getItem(`gpa_${p.id}`) || 'Not Yet Recorded';
+                    let rawGPA = localStorage.getItem(`gpa_${p.id}`);
+                    if (rawGPA === '3.80') {
+                        localStorage.removeItem(`gpa_${p.id}`);
+                        rawGPA = null;
+                    }
+                    let savedGPA = rawGPA || 'Not Yet Recorded';
                     let playerPin = p.pin || '1234';
                     let hasFieldLevel = p.fieldlevel_url && p.fieldlevel_url.trim() !== '';
 
@@ -246,7 +252,9 @@
             let { data: player } = await supabaseClient.from('players').select('*').eq('id', playerId).single();
             if (!player) return;
 
-            let newGPA = prompt("Update Academic GPA Score (e.g. 3.85):", localStorage.getItem(`gpa_${playerId}`) || "");
+            let currentStored = localStorage.getItem(`gpa_${playerId}`);
+            if (currentStored === '3.80') currentStored = '';
+            let newGPA = prompt("Update Academic GPA Score (e.g. 3.85):", currentStored || "");
             if (newGPA === null) return;
 
             let newFieldLevel = prompt("Update FieldLevel Profile Link:", player.fieldlevel_url || "");
