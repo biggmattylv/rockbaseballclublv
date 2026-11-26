@@ -617,7 +617,7 @@
             <section id="tab-rss" class="tab-content-section">
                 <div class="page-header">
                     <h1>📡 Baseball Training &amp; News Articles Manager</h1>
-                    <p>Import any article manually, pull from RSS feeds, toggle which ones appear on the homepage, or delete articles.</p>
+                    <p>NCAA DI, DII, and DIII Baseball feeds sync automatically. Toggle which articles appear on the homepage, import custom feeds, or delete articles.</p>
                 </div>
 
                 <!-- MANUAL ARTICLE IMPORTER -->
@@ -631,7 +631,7 @@
                             </div>
                             <div class="input-group">
                                 <label>Source / Category Tag</label>
-                                <input type="text" id="art_source" placeholder="e.g. Baseball America, Driveline, Club News" value="Pro Training" required>
+                                <input type="text" id="art_source" placeholder="e.g. DI Baseball, Driveline, Club News" value="Pro Training" required>
                             </div>
                             <div class="input-group">
                                 <label>Article Web URL (Link)</label>
@@ -654,10 +654,13 @@
 
                 <!-- RSS FEED IMPORTER & ARTICLE MODERATION GRID -->
                 <div class="admin-form-module">
-                    <h2 class="toolbar-title">📡 Import from RSS Feeds</h2>
+                    <h2 class="toolbar-title">📡 NCAA &amp; Training RSS Feeds</h2>
                     <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.25rem;">
-                        <button type="button" class="btn-submit" style="margin-top:0;" onclick="fetchRSSFromSource('Driveline Baseball', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.drivelinebaseball.com%2Ffeed%2F')">📡 Fetch Driveline RSS</button>
-                        <button type="button" class="btn-submit" style="margin-top:0; background:#202028; border:var(--border-thin);" onclick="fetchRSSFromSource('Youth Baseball Edge', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.youthbaseballedge.com%2Ffeed%2F')">📡 Fetch Youth Edge RSS</button>
+                        <button type="button" class="btn-submit" style="margin-top:0;" onclick="fetchRSSFromSource('DI Baseball', 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://www.ncaa.com/news/baseball/d1/rss.xml'))">⚾ Fetch DI Baseball</button>
+                        <button type="button" class="btn-submit" style="margin-top:0;" onclick="fetchRSSFromSource('DII Baseball', 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://www.ncaa.com/news/baseball/d2/rss.xml'))">⚾ Fetch DII Baseball</button>
+                        <button type="button" class="btn-submit" style="margin-top:0;" onclick="fetchRSSFromSource('DIII Baseball', 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://www.ncaa.com/news/baseball/d3/rss.xml'))">⚾ Fetch DIII Baseball</button>
+                        <button type="button" class="btn-submit" style="margin-top:0; background:#202028; border:var(--border-thin);" onclick="fetchRSSFromSource('Driveline Baseball', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.drivelinebaseball.com%2Ffeed%2F')">📡 Fetch Driveline</button>
+                        <button type="button" class="btn-submit" style="margin-top:0; background:#202028; border:var(--border-thin);" onclick="fetchRSSFromSource('Youth Baseball Edge', 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.youthbaseballedge.com%2Ffeed%2F')">📡 Fetch Youth Edge</button>
                     </div>
 
                     <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.75rem; background:var(--bg-input); padding:1rem; border-radius:8px; border:var(--border-thin);">
@@ -758,6 +761,12 @@
         let activeEditingPlayerId = null;
         let activeEditingSponsorId = null;
 
+        const DEFAULT_NCAA_FEEDS = [
+            { name: 'DI Baseball', url: 'https://www.ncaa.com/news/baseball/d1/rss.xml' },
+            { name: 'DII Baseball', url: 'https://www.ncaa.com/news/baseball/d2/rss.xml' },
+            { name: 'DIII Baseball', url: 'https://www.ncaa.com/news/baseball/d3/rss.xml' }
+        ];
+
         function switchAdminTab(tabId) {
             document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content-section').forEach(sec => sec.classList.remove('active'));
@@ -772,6 +781,7 @@
             await loadCoaches();
             await loadSponsorsHub();
             await loadMasterRoster();
+            await autoSyncDefaultNCAAFeeds();
             await loadRSSForModeration();
         }
 
@@ -1485,6 +1495,38 @@
         }
 
         /* RSS & MANUAL ARTICLE MODERATION ENGINE */
+        async function autoSyncDefaultNCAAFeeds() {
+            try {
+                let { data: existing } = await supabaseClient.from('rss_articles').select('id');
+                let existingIds = new Set((existing || []).map(row => row.id));
+
+                for (const feed of DEFAULT_NCAA_FEEDS) {
+                    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`;
+                    const res = await fetch(apiUrl);
+                    const json = await res.json();
+
+                    if (json.items && json.items.length > 0) {
+                        for (const item of json.items.slice(0, 4)) {
+                            const artId = 'rss_' + btoa(unescape(encodeURIComponent(item.link))).replace(/[^a-zA-Z0-9]/g, '').substring(0, 20);
+                            if (!existingIds.has(artId)) {
+                                await supabaseClient.from('rss_articles').insert([{
+                                    id: artId,
+                                    title: item.title,
+                                    link: item.link,
+                                    source: feed.name,
+                                    snippet: item.description ? item.description.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...' : '',
+                                    approved: false
+                                }]);
+                                existingIds.add(artId);
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn('Auto NCAA feed sync skipped:', err);
+            }
+        }
+
         async function handleManualArticleImport(event) {
             event.preventDefault();
             const titleVal = document.getElementById('art_title').value.trim();
@@ -1532,14 +1574,18 @@
                 let json = await res.json();
                 
                 if (json.items && json.items.length > 0) {
+                    let { data: existing } = await supabaseClient.from('rss_articles').select('id, approved');
+                    let existingMap = new Map((existing || []).map(r => [r.id, r.approved]));
+
                     for (let item of json.items.slice(0, 5)) {
+                        let artId = 'rss_' + btoa(unescape(encodeURIComponent(item.link))).replace(/[^a-zA-Z0-9]/g, '').substring(0, 20);
                         let articleObj = {
-                            id: 'rss_' + btoa(unescape(encodeURIComponent(item.link))).replace(/[^a-zA-Z0-9]/g, '').substring(0, 20),
+                            id: artId,
                             title: item.title,
                             link: item.link,
                             source: sourceName,
                             snippet: item.description ? item.description.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...' : '',
-                            approved: false
+                            approved: existingMap.has(artId) ? existingMap.get(artId) : false
                         };
                         await supabaseClient.from('rss_articles').upsert(articleObj);
                     }
