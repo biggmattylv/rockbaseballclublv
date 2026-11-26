@@ -19,10 +19,22 @@
             background: linear-gradient(135deg, #161620 0%, #08080b 100%);
             border: var(--border-thin); border-left: 6px solid var(--red-accent);
             border-radius: var(--radius-module); padding: 2.5rem; margin-bottom: 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1.25rem;
         }
 
-        .page-header h1 { font-family: 'Impact', sans-serif; font-size: 3.2rem; text-transform: uppercase; letter-spacing: 2px; }
-        .page-header p { color: var(--text-muted); font-size: 1rem; }
+        .page-header h1 { font-family: 'Impact', sans-serif; font-size: 3.2rem; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        .page-header p { color: var(--text-muted); font-size: 1rem; margin-top: 0.35rem; }
+
+        .btn-gc-header {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: #10b981; color: #000; font-weight: 900; font-size: 0.85rem;
+            text-transform: uppercase; padding: 0.85rem 1.4rem; border-radius: 8px;
+            text-decoration: none; box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);
+            transition: all 0.2s ease;
+        }
+
+        .btn-gc-header:hover { background: #059669; color: #fff; transform: translateY(-2px); }
 
         .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
         .card-container { background-color: transparent; width: 100%; height: 500px; perspective: 1000px; }
@@ -102,8 +114,13 @@
 
     <main>
         <div class="page-header">
-            <h1>18U Division Roster</h1>
-            <p>High School & College Recruitment Showcase Team</p>
+            <div>
+                <h1>18U Division Roster</h1>
+                <p>High School & College Recruitment Showcase Team</p>
+            </div>
+            <a href="https://web.gc.com/teams/QajxhRe8yxv7?utm_source=Web&utm_campaign=team_share_link" target="_blank" class="btn-gc-header">
+                ⚾ 18U GameChanger Team Page →
+            </a>
         </div>
 
         <div class="roster-grid" id="rosterContainer">
