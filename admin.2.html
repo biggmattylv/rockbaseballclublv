@@ -324,7 +324,7 @@
 
     <header>
         <div class="nav-container">
-            <a class='logo-group' href='/'>
+            <a class="logo-group" href="index.html">
                 <img src="brand/logo.jpg" alt="Logo" class="logo-img">
                 <div class="logo-text">The Rock <span>Baseball</span><small>Summerlin, Nevada</small></div>
             </a>
@@ -332,12 +332,12 @@
             <button class="hamburger-toggle" onclick="document.querySelector('nav').classList.toggle('mobile-active')">☰</button>
 
             <nav>
-                <a href='/'>Home</a>
-                <a href='/14u'>14U Roster</a>
-                <a href='/16u'>16U Roster</a>
-                <a href='/18u'>18U Roster</a>
-                <a href='/uniforms'>Uniforms</a>
-                <a class='active nav-accent' href='/admin.2'>🔒 Coaches Hub</a>
+                <a href="index.html">Home</a>
+                <a href="14u.html">14U Roster</a>
+                <a href="16u.html">16U Roster</a>
+                <a href="18u.html">18U Roster</a>
+                <a href="uniforms.html">Uniforms</a>
+                <a class="active nav-accent" href="admin.2.html">🔒 Coaches Hub</a>
             </nav>
         </div>
     </header>
@@ -1557,7 +1557,7 @@
                                     <span class="badge-team">${p.team}</span>
                                 </div>
                                 <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">
-                                    <div><strong>Age:</strong> ${p.age} | <strong>Pos:</strong>${p.pos}</div>
+                                    <div><strong>Age:</strong> ${p.age} | <strong>Pos:</strong> ${p.pos}</div>
                                     <div><strong>Email:</strong> ${p.email}</div>
                                     <div><strong>Portal PIN:</strong> <span style="color:var(--gold-accent); font-weight:900;">${p.pin || '1234'}</span></div>
                                 </div>
@@ -1588,4 +1588,176 @@
                                 </div>
                                 <div class="ledger-list">${ledgerRowsHtml || '<div style="font-style:italic;">No transaction history</div>'}</div>
                                 <div class="add-charge-group">
-                                    <input type="text" id
+                                    <input type="text" id="desc-${p.id}" placeholder="Fee / Payment desc">
+                                    <input type="number" step="0.01" id="amt-${p.id}" placeholder="$ Amt (+/-)" style="width:80px;">
+                                    <button class="btn-small" onclick="addLedgerItem('${p.id}')">Add</button>
+                                </div>
+                                <button class="btn-small" style="background:#181822; border:1px solid #333; color:var(--gold-accent); width:100%; margin-top:0.6rem;" onclick="zeroOutSeasonAccount('${p.id}', '${p.name.replace(/'/g, "\\'")}')">
+                                    🔄 Zero Out Account for Season
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) { console.error("Roster error:", err); }
+        }
+
+        function populateJumpPlayerDropdown() {
+            const select = document.getElementById('jumpPlayerSelect');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Select Player --</option>';
+            activePlayers.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.name} (${p.team})</option>`;
+            });
+        }
+
+        function scrollToPlayerCard(playerId) {
+            if (!playerId) return;
+            let el = document.getElementById(`pcard-${playerId}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function openPlayerModal(playerId) {
+            let player = activePlayers.find(p => p.id === playerId);
+            if (!player) return;
+
+            activeEditingPlayerId = playerId;
+            document.getElementById('pm_name').value = player.name || '';
+            document.getElementById('pm_pos').value = player.pos || '';
+            document.getElementById('pm_team').value = player.team || '';
+            document.getElementById('pm_hs').value = player.high_school || '';
+            document.getElementById('pm_grad').value = player.grad_year || '';
+            document.getElementById('pm_exit').value = player.exit_velo || '';
+            document.getElementById('pm_fb').value = player.fastball_velo || '';
+            document.getElementById('pm_status').value = player.commit_status || 'UNCOMMITTED';
+            document.getElementById('pm_twitter').value = player.twitter_handle || '';
+            document.getElementById('pm_fieldlevel').value = player.fieldlevel_url || '';
+            document.getElementById('pm_pin').value = player.pin || '1234';
+
+            document.getElementById('playerEditModal').style.display = 'flex';
+        }
+
+        function closePlayerModal() {
+            document.getElementById('playerEditModal').style.display = 'none';
+            activeEditingPlayerId = null;
+        }
+
+        async function savePlayerModal() {
+            if (!activeEditingPlayerId) return;
+
+            const updates = {
+                name: document.getElementById('pm_name').value,
+                pos: document.getElementById('pm_pos').value,
+                team: document.getElementById('pm_team').value,
+                high_school: document.getElementById('pm_hs').value,
+                grad_year: document.getElementById('pm_grad').value,
+                exit_velo: document.getElementById('pm_exit').value,
+                fastball_velo: document.getElementById('pm_fb').value,
+                commit_status: document.getElementById('pm_status').value,
+                twitter_handle: document.getElementById('pm_twitter').value,
+                fieldlevel_url: document.getElementById('pm_fieldlevel').value,
+                pin: document.getElementById('pm_pin').value.trim()
+            };
+
+            const { error } = await supabaseClient.from('players').update(updates).eq('id', activeEditingPlayerId);
+            if (error) alert('Error updating player: ' + error.message);
+            else { closePlayerModal(); loadMasterRoster(); }
+        }
+
+        function populatePINPlayerDropdown() {
+            const select = document.getElementById('pinSelectPlayer');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Choose Player --</option>';
+
+            activePlayers.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.name} (${p.team})</option>`;
+            });
+        }
+
+        function displaySelectedPlayerPIN() {
+            const pId = document.getElementById('pinSelectPlayer').value;
+            const player = activePlayers.find(p => p.id === pId);
+
+            if (player) {
+                document.getElementById('pinDisplayCurrent').value = player.pin || '1234';
+            } else {
+                document.getElementById('pinDisplayCurrent').value = '';
+            }
+        }
+
+        async function overridePlayerPIN() {
+            const pId = document.getElementById('pinSelectPlayer').value;
+            const newPin = document.getElementById('pinNewValue').value;
+
+            if (!pId) { alert("Please select a player first."); return; }
+            if (!newPin || newPin.trim().length < 4) { alert("Please enter a valid 4-digit PIN."); return; }
+
+            const { error } = await supabaseClient.from('players').update({ pin: newPin.trim() }).eq('id', pId);
+
+            if (error) alert("Error updating PIN: " + error.message);
+            else {
+                alert("✅ Success! Security PIN overwritten successfully.");
+                document.getElementById('pinNewValue').value = '';
+                await loadMasterRoster();
+                populatePINPlayerDropdown();
+            }
+        }
+
+        async function handleAddPlayer(event) {
+            event.preventDefault();
+            const playerId = 'p_' + Date.now();
+            let photoUrl = '';
+            const photoFile = document.getElementById('new_photo').files[0];
+            if (photoFile) photoUrl = await uploadImageFile(photoFile, playerId);
+
+            const newPlayer = {
+                id: playerId, 
+                name: document.getElementById('new_name').value,
+                team: document.getElementById('new_team').value, 
+                age: document.getElementById('new_age').value,
+                pos: document.getElementById('new_pos').value, 
+                email: document.getElementById('new_email').value,
+                pin: document.getElementById('new_pin').value || '1234',
+                photo_url: photoUrl, 
+                active: true, 
+                ledger: []
+            };
+
+            await supabaseClient.from('players').insert([newPlayer]);
+            document.getElementById('addPlayerForm').reset();
+            loadMasterRoster();
+        }
+
+        async function uploadPlayerPhoto(playerId) {
+            const file = document.getElementById(`upload-${playerId}`).files[0];
+            if (!file) return;
+            const publicUrl = await uploadImageFile(file, playerId);
+            await supabaseClient.from('players').update({ photo_url: publicUrl }).eq('id', playerId);
+            loadMasterRoster();
+        }
+
+        async function uploadImageFile(file, prefix) {
+            const filePath = `${prefix}-${Date.now()}.${file.name.split('.').pop()}`;
+            const { error } = await supabaseClient.storage.from('player-photos').upload(filePath, file, { upsert: true });
+            if (error) { alert('Upload error: ' + error.message); return ''; }
+            return supabaseClient.storage.from('player-photos').getPublicUrl(filePath).data.publicUrl;
+        }
+
+        async function addLedgerItem(playerId) {
+            let desc = document.getElementById(`desc-${playerId}`).value || 'Fee';
+            let amt = parseFloat(document.getElementById(`amt-${playerId}`).value);
+            if (isNaN(amt)) return;
+
+            let player = activePlayers.find(p => p.id === playerId);
+            let currentLedger = Array.isArray(player.ledger) ? player.ledger : [];
+            currentLedger.push({ desc: desc, amount: amt, date: new Date().toISOString().split('T')[0] });
+
+            await supabaseClient.from('players').update({ ledger: currentLedger }).eq('id', playerId);
+            await loadMasterRoster();
+            renderAccountBalancesTab();
+        }
+
+        initCoachesHub();
+    </script>
+</body>
+</html>
